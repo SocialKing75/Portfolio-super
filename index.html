@@ -34,8 +34,8 @@
             --title-color: hsl(0, 0%, 0%);
             --text-color: hsl(0, 0%, 35%);
             --text-color-light: hsl(0, 0%, 64%);
-            --body-color: hsl(0, 0%, 87%);
-            --container-color: hsl(0, 0%, 83%);
+            --body-color: hsl(0, 0%, 95%);
+            --container-color: hsl(0, 0%, 90%);
             --body-font: "Bai Jamjuree", sans-serif;
             --footer-height: 5rem;
             /* Footer specific colors */
@@ -75,6 +75,12 @@
             --footer-divider-color: rgba(255,255,255,0.06);
         }
 
+        /* Reset général */
+        body, html {
+            margin: 0;
+            padding: 0;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -84,6 +90,20 @@
 
         html {
             scroll-behavior: smooth;
+        }
+
+        /* Conteneur de l'image */
+        .home__image {
+            margin-top: 0;
+            padding-top: 0;
+            display: block;
+            line-height: 0;
+        }
+
+        /* Style du SVG */
+        .home__blob {
+            display: block;
+            vertical-align: top;
         }
 
         body {
@@ -131,21 +151,31 @@
             outline: none !important;
         }
 
-        a:focus, button:focus, [data-section]:focus, .nav__link:focus, .home__button:focus,
-        h1:focus, h2:focus, h3:focus {
+        /* Empêche le curseur texte sur les éléments cliquables */
+        a, button, .nav__link, .nav__logo, [data-section],
+        .home__button, .language-toggle, .theme-toggle,
+        .nav__toggle, .nav__close, .project__card,
+        .modal__close, .back-to-top {
+            user-select: none;
+            -webkit-user-select: none;
+            cursor: pointer;
+        }
+
+        a:focus-visible, button:focus-visible, [data-section]:focus-visible, .nav__link:focus-visible, .home__button:focus-visible,
+        h1:focus-visible, h2:focus-visible, h3:focus-visible {
             outline: 3px solid var(--first-color);
             outline-offset: 2px;
             border-radius: 4px;
             transition: outline 0.2s ease;
         }
-        
-        .language-toggle:focus, .theme-toggle:focus {
+
+        .language-toggle:focus-visible, .theme-toggle:focus-visible {
             outline: 3px solid var(--first-color);
             outline-offset: 2px;
             border-radius: 50%;
         }
 
-        .section__title:focus, .projects__title:focus, .skills__title:focus {
+        .section__title:focus-visible, .projects__title:focus-visible, .skills__title:focus-visible {
             outline: 3px solid var(--first-color);
             outline-offset: 2px;
         }
@@ -171,6 +201,15 @@
             position: relative;
         }
 
+        /* Ensure section headings and skill headings are centered consistently */
+        .section__title,
+        .skills__title,
+        .timeline__title {
+            text-align: center !important;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
         .section__title::after {
             content: '';
             position: absolute;
@@ -189,12 +228,11 @@
             top: 0;
             left: 0;
             background-color: var(--container-color);
-            z-index: var(--z-fixed);
+            z-index: 1000;
             transition: opacity 0.3s ease, background-color 0.4s;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            background-color: rgba(var(--container-color-rgb), 0.95);
             opacity: 1;
             pointer-events: auto;
         }
@@ -739,21 +777,43 @@
 
         .home__image {
             justify-self: center;
-            animation: slideInRight 1s ease forwards;
         }
 
         .home__blob {
             width: 280px;
             fill: var(--first-color);
             filter: drop-shadow(0 12px 12px hsla(14, 98%, 50%, 0.2));
-            animation: float 6s ease-in-out infinite;
+        }
+
+        /* Version responsive */
+        @media screen and (max-width: 768px) {
+            .home__blob {
+                width: 220px;
+                margin-top: 1rem;
+            }
+        }
+
+        @media screen and (max-width: 375px) {
+            .home__blob {
+                width: 200px;
+            }
+        }
+
+        @media screen and (min-width: 1023px) {
+            .home__blob {
+                width: 400px;
+            }
+        }
+        
+        #pattern-mask {
+            fill: white;
         }
 
         /* ========== About Section Redesign ========== */
         .about {
             background-color: var(--container-color);
             padding-top: 7rem;
-        }
+        }   
 
         .about__presentation {
             margin-bottom: 4rem;
@@ -1203,6 +1263,35 @@
             gap: 2rem;
         }
 
+        /* Skills grid: use same layout as projects */
+        .skills__grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            width: 100%;
+            justify-items: stretch;
+        }
+
+        @media screen and (max-width: 900px) {
+            .skills__grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media screen and (max-width: 500px) {
+            .skills__grid { grid-template-columns: 1fr; }
+        }
+
+        .skills__grid > .skills__content {
+            width: 100%;
+        }
+
+        /* Make the section title span the whole skills grid and center it */
+        .skills__container > .section__title {
+            grid-column: 1 / -1;
+            text-align: center;
+            justify-self: center;
+            margin-bottom: 1.5rem;
+        }
+
         .project__card {
             background-color: var(--body-color);
             border-radius: 1rem;
@@ -1484,9 +1573,8 @@
         .newsletter-input {
             display: flex;
             align-items: center;
-            /* match footer background so the input area blends with the footer */
-            background-color: transparent;
-            border: 1px solid rgba(0,0,0,0.08);
+            background-color: #ffffff;
+            border: 1px solid rgba(0,0,0,0.15);
             padding: 0.35rem 0.5rem;
             border-radius: 4px;
             flex: 1;
@@ -1507,8 +1595,8 @@
         .newsletter-subject:focus,
         .newsletter-msg:focus,
         .newsletter-email:focus {
-            background: transparent;
-            border-color: rgba(0,0,0,0.08);
+            background: #ffffff;
+            border-color: var(--first-color);
             outline: none !important;
             box-shadow: none !important;
         }
@@ -1525,19 +1613,19 @@
             padding: 0.45rem 0.25rem;
             background: transparent;
             font-size: var(--normal-font-size);
-            color: var(--text-color);
+            color: hsl(0, 0%, 15%);
             font-family: var(--body-font);
         }
 
         .newsletter-email::placeholder {
-            color: var(--footer-copy-color);
+            color: hsl(0, 0%, 55%);
             opacity: 1;
             font-family: var(--body-font);
         }
 
         .newsletter-subject::placeholder,
         .newsletter-msg::placeholder {
-            color: var(--footer-copy-color);
+            color: hsl(0, 0%, 55%);
             font-family: var(--body-font);
             opacity: 1;
         }
@@ -1580,10 +1668,10 @@
             width: 100%;
             padding: 0.45rem 0.5rem;
             border-radius: 4px;
-            border: 1px solid rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.15);
             font-size: var(--normal-font-size);
-            color: var(--text-color);
-            background: transparent;
+            color: hsl(0, 0%, 15%);
+            background: #ffffff;
             font-family: var(--body-font);
         }
 
@@ -2056,24 +2144,37 @@
 
     <!-- ========== Main ========== -->
     <main>
-        <!-- ========== Home ========== -->
-        <section class="section home active" id="home">
+        <!-- Home -->
+        <section class="home section" id="home">
             <div class="home__container container grid">
-                <div class="home__data">
-                    <h1 class="home__title" data-translate="Bonjour, je suis">Bonjour, je suis Joë</h1>
-                    <h2 class="home__subtitle" data-translate="Chef de Projet Digital">Chef de Projet Digital</h2>
-                    <p class="home__description" data-translate="description">Passionné par l'innovation et la gestion de projets digitaux, je mets mon expertise au service de vos ambitions.</p>
-                    <div class="home__buttons">
-                        <button class="home__button" data-section="projects" data-translate="Voir mes projets">Voir mes projets</button>
-                        <a class="home__button home__button--outline" href="assets/CV.pdf" download data-translate="Télécharger le CV">Télécharger le CV</a>
+                <div class="home__content">
+                    <div class="home__data">
+                        <h1 class="home__title" data-translate="Bonjour, je suis Joë">Bonjour, je suis Joë</h1>
+                        <h2 class="home__subtitle" data-translate="Chef de Projet Digital">Chef de Projet Digital</h2>
+                        <p class="home__description" data-translate="home_description">
+                            Je suis un chef de projet passionné avec plus de 8 ans d'expérience dans la gestion de projets digitaux. 
+                            J'accompagne les entreprises dans la réalisation de leurs objectifs grâce à une approche méthodique et collaborative.
+                        </p>
+                        <div class="home__buttons">
+                            <button class="home__button" data-section="about" data-translate="Découvrir mon profil">Découvrir mon profil</button>
+                            <button class="home__button home__button--outline" data-section="contact" data-translate="Me contacter">Me contacter</button>
+                        </div>  
                     </div>
                 </div>
-
-                <div class="home__image">
-                    <svg class="home__blob" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                        <path fill="currentColor" d="M44.7,-76.4C58.8,-69.2,71.8,-59.1,79.6,-45.8C87.4,-32.6,90,-16.3,89.8,-0.1C89.7,16.2,86.8,32.4,80.1,45.9C73.3,59.5,62.7,70.4,49.7,77.1C36.7,83.8,21.3,86.3,5.5,83.5C-10.3,80.7,-20.7,72.6,-32.3,65.1C-43.9,57.6,-56.8,50.7,-65.1,40.1C-73.4,29.5,-77.2,15.7,-77.8,0.3C-78.4,-15.2,-75.9,-30.5,-68.9,-43.4C-61.9,-56.3,-50.3,-66.9,-37.1,-74.8C-23.9,-82.7,-8.5,-87.9,5.7,-89.8C19.9,-91.7,30.6,-83.5,44.7,-76.4Z" transform="translate(100 100)" />
-                    </svg>
-                </div>
+<div class="home__image">
+    <svg class="home__blob" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <clipPath id="blob-clip">
+                <path d="M44.7,-76.4C58.8,-69.2,71.8,-59.1,79.6,-45.8C87.4,-32.6,90,-16.3,89.2,-0.6C88.4,15.2,84.2,30.4,76.5,43.8C68.8,57.2,57.6,68.7,44.5,75.4C31.4,82.1,16.7,84,-0.7,85.4C-18,86.8,-36,87.6,-50.5,80.9C-65,74.2,-76,60,-81.9,44.4C-87.8,28.8,-88.5,11.8,-86.5,-4.4C-84.5,-20.6,-79.7,-35.9,-70.4,-47.7C-61.1,-59.5,-47.3,-67.7,-33.1,-74.9C-18.9,-82.1,-4.5,-88.3,8.7,-86.5C21.9,-84.7,43.7,-74.8,44.7,-76.4Z" transform="translate(100 100)" />
+            </clipPath>
+            <filter id="blur-filter">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="1" />
+            </filter>
+        </defs>
+        <image href="lbphotographe-Portrait-62.jpg" width="200" height="200" x="0" y="0" clip-path="url(#blob-clip)" preserveAspectRatio="xMidYMin slice" />
+    </svg>
+</div>
+            </div>
                 </div>
                 <!-- About snippet moved here from About section (placed below hero) -->
                 <div class="home__about">
@@ -2101,14 +2202,14 @@
                                 <div class="contact-icon" aria-hidden="true"><i class="fa-solid fa-envelope"></i></div>
                                 <div>
                                     <div class="contact-label">Email</div>
-                                    <div class="contact-value"><a href="mailto:john.doe@example.com">john.doe@example.com</a></div>
+                                    <div class="contact-value"><a href="mailto:john.doe@example.com">john.doe@gmail.com</a></div>
                                 </div>
                             </div>
                             <div class="contact-row">
                                 <div class="contact-icon" aria-hidden="true"><i class="fa-solid fa-location-dot"></i></div>
                                 <div>
                                     <div class="contact-label">Adresse</div>
-                                    <div class="contact-value">Paris, France</div>
+                                    <div class="contact-value">Versailles, France</div>
                                 </div>
                             </div>
                             <div class="contact-row">
@@ -2130,7 +2231,7 @@
 
                 <!-- Timeline des formations -->
                 <div class="about__timeline">
-                    <h3 class="timeline__title" data-translate="Formation">Formation</h3>
+                    <h2 class="section__title" data-translate="Formation">Formation</h2>
                     <div class="timeline__container">
                         <div class="timeline__item">
                             <div class="timeline__year">2025-2027</div>
@@ -2170,7 +2271,7 @@
                     <div class="experience__category">
                         <div class="experience__grid">
                             <div class="experience__card">
-                                <span class="experience__period">2022 - 2024</span>
+                                <span class="experience__period">2024 - 2022</span>
                                 <h5 data-translate="BIM Modeleur">BIM Modeleur</h5>
                                 <p data-translate="Meudon">SADIEM - Meudon</p>
                                 <ul class="experience__tasks">
@@ -2181,7 +2282,7 @@
                                 
                             </div>
                             <div class="experience__card">
-                                <span class="experience__period">2021 - 2022</span>
+                                <span class="experience__period">2022 - 2021</span>
                                 <h5 data-translate="Économiste - métreur">Économiste métreur</h5>
                                 <p data-translate="Paris"> Boréal - Paris</p>
                                 <ul class="experience__tasks">
@@ -2192,7 +2293,7 @@
                                 </ul>
                             </div>
                             <div class="experience__card">
-                                <span class="experience__period">2020 - 2021</span>
+                                <span class="experience__period">2021 - 2020</span>
                                 <h5 data-translate="Assistant Chef de projet">Assistant Chef de projet</h5>
                                 <p data-translate="Sisco">Sisco - Vélizy</p>
                                 <ul class="experience__tasks">
@@ -2246,7 +2347,7 @@
                                 <details class="blog-card__details">
                                     <summary>En savoir plus</summary>
                                     <ul>
-                                        <li data-translate="encadrement-enfants">Encadrement de groupes d'enfants (6 à 17 ans)</li>
+                                        <li data-translate="encadrement-enfants">BAFA obtenu en 2018, avec une spécialisation</li>
                                         <li data-translate="preparation-activites">Préparation, organisation et mise en place d'activités ludiques</li>
                                         <li data-translate="securite-psc1">Respect des règles sanitaires et de sécurité (titulaire du PSC1)</li>
                                     </ul>
@@ -2274,79 +2375,100 @@
         <!-- ========== Skills ========== -->
         <section class="section skills" id="skills">
             <div class="skills__container container grid">
-                <h2 class="section__title" data-translate="Mes compétences">Mes compétences</h2>
-                
-                <div class="skills__content">
-                    <h3 class="skills__title" data-translate="Gestion de projet">Gestion de projet</h3>
-                    <div class="skills__list">
-                        <div class="skills__item">
-                            <i class="fa-solid fa-check skills__icon"></i>
-                            <span data-translate="Agile/Scrum">Agile/Scrum</span>
-                        </div>
-                        <div class="skills__item">
-                            <i class="fa-solid fa-check skills__icon"></i>
-                            <span data-translate="Gestion des risques">Gestion des risques</span>
-                        </div>
-                        <div class="skills__item">
-                            <i class="fa-solid fa-check skills__icon"></i>
-                            <span data-translate="Planification stratégique">Planification stratégique</span>
-                        </div>
-                        <div class="skills__item">
-                            <i class="fa-solid fa-check skills__icon"></i>
-                            <span data-translate="Suivi budgétaire">Suivi budgétaire</span>
-                        </div>
-                    </div>
-                </div>
+                    <h2 class="section__title" data-translate="Mes compétences">Mes compétences</h2>
 
-                <div class="skills__content">
-                    <h3 class="skills__title" data-translate="Compétences techniques">Compétences techniques</h3>
-                    <div class="skills__list">
-                        <div class="skills__item">
-                            <i class="fa-solid fa-check skills__icon"></i>
-                            <span data-translate="Suite Microsoft 365">Suite Microsoft 365</span>
-                        </div>
-                        <div class="skills__item">
-                            <i class="fa-solid fa-check skills__icon"></i>
-                            <span data-translate="Jira/Trello">Excel - Expert</span>
-                        </div>
-                        <div class="skills__item">
-                            <i class="fa-solid fa-check skills__icon"></i>
-                            <span data-translate="Jira/Trello">Notion</span>
-                        </div>
-                        <div class="skills__item">
-                            <i class="fa-solid fa-check skills__icon"></i>
-                            <span data-translate="HTML/CSS/JavaScript">C/Python/VBA</span>
-                        </div>
-                        <div class="skills__item">
-                            <i class="fa-solid fa-check skills__icon"></i>
-                            <span data-translate="CMS (WordPress)">CMS (WordPress)</span>
-                        </div>
-                    </div>
-                </div>
+                    <!-- skills grid -->
+                    <div class="skills__grid">
 
-                <div class="skills__content">
-                    <h3 class="skills__title" data-translate="Soft Skills">Soft Skills</h3>
-                    <div class="skills__list">
-                        <div class="skills__item">
-                            <i class="fa-solid fa-check skills__icon"></i>
-                            <span data-translate="Leadership">Leadership</span>
+                        <div class="skills__content languages">
+                            <h3 class="skills__title" data-translate="Languages">Languages</h3>
+                            <div class="skills__list">
+                                <div class="skills__item">
+                                    <i class="fa-solid fa-check skills__icon"></i>
+                                    <span data-translate="HTML - CSS - JavaScript">HTML - CSS - JavaScript</span>
+                                </div>
+                                <div class="skills__item">
+                                    <i class="fa-solid fa-check skills__icon"></i>
+                                    <span data-translate="Python">Python</span>
+                                </div>
+                                <div class="skills__item">
+                                    <i class="fa-solid fa-check skills__icon"></i>
+                                    <span data-translate="C">C</span>
+                                </div>
+                                <div class="skills__item">
+                                    <i class="fa-solid fa-check skills__icon"></i>
+                                    <span data-translate="VBA">VBA</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="skills__item">
-                            <i class="fa-solid fa-check skills__icon"></i>
-                            <span data-translate="Communication">Communication</span>
-                        </div>
-                        <div class="skills__item">
-                            <i class="fa-solid fa-check skills__icon"></i>
-                            <span data-translate="Résolution de problèmes">Résolution de problèmes</span>
-                        </div>
-                        <div class="skills__item">
-                            <i class="fa-solid fa-check skills__icon"></i>
-                            <span data-translate="Adaptabilité">Adaptabilité</span>
-                        </div>
-                    </div>
-                </div>
 
+                        <div class="skills__content tech">
+                            <h3 class="skills__title" data-translate="Compétences techniques">Compétences techniques</h3>
+                            <div class="skills__list">
+                                <div class="skills__item">
+                                    <i class="fa-solid fa-check skills__icon"></i>
+                                    <span data-translate="Suite Microsoft 365">Suite Microsoft 365</span>
+                                </div>
+                                <div class="skills__item">
+                                    <i class="fa-solid fa-check skills__icon"></i>
+                                    <span data-translate="Excel - Expert">Excel - Expert</span>
+                                </div>
+                                <div class="skills__item">
+                                    <i class="fa-solid fa-check skills__icon"></i>
+                                    <span data-translate="Notion">PowerBI</span>
+                                </div>
+                                <div class="skills__item">
+                                    <i class="fa-solid fa-check skills__icon"></i>
+                                    <span data-translate="Ms Project">Ms Project</span>
+                                </div>
+                            </div>
+                        </div>
 
+                        <div class="skills__content tools">
+                            <h3 class="skills__title" data-translate="Logiciel métier">Logiciel métier</h3>
+                            <div class="skills__list">
+                                <div class="skills__item">
+                                    <i class="fa-solid fa-check skills__icon"></i>
+                                    <span data-translate="Revit/Autocad/Navisworks">Revit/Autocad/Navisworks/SketchUp</span>
+                                </div>
+                                <div class="skills__item">
+                                    <i class="fa-solid fa-check skills__icon"></i>
+                                    <span data-translate="Devisoc/JustBIM/Kreo/Quoterplan">Devisoc/JustBIM/Kreo/Quoterplan</span>
+                                </div>
+                                <div class="skills__item">
+                                    <i class="fa-solid fa-check skills__icon"></i>
+                                    <span data-translate="EveBIM/BIMvision">EveBIM/BIMvision</span>
+                                </div>
+                                <div class="skills__item">
+                                    <i class="fa-solid fa-check skills__icon"></i>
+                                    <span data-translate="Adaptabilité">Adaptabilité</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="skills__content other">
+                            <h3 class="skills__title" data-translate="Et d'autre">Et d'autre</h3>
+                            <div class="skills__list">
+                                <div class="skills__item">
+                                    <i class="fa-solid fa-check skills__icon"></i>
+                                    <span data-translate="Premiere Pro">Adobe Premiere Pro</span>
+                                </div>
+                                <div class="skills__item">
+                                    <i class="fa-solid fa-check skills__icon"></i>
+                                    <span data-translate="Adobe After Effects">Adobe After Effects</span>
+                                </div>
+                                <div class="skills__item">
+                                    <i class="fa-solid fa-check skills__icon"></i>
+                                    <span data-translate="Photoshop">Adobe Photoshop</span>
+                                </div>
+                                <div class="skills__item">
+                                    <i class="fa-solid fa-check skills__icon"></i>
+                                    <span data-translate="OBS Studio">OBS Studio</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div> <!-- /.skills__grid -->
             </div>
         </section>
 
@@ -2358,7 +2480,7 @@
                 <div class="projects__grid">
                     <!-- Projet 1 -->
                     <div class="project__card" data-project="1">
-                        <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Création d’outil d’analyse comparative" class="project__image">
+                        <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Outil d’analyse comparative" class="project__image">
                         <div class="project__content">
                             <h3 class="project__title" data-translate="Création d’outil d’analyse comparative">Création d’outil d’analyse comparative</h3>
                             <p class="project__description" data-translate="description-projet-1">Création d’une interface interactive sur Powerbi regroupant plus de 1000 projets de construction pour des analyses comparatives</p>
@@ -2445,7 +2567,7 @@
             <button class="modal__close">&times;</button>
             <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Création d’outil d’analyse comparative" class="modal__image">
             <div class="modal__body">
-                <h2 class="modal__title" data-translate="Development of comparative analysis tool">Création d’outil d’analyse comparative</h2>
+                <h2 class="modal__title" data-translate="Création d’outil d’analyse comparative">Création d’outil d’analyse comparative</h2>
                 <p class="modal__description" data-translate="description-projet-1-modal">Développement d'une application mobile innovante de vente en ligne avec système de paiement sécurisé et gestion des stocks en temps réel. Cette application a permis à notre client d'augmenter ses ventes mobiles de 150% en 6 mois.</p>
                 
                 <div class="modal__details">
@@ -2478,9 +2600,9 @@
     <div class="modal" id="modal-2">
         <div class="modal__content">
             <button class="modal__close">&times;</button>
-            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Plateforme Analytics" class="modal__image">
+            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Excel automatisés" class="modal__image">
             <div class="modal__body">
-                <h2 class="modal__title" data-translate="Plateforme Analytics">Plateforme Analytics</h2>
+                <h2 class="modal__title" data-translate="Excel automatisés">Excel automatisés</h2>
                 <p class="modal__description" data-translate="description-projet-2-modal">Conception et déploiement d'une plateforme de business intelligence avancée permettant l'analyse en temps réel des données marketing et commerciales avec des tableaux de bord personnalisables.</p>
                 
                 <div class="modal__details">
@@ -2513,9 +2635,9 @@
     <div class="modal" id="modal-3">
         <div class="modal__content">
             <button class="modal__close">&times;</button>
-            <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Refonte Site Corporate" class="modal__image">
+            <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Automatisation de rapports" class="modal__image">
             <div class="modal__body">
-                <h2 class="modal__title" data-translate="Refonte Site Corporate">Refonte Site Corporate</h2>
+                <h2 class="modal__title" data-translate="Automatisation de rapports">Automatisation de rapports</h2>
                 <p class="modal__description" data-translate="description-projet-3-modal">Refonte complète du site internet corporate d'une entreprise avec optimisation SEO avancée, intégration d'un système de gestion de contenu moderne et amélioration de l'expérience utilisateur.</p>
                 
                 <div class="modal__details">
@@ -2798,6 +2920,7 @@
                 "Compétences": "Compétences",
                 "Projets": "Projets",
                 "Contact": "Contact",
+                "Mon Parcours": "Mon Parcours",
                 "Bonjour, je suis Joë": "Bonjour, je suis Joë",
                 "Chef de Projet Digital": "Chef de Projet Digital",
                 "description": "Passionné par l'innovation et la gestion de projets digitaux, je mets mon expertise au service de vos ambitions.",
@@ -2826,16 +2949,24 @@
                 "Chef de Projet Digital": "Chef de Projet Digital",
                 
                 "SADIEM": "SADIEM - Meudon",
-                "Lead Project Manager": "Lead Project Manager",
-                "Gestion de projets web et mobiles": "Gestion de projets web et mobiles",
-                "Coordination d'équipes pluridisciplinaires": "Coordination d'équipes pluridisciplinaires",
-                "Suivi budgétaire et reporting": "Suivi budgétaire et reporting",
+                "BIM modeleur": "BIM modeleur",
+                "Analyse des besoins du bureau d'études": "Analyse des besoins du bureau d'études",
+                "Préparation des données nécessaires (modélisation sous Revit)": "Préparation des données nécessaires (modélisation sous Revit)",
+                "Elaboration et automatisation d'un tableau de bord (Macros VBA)": "Elaboration et automatisation d'un tableau de bord (Macros VBA)",
 
-                "Startup TechVision": "Startup TechVision",
-                "Chef de Projet Junior": "Chef de Projet Junior",
-                "Développement d'applications SaaS": "Développement d'applications SaaS",
-                "Gestion de la relation client": "Gestion de la relation client",
-                "Tests utilisateurs et recette": "Tests utilisateurs et recette",
+                "Boréal": "Boréal - Paris",
+                "Économiste - métreur": "Économiste - métreur",
+                "Rédaction des devis": "Rédaction des devis",
+                "Négociation avec les fournisseurs": "Négociation avec les fournisseurs",
+                "Elaboration des tableaux de bord : suivi du budget et des KPI": "Elaboration des tableaux de bord : suivi du budget et des KPI",
+                "Support décisionnel via la modélisation de scénarios budgétaires": "Support décisionnel via la modélisation de scénarios budgétaires",
+
+                "Sisco": "Sisco - Vélizy",
+                "Assistant Chef de projet": "Assistant Chef de projet",
+                "Réalisation de plans de démolition : tâches, planning, budget": "Réalisation de plans de démolition : tâches, planning, budget",
+                "Création d'un tableau de bord : visualisation optimisée de l'ensemble des matériaux (Macro VBA)": "Création d'un tableau de bord : visualisation optimisée de l'ensemble des matériaux (Macro VBA)",
+                "Elaboration de diagnostics de traitement des déchets": "Elaboration de diagnostics de traitement des déchets",
+                "Respect de la réglementation des produits : non dangereux - dangereux - inertes": "Respect de la réglementation des produits : non dangereux - dangereux - inertes",
                 
                 "Expérience Internationale": "Expérience Internationale",
                 "Projets Internationaux": "Projets Internationaux",
@@ -2873,12 +3004,12 @@
                 "Durée: 6 mois": "Durée: 6 mois",
                 "Équipe: 8 personnes": "Équipe: 8 personnes",
                 "Budget: 120K€": "Budget: 120K€",
-                "Plateforme Analytics": "Plateforme Analytics",
+                "Excel automatisés": "Excel automatisés",
                 "description-projet-2": "Conception et déploiement d'une plateforme de business intelligence pour l'analyse des données marketing et commerciales.",
                 "Durée: 4 mois": "Durée: 4 mois",
                 "Équipe: 6 personnes": "Équipe: 6 personnes",
                 "Budget: 85K€": "Budget: 85K€",
-                "Refonte Site Corporate": "Refonte Site Corporate",
+                "Automatisation de rapports": "Automatisation de rapports",
                 "description-projet-3": "Refonte complète du site internet d'une entreprise avec optimisation SEO et intégration d'un système de gestion de contenu.",
                 "Durée: 3 mois": "Durée: 3 mois",
                 "Équipe: 4 personnes": "Équipe: 4 personnes",
@@ -2886,14 +3017,8 @@
                 "Contactez-moi": "Contactez-moi",
                 "Télécharger le CV": "Télécharger le CV",
                 "Travaillons ensemble": "Travaillons ensemble",
-                "description-contact": "Vous avez un projet en tête ? N'hésitez pas à me contacter pour discuter de vos besoins et voir comment je peux vous accompagner.",
-                "Paris, France": "Paris, France",
-                "Envoyer un message": "Envoyer un message",
-                "description-projet-1-modal": "Développement d'une application mobile innovante de vente en ligne avec système de paiement sécurisé et gestion des stocks en temps réel. Cette application a permis à notre client d'augmenter ses ventes mobiles de 150% en 6 mois.",
-                "Contexte": "Contexte",
-                "contexte-projet-1": "Le client, une entreprise de vente au détail, souhaitait étendre sa présence digitale avec une application mobile performante pour concurrencer les acteurs majeurs du e-commerce.",
                 "Mission": "Mission",
-                "mission-projet-1": "Conception, développement et déploiement d'une application mobile cross-platform avec intégration des systèmes de paiement et de gestion des stocks existants.",
+                "Mission-projet-1": "Conception, développement et déploiement d'une application mobile cross-platform avec intégration des systèmes de paiement et de gestion des stocks existants.",
                 "Résultats": "Résultats",
                 "resultats-projet-1": "+150% de ventes mobiles, réduction de 30% du taux d'abandon de panier, et amélioration de la note moyenne sur les stores à 4.8/5.",
                 "description-projet-2-modal": "Conception et déploiement d'une plateforme de business intelligence avancée permettant l'analyse en temps réel des données marketing et commerciales avec des tableaux de bord personnalisables.",
@@ -2913,7 +3038,7 @@
                 "Compétences": "Skills",
                 "Projets": "Projects",
                 "Contact": "Contact",
-                "Bonjour, je suis": "Hello, I'm Joë",
+                "Bonjour, je suis Joë": "Hello, I'm Joë",
                 "Chef de Projet Digital": "Digital Project Manager",
                 "description": "Passionate about innovation and digital project management, I put my expertise at the service of your ambitions.",
                 "Voir mes projets": "View my projects",
@@ -2939,17 +3064,26 @@
                 "Expérience Professionnelle": "Professional Experience",
                 "Chef de Projet Digital": "Digital Project Manager",
 
-                "Sadiem": "Sadiem",
+                "SADIEM": "SADIEM - Meudon",
                 "BIM modeleur": "BIM modeleur",
-                "Gestion de projets web et mobiles": "Web and mobile project management",
-                "Coordination d'équipes pluridisciplinaires": "Coordination of multidisciplinary teams",
-                "Suivi budgétaire et reporting": "Budget monitoring and reporting",
+                "Analyse des besoins du bureau d'études": "Analyse des besoins du bureau d'études",
+                "Préparation des données nécessaires (modélisation sous Revit)": "Préparation des données nécessaires (modélisation sous Revit)",
+                "Elaboration et automatisation d'un tableau de bord (Macros VBA)": "Elaboration et automatisation d'un tableau de bord (Macros VBA)",
 
-                "Startup TechVision": "TechVision Startup",
-                "Chef de Projet Junior": "Junior Project Manager",
-                "Développement d'applications SaaS": "SaaS application development",
-                "Gestion de la relation client": "Customer relationship management",
-                "Tests utilisateurs et recette": "User testing and acceptance",
+                "Boréal": "Boréal - Paris",
+                "Économiste - métreur": "Économiste - métreur",
+                "Rédaction des devis": "Rédaction des devis",
+                "Négociation avec les fournisseurs": "Négociation avec les fournisseurs",
+                "Elaboration des tableaux de bord : suivi du budget et des KPI": "Elaboration des tableaux de bord : suivi du budget et des KPI",
+                "Support décisionnel via la modélisation de scénarios budgétaires": "Support décisionnel via la modélisation de scénarios budgétaires",
+
+                "Sisco": "Sisco - Vélizy",
+                "Assistant Chef de projet": "Assistant Chef de projet",
+                "Réalisation de plans de démolition : tâches, planning, budget": "Réalisation de plans de démolition : tâches, planning, budget",
+                "Création d'un tableau de bord : visualisation optimisée de l'ensemble des matériaux (Macro VBA)": "Création d'un tableau de bord : visualisation optimisée de l'ensemble des matériaux (Macro VBA)",
+                "Elaboration de diagnostics de traitement des déchets": "Elaboration de diagnostics de traitement des déchets",
+                "Respect de la réglementation des produits : non dangereux, dangereux - inertes": "Compliance with product regulations : non-hazardous, hazardous - inert",
+
 
                 "Expérience Internationale": "International Experience",
                 "Projets Internationaux": "International Projects",
@@ -2995,12 +3129,12 @@
                 "Durée: 6 mois": "Duration: 6 months",
                 "Équipe: 8 personnes": "Team: 8 people",
                 "Budget: 120K€": "Budget: 120K€",
-                "Plateforme Analytics": "Analytics Platform",
+                "Excel automatisés": "Automated Excel tools",
                 "description-projet-2": "Design and deployment of a business intelligence platform for marketing and sales data analysis.",
                 "Durée: 4 mois": "Duration: 4 months",
                 "Équipe: 6 personnes": "Team: 6 people",
                 "Budget: 85K€": "Budget: 85K€",
-                "Refonte Site Corporate": "Corporate Website Redesign",
+                "Automatisation de rapports": "Report automation",
                 "description-projet-3": "Complete redesign of a company website with SEO optimization and content management system integration.",
                 "Durée: 3 mois": "Duration: 3 months",
                 "Équipe: 4 personnes": "Team: 4 people",
@@ -3025,7 +3159,30 @@
                 "contexte-projet-3": "The existing website of a French SME was outdated, not responsive and no longer met current standards in terms of UX and SEO.",
                 "mission-projet-3": "Complete website redesign with migration to a modern platform, SEO optimization, creation of new content and team training on CMS management.",
                 "resultats-projet-3": "+200% organic traffic, 40% improvement in conversion rate, and 60% reduction in bounce rate thanks to a better user experience.",
-                "© 2023 Tous droits réservés": "© 2023 All rights reserved"
+                "© 2023 Tous droits réservés": "© 2023 All rights reserved",
+                "BIM Modeleur": "BIM Modeler",
+                "Devisoc/JustBIM/Kreo/Quoterplan": "Devisoc/JustBIM/Kreo/Quoterplan",
+                "Droit d'auteur © 2025 Le Joë.": "Copyright © 2025 Le Joë.",
+                "Et d'autre": "And others",
+                "EveBIM/BIMvision": "EveBIM/BIMvision",
+                "Excel - Expert": "Excel - Expert",
+                "Expérience professionnelle": "Professional Experience",
+                "Footer links": "Footer links",
+                "HTML/CSS/JavaScript/C/Python/VBA": "HTML/CSS/JavaScript/C/Python/VBA",
+                "Inscrivez-vous pour recevoir les dernières nouveautés.": "Sign up to receive the latest updates.",
+                "Le Joë Portfolio": "Joë Portfolio",
+                "Le blog le plus réel du game.": "More than a candidate portfolio.",
+                "Logiciel métier": "Professional software",
+                "Meudon": "Meudon",
+                "Mon Parcours": "My journey",
+                "Ms Project": "Ms Project",
+                "Notion": "Notion",
+                "Paris": "Paris",
+                "PremierePro/Photoshop/": "PremierePro/Photoshop/",
+                "Rejoindre": "Subscribe",
+                "Respect de la réglementation des produits : non dangereux - dangereux - inertes": "Compliance with product regulations: non-hazardous - hazardous - inert",
+                "Revit/Autocad/Navisworks": "Revit/Autocad/Navisworks",
+                "À propos de Joë Deriu": "About Joë Deriu"
             }
         };
 
@@ -3053,7 +3210,7 @@
                 "Objet": "Subject",
                 "Message": "Message",
                 "Le Joë Portfolio": "The Joë Portfolio",
-                "Le blog le plus réel du game.": "Le seul moyen  de faure du bon travail est d'aimer ce que vous faites.",
+                "Le blog le plus réel du game.": "Le seul moyen  de faire du bon travail est d'aimer ce que vous faites.",
                 "Droit d'auteur © 2025 Le Joë.": "Copyright © 2025 Deriu Joë."
             }
         };
