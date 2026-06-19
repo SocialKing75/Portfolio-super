@@ -204,7 +204,7 @@ body.preloading { overflow: hidden; background: #000; }
 /* ========== Reset ========== */
 html, body { height: 100%; margin: 0; padding: 0; }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; max-width: 100%; }
 
 body {
     display: flex;
@@ -329,6 +329,9 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible {
 }
 .nav__contact {
     order: -1;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
     background: var(--first-color);
     color: #fff;
     border: none;
@@ -341,9 +344,17 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible {
     white-space: nowrap;
     transition: var(--transition);
 }
+.nav__contact i { font-size: 0.95em; }
 .nav__contact:hover { filter: brightness(1.08); transform: translateY(-2px); }
-@media screen and (max-width: 480px) {
-    .nav__contact { padding: 0.5rem 0.85rem; font-size: var(--smaller-font-size); }
+/* On mobile the hamburger needs room: compact controls + icon-only contact. */
+@media screen and (max-width: 1023px) {
+    .nav__contact-text { display: none; }
+    .nav__contact { padding: 0; gap: 0; width: 2.5rem; height: 2.5rem; justify-content: center; }
+    .nav__contact i { font-size: 1rem; }
+    .nav__logo-img { height: 2.5rem; }
+    .nav__controls { gap: 0.5rem; }
+    .language-toggle, .theme-toggle { width: 2.5rem; height: 2.5rem; font-size: 1rem; }
+    .nav__toggle { font-size: 1.4rem; }
 }
 
 .nav__toggle, .nav__close {
@@ -1330,4 +1341,19 @@ body.dark-mode .newsletter-input { border-color: rgba(255,255,255,0.08); }
     .contact-modal, .contact-modal__panel { transition: none; }
     .contact-modal__panel { transform: none; }
     .contact-modal__close:hover, .contact-modal__submit:hover { transform: none; }
+}
+
+/* ===== Mobile header sizing (placed last to win source order) ===== */
+@media screen and (max-width: 1023px) {
+    .nav__controls { gap: 0.5rem; }
+    .nav__contact { width: 2.5rem; height: 2.5rem; padding: 0; gap: 0; justify-content: center; }
+    .nav__contact i { font-size: 1rem; }
+    .nav__contact-text { display: none; }
+    .language-toggle, .theme-toggle { width: 2.5rem; height: 2.5rem; font-size: 1rem; }
+    .nav__logo-img { height: 2.5rem; }
+    .nav__toggle { font-size: 1.35rem; }
+}
+@media screen and (max-width: 360px) {
+    .nav__controls { gap: 0.4rem; }
+    .nav__contact, .language-toggle, .theme-toggle { width: 2.25rem; height: 2.25rem; }
 }
