@@ -327,6 +327,24 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible {
 @media screen and (min-width: 1023px) {
     .nav__logo-img { height: 3.75rem; }
 }
+.nav__contact {
+    order: -1;
+    background: var(--first-color);
+    color: #fff;
+    border: none;
+    border-radius: 2rem;
+    padding: 0.55rem 1.1rem;
+    font-family: var(--body-font);
+    font-weight: var(--font-semi-bold);
+    font-size: var(--small-font-size);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: var(--transition);
+}
+.nav__contact:hover { filter: brightness(1.08); transform: translateY(-2px); }
+@media screen and (max-width: 480px) {
+    .nav__contact { padding: 0.5rem 0.85rem; font-size: var(--smaller-font-size); }
+}
 
 .nav__toggle, .nav__close {
     display: flex;
