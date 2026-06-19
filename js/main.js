@@ -178,23 +178,139 @@ languageToggle.addEventListener('click', () => {
     applyLang();
 });
 
-// ========== Footer form (mailto) ==========
+// ========== Contact (Web3Forms) ==========
+// 1) Va sur https://web3forms.com, saisis ton email, copie l'« Access Key ».
+// 2) Colle-la ci-dessous à la place de YOUR_ACCESS_KEY. C'est tout.
+const WEB3FORMS_ACCESS_KEY = '6be6fe95-5533-4d50-bdc4-02b138268892';
+
 document.addEventListener('DOMContentLoaded', () => {
     applyLang();
 
+    // Envoi générique vers Web3Forms. Renvoie une promesse résolue à true/false.
+    async function sendContact({ name, email, subject, message }, statusEl) {
+        if (!WEB3FORMS_ACCESS_KEY || WEB3FORMS_ACCESS_KEY === 'YOUR_ACCESS_KEY') {
+            if (statusEl) {
+                statusEl.textContent = "Le formulaire n'est pas encore configuré (clé Web3Forms manquante).";
+                statusEl.className = 'form-status form-status--error';
+            }
+            return false;
+        }
+        if (statusEl) {
+            statusEl.textContent = 'Envoi en cours…';
+            statusEl.className = 'form-status form-status--pending';
+        }
+        try {
+            const res = await fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                body: JSON.stringify({
+                    access_key: WEB3FORMS_ACCESS_KEY,
+                    from_name: name || 'Portfolio',
+                    name: name || '',
+                    email,
+                    subject: subject || 'Message depuis le portfolio',
+                    message: message || '',
+                    botcheck: ''
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                if (statusEl) {
+                    statusEl.textContent = 'Message envoyé, merci ! Je reviens vers vous rapidement.';
+                    statusEl.className = 'form-status form-status--ok';
+                }
+                return true;
+            }
+            throw new Error(data.message || 'Échec');
+        } catch (err) {
+            if (statusEl) {
+                statusEl.textContent = "L'envoi a échoué. Réessayez ou écrivez directement à jorechercher@protonmail.com.";
+                statusEl.className = 'form-status form-status--error';
+            }
+            return false;
+        }
+    }
+
+    // --- Footer form ---
     const newsletterForm = document.getElementById('footer-newsletter-form');
     if (newsletterForm) {
-        newsletterForm.addEventListener('submit', (e) => {
+        let footerStatus = newsletterForm.querySelector('.form-status');
+        if (!footerStatus) {
+            footerStatus = document.createElement('p');
+            footerStatus.className = 'form-status';
+            footerStatus.setAttribute('role', 'status');
+            footerStatus.setAttribute('aria-live', 'polite');
+            newsletterForm.appendChild(footerStatus);
+        }
+        newsletterForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('newsletter-email')?.value.trim() || '';
             if (!email) return;
-            const recipient = 'jorechercher@protonmail.com';
-            const subjectRaw = document.getElementById('newsletter-subject')?.value.trim() || '';
-            const messageRaw = document.getElementById('newsletter-msg')?.value.trim() || '';
-            const subject = encodeURIComponent(subjectRaw || 'Message depuis le portfolio');
-            let bodyText = `Email: ${email}`;
-            if (messageRaw) bodyText += `\n\nMessage:\n${messageRaw}`;
-            window.location.href = `mailto:${recipient}?subject=${subject}&body=${encodeURIComponent(bodyText)}`;
+            const ok = await sendContact({
+                email,
+                subject: document.getElementById('newsletter-subject')?.value.trim() || '',
+                message: document.getElementById('newsletter-msg')?.value.trim() || ''
+            }, footerStatus);
+            if (ok) newsletterForm.reset();
+        });
+    }
+
+    // --- Contact modal (injected once, shared across pages) ---
+    if (!document.getElementById('contact-modal')) {
+        const modal = document.createElement('div');
+        modal.className = 'contact-modal';
+        modal.id = 'contact-modal';
+        modal.innerHTML = `
+            <div class="contact-modal__panel" role="dialog" aria-modal="true" aria-labelledby="contact-modal-title">
+                <button class="contact-modal__close" type="button" aria-label="Fermer">&times;</button>
+                <h3 class="contact-modal__title" id="contact-modal-title">Me contacter</h3>
+                <p class="contact-modal__intro">Une question, un projet, une opportunité ? Écrivez-moi, je réponds rapidement.</p>
+                <form class="contact-modal__form" novalidate>
+                    <input type="text" name="name" class="contact-modal__input" placeholder="Votre nom" autocomplete="name">
+                    <input type="email" name="email" class="contact-modal__input" placeholder="Votre email" autocomplete="email" required>
+                    <textarea name="message" class="contact-modal__input contact-modal__textarea" placeholder="Votre message" required></textarea>
+                    <button type="submit" class="contact-modal__submit">Envoyer</button>
+                    <p class="form-status" role="status" aria-live="polite"></p>
+                </form>
+            </div>`;
+        document.body.appendChild(modal);
+
+        const panel = modal.querySelector('.contact-modal__panel');
+        const form = modal.querySelector('.contact-modal__form');
+        const status = modal.querySelector('.form-status');
+
+        const openModal = () => { modal.classList.add('active'); document.body.style.overflow = 'hidden'; };
+        const closeModal = () => {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+            status.textContent = ''; status.className = 'form-status';
+        };
+
+        modal.querySelector('.contact-modal__close').addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('active')) closeModal(); });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = form.email.value.trim();
+            const message = form.message.value.trim();
+            if (!email || !message) {
+                status.textContent = 'Merci de renseigner votre email et votre message.';
+                status.className = 'form-status form-status--error';
+                return;
+            }
+            const ok = await sendContact({
+                name: form.name.value.trim(),
+                email,
+                subject: 'Contact via la modale du portfolio',
+                message
+            }, status);
+            if (ok) form.reset();
+        });
+
+        // Triggers: any mailto link or element marked data-contact-open opens the modal.
+        document.querySelectorAll('[data-contact-open], a[href^="mailto:"]').forEach(el => {
+            el.addEventListener('click', (e) => { e.preventDefault(); openModal(); });
         });
     }
 
