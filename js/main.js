@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const email = document.getElementById('newsletter-email')?.value.trim() || '';
             if (!email) return;
-            const recipient = 'jo.deriu@gmail.com';
+            const recipient = 'jorechercher@protonmail.com';
             const subjectRaw = document.getElementById('newsletter-subject')?.value.trim() || '';
             const messageRaw = document.getElementById('newsletter-msg')?.value.trim() || '';
             const subject = encodeURIComponent(subjectRaw || 'Message depuis le portfolio');
