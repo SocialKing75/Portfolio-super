@@ -19,7 +19,9 @@
     <!-- ========== Header ========== -->
     <header class="header" id="header">
         <nav class="nav container">
-            <a class="nav__logo" href="index.html" data-translate="Portfolio">Portfolio</a>
+            <a class="nav__logo" href="index.html" aria-label="Portfolio — Joë Deriu">
+                <img src="assets/logo-jd-sunset.png" alt="Joë Deriu" class="nav__logo-img">
+            </a>
 
             <div class="nav__menu" id="nav-menu">
                 <ul class="nav__list">
@@ -53,10 +55,67 @@
             <div class="projects__container container">
                 <h2 class="section__title" data-translate="Mes projets">Mes projets</h2>
 
+                <div class="projects__filter" role="group" aria-label="Filtrer les projets">
+                    <button class="projects__filter-btn active" data-filter="all" aria-pressed="true" data-translate="Tous">Tous</button>
+                    <button class="projects__filter-btn" data-filter="entreprise" aria-pressed="false" data-translate="Entreprise">Entreprise</button>
+                    <button class="projects__filter-btn" data-filter="ecole" aria-pressed="false" data-translate="École">École</button>
+                    <button class="projects__filter-btn" data-filter="perso" aria-pressed="false" data-translate="Perso">Perso</button>
+                </div>
+
                 <div class="projects__grid">
 
+                    <!-- Projet 7 — Agent IA (transport) -->
+                    <div class="project__card" data-project="7" data-category="entreprise">
+                        <img src="https://images.unsplash.com/photo-1591453089816-0fbb971b454c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Agent IA — automatisation commerciale" class="project__image">
+                        <div class="project__content">
+                            <h3 class="project__title">Agent IA — Automatisation commerciale</h3>
+                            <p class="project__description">Pour une agence de transport : un agent IA orchestrateur couplé à un moteur déterministe (Python) qui qualifie les demandes entrantes, génère les devis et assure le suivi commercial. Automatisation de bout en bout d'un besoin métier réel.</p>
+                            <div class="project__details">
+                                <div class="project__detail">
+                                    <i class="fa-solid fa-robot"></i>
+                                    <span>Agent orchestrateur + moteur déterministe</span>
+                                </div>
+                                <div class="project__detail">
+                                    <i class="fa-solid fa-diagram-project"></i>
+                                    <span>Qualification · devis · suivi</span>
+                                </div>
+                            </div>
+                            <div class="project__tech">
+                                <span class="tech-tag">Python</span>
+                                <span class="tech-tag">Agents IA</span>
+                                <span class="tech-tag">Automatisation</span>
+                                <span class="tech-tag">LLM</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Projet 8 — ERP PARASITIS -->
+                    <div class="project__card" data-project="8" data-category="entreprise">
+                        <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Logiciel ERP sur mesure PARASITIS" class="project__image">
+                        <div class="project__content">
+                            <h3 class="project__title">ERP sur mesure — PARASITIS</h3>
+                            <p class="project__description">Logiciel ERP développé de bout en bout : architecture, build et déploiement, workflows métier, QR codes dynamiques, et une plateforme de formation interne. De la conception jusqu'à l'adoption utilisateur.</p>
+                            <div class="project__details">
+                                <div class="project__detail">
+                                    <i class="fa-solid fa-cubes"></i>
+                                    <span>Architecture → build → déploiement</span>
+                                </div>
+                                <div class="project__detail">
+                                    <i class="fa-solid fa-qrcode"></i>
+                                    <span>Workflows métier · QR codes dynamiques</span>
+                                </div>
+                            </div>
+                            <div class="project__tech">
+                                <span class="tech-tag">ERP</span>
+                                <span class="tech-tag">Workflows</span>
+                                <span class="tech-tag">QR dynamiques</span>
+                                <span class="tech-tag">Formation</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Projet 1 -->
-                    <div class="project__card" data-project="1">
+                    <div class="project__card" data-project="1" data-category="ecole">
                         <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Outil d'analyse comparative" class="project__image">
                         <div class="project__content">
                             <h3 class="project__title" data-translate="Création d'outil d'analyse comparative">Création d'outil d'analyse comparative</h3>
@@ -84,7 +143,7 @@
                     </div>
 
                     <!-- Projet 2 -->
-                    <div class="project__card" data-project="2">
+                    <div class="project__card" data-project="2" data-category="entreprise">
                         <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Excel automatisés" class="project__image">
                         <div class="project__content">
                             <h3 class="project__title" data-translate="Excel automatisés">Excel automatisés</h3>
@@ -108,7 +167,7 @@
                     </div>
 
                     <!-- Projet 3 -->
-                    <div class="project__card" data-project="3">
+                    <div class="project__card" data-project="3" data-category="entreprise">
                         <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Automatisation de rapports" class="project__image">
                         <div class="project__content">
                             <h3 class="project__title" data-translate="Automatisation de rapports">Automatisation de rapports</h3>
@@ -128,7 +187,7 @@
                     </div>
 
                     <!-- Projet 4 -->
-                    <div class="project__card" data-project="4">
+                    <div class="project__card" data-project="4" data-category="perso">
                         <img src="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt=" — Mémoire sémantique & LLM local" class="project__image">
                         <div class="project__content">
                             <h3 class="project__title">Mémoire sémantique</h3>
@@ -148,7 +207,7 @@
                     </div>
 
                     <!-- Projet 5 -->
-                    <div class="project__card" data-project="5">
+                    <div class="project__card" data-project="5" data-category="perso">
                         <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="SRP - System running pro" class="project__image">
                         <div class="project__content">
                             <h3 class="project__title">Solo Runner Pro (SRP)</h3>
@@ -174,7 +233,7 @@
                     </div>
 
                     <!-- Projet 6 -->
-                    <div class="project__card" data-project="6">
+                    <div class="project__card" data-project="6" data-category="perso">
                         <img src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="LLM local" class="project__image">
                         <div class="project__content">
                             <h3 class="project__title">LLM local</h3>
@@ -371,6 +430,70 @@
                     <div class="modal__detail"><h4>Résultats</h4><p>À compléter.</p></div>
                 </div>
                 <div class="modal__tech"><span class="tech-tag">À définir</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-7">
+        <div class="modal__content">
+            <button class="modal__close">&times;</button>
+            <img src="https://images.unsplash.com/photo-1591453089816-0fbb971b454c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Agent IA — automatisation commerciale" class="modal__image">
+            <div class="modal__body">
+                <h2 class="modal__title">Agent IA — Automatisation commerciale</h2>
+                <p class="modal__description">Automatisation de bout en bout du processus commercial d'une agence de transport : un agent IA orchestrateur combiné à un moteur déterministe prend en charge la chaîne, de la demande entrante jusqu'au suivi.</p>
+                <div class="modal__details">
+                    <div class="modal__detail">
+                        <h4>Contexte</h4>
+                        <p>Une agence de transport traitait manuellement la qualification des demandes et la production des devis — un goulot d'étranglement chronophage et source d'erreurs.</p>
+                    </div>
+                    <div class="modal__detail">
+                        <h4>Solution</h4>
+                        <p>Un agent IA orchestrateur pilote le flux et délègue les calculs critiques à un moteur déterministe (Python) : qualification des demandes, génération automatique des devis et suivi commercial. L'IA gère le langage et la décision, le moteur garantit des résultats fiables et reproductibles.</p>
+                    </div>
+                    <div class="modal__detail">
+                        <h4>Impact</h4>
+                        <p>Un besoin métier réel automatisé — exactement le type de système attendu sur un poste mêlant agents IA et automatisation de processus.</p>
+                    </div>
+                </div>
+                <div class="modal__tech">
+                    <span class="tech-tag">Python</span>
+                    <span class="tech-tag">Agents IA</span>
+                    <span class="tech-tag">Orchestration</span>
+                    <span class="tech-tag">Moteur déterministe</span>
+                    <span class="tech-tag">Automatisation</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-8">
+        <div class="modal__content">
+            <button class="modal__close">&times;</button>
+            <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Logiciel ERP sur mesure PARASITIS" class="modal__image">
+            <div class="modal__body">
+                <h2 class="modal__title">ERP sur mesure — PARASITIS</h2>
+                <p class="modal__description">Conception et développement complet d'un logiciel ERP sur mesure, de l'architecture jusqu'à l'adoption par les utilisateurs, accompagné d'une plateforme de formation interne.</p>
+                <div class="modal__details">
+                    <div class="modal__detail">
+                        <h4>Projet</h4>
+                        <p>Développement de bout en bout : architecture, build et déploiement d'un ERP adapté aux processus de l'entreprise.</p>
+                    </div>
+                    <div class="modal__detail">
+                        <h4>Fonctionnalités</h4>
+                        <p>Workflows métier sur mesure, QR codes dynamiques, et une plateforme de formation interne pour accompagner la prise en main.</p>
+                    </div>
+                    <div class="modal__detail">
+                        <h4>De la conception à l'adoption</h4>
+                        <p>Au-delà du code : coaching et modes opératoires pour assurer l'adoption utilisateur — de l'idée jusqu'à l'usage quotidien.</p>
+                    </div>
+                </div>
+                <div class="modal__tech">
+                    <span class="tech-tag">ERP</span>
+                    <span class="tech-tag">Workflows métier</span>
+                    <span class="tech-tag">QR codes dynamiques</span>
+                    <span class="tech-tag">Déploiement</span>
+                    <span class="tech-tag">Formation</span>
+                </div>
             </div>
         </div>
     </div>

@@ -3,12 +3,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const projectCards = document.querySelectorAll('.project__card');
     const modals = document.querySelectorAll('.modal');
     const closeButtons = document.querySelectorAll('.modal__close');
-    const total = String(modals.length).padStart(2, '0');
+    const total = String(projectCards.length).padStart(2, '0');
 
-    // Inject the dossier index (big number + eyebrow) once per modal.
-    modals.forEach(modal => {
-        const id = modal.id.replace('modal-', '');
-        const num = String(id).padStart(2, '0');
+    // Inject the dossier index (big number + eyebrow). The displayed number
+    // follows the card's visual order in the grid, not its data-project id.
+    projectCards.forEach((card, i) => {
+        const projectId = card.getAttribute('data-project');
+        const modal = document.getElementById(`modal-${projectId}`);
+        if (!modal) return;
+        const num = String(i + 1).padStart(2, '0');
         const body = modal.querySelector('.modal__body');
         if (!body) return;
 
@@ -55,4 +58,26 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') closeModal();
     });
+
+    // ===== Category filter =====
+    const filterBtns = document.querySelectorAll('.projects__filter-btn');
+    if (filterBtns.length) {
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const filter = btn.getAttribute('data-filter');
+
+                filterBtns.forEach(b => {
+                    const active = b === btn;
+                    b.classList.toggle('active', active);
+                    b.setAttribute('aria-pressed', active ? 'true' : 'false');
+                });
+
+                projectCards.forEach(card => {
+                    const match = filter === 'all' ||
+                        card.getAttribute('data-category') === filter;
+                    card.classList.toggle('is-hidden', !match);
+                });
+            });
+        });
+    }
 });

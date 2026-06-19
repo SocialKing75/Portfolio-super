@@ -316,6 +316,13 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible {
     font-weight: var(--font-semi-bold);
     font-size: var(--h2-font-size);
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+}
+.nav__logo-img {
+    height: 2.25rem;
+    width: auto;
+    display: block;
 }
 
 .nav__toggle, .nav__close {
@@ -808,7 +815,36 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible {
 /* ========== Projects ========== */
 .projects { background-color: var(--container-color); padding-top: 7rem; }
 .projects__container { row-gap: 2.5rem; }
+.projects__filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 2.5rem;
+}
+.projects__filter-btn {
+    background: transparent;
+    border: 1px solid var(--footer-divider-color);
+    color: var(--text-color);
+    font-family: var(--body-font);
+    font-size: var(--small-font-size);
+    font-weight: var(--font-medium);
+    letter-spacing: 0.04em;
+    padding: 0.5rem 1.1rem;
+    border-radius: 2rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.projects__filter-btn:hover {
+    border-color: var(--first-color);
+    color: var(--first-color);
+}
+.projects__filter-btn.active {
+    background: var(--first-color);
+    border-color: var(--first-color);
+    color: #fff;
+}
 .projects__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+.project__card.is-hidden { display: none; }
 .project__card {
     background-color: var(--body-color);
     border-radius: 1rem;
