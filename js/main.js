@@ -94,6 +94,7 @@ const SCROLL_THRESHOLD = 100;
 function handleScroll() {
     if (navMenu && navMenu.classList.contains('show-menu')) return;
     const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+    header.classList.toggle('header--scrolled', currentScroll > 20);
     if (Math.abs(currentScroll - lastScrollTop) < 5) return;
     if (currentScroll > lastScrollTop && currentScroll > SCROLL_THRESHOLD) {
         if (!isScrolling) { header.classList.add('header--hidden'); isScrolling = true; }
