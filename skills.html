@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compétences — Joë Deriu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/skills.css">
+</head>
+<body>
+
+    <!-- ========== Cursor ========== -->
+    <div class="mouse-cursor cursor-outer"></div>
+    <div class="mouse-cursor cursor-inner"></div>
+
+    <!-- ========== Header ========== -->
+    <header class="header" id="header">
+        <nav class="nav container">
+            <a class="nav__logo" href="index.html" data-translate="Portfolio">Portfolio</a>
+            <div class="nav__menu" id="nav-menu">
+                <ul class="nav__list">
+                    <li class="nav__item"><a class="nav__link" href="index.html" data-translate="Accueil">Accueil</a></li>
+                    <li class="nav__item"><a class="nav__link" href="skills.html" data-translate="Compétences">Compétences</a></li>
+                    <li class="nav__item"><a class="nav__link" href="projects.html" data-translate="Projets">Projets</a></li>
+                    <li class="nav__item"><a class="nav__link" href="about.html" data-translate="Mon Parcours">Mon Parcours</a></li>
+                </ul>
+                <div class="nav__close" id="nav-close"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+            <div class="nav__controls">
+                <button class="language-toggle" id="language-toggle" aria-label="Changer la langue"><i class="fas fa-globe"></i></button>
+                <button class="theme-toggle" id="theme-toggle" aria-label="Changer le thème"><i class="fa-solid fa-moon"></i></button>
+                <div class="nav__toggle" id="nav-toggle"><i class="fa-solid fa-bars"></i></div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="section skills-page" id="skills">
+            <div class="container">
+
+                <h2 class="section__title" data-translate="Mes compétences">Mes compétences</h2>
+
+                <!-- Grille principale -->
+                <div class="sk-grid">
+
+                    <!-- Langages -->
+                    <div class="sk-card" data-delay="0">
+                        <div class="sk-card__header sk-card__header--code">
+                            <div class="sk-card__icon"><i class="fa-solid fa-code"></i></div>
+                            <h3 class="sk-card__title">Langages</h3>
+                        </div>
+                        <ul class="sk-list">
+                            <li class="sk-item">
+                                <span class="sk-name">HTML / CSS / JS</span>
+                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:85%"></div></div>
+                                <span class="sk-level sk-level--high">Avancé</span>
+                            </li>
+                            <li class="sk-item">
+                                <span class="sk-name">Python</span>
+                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:65%"></div></div>
+                                <span class="sk-level sk-level--mid">Intermédiaire</span>
+                            </li>
+                            <li class="sk-item">
+                                <span class="sk-name">VBA</span>
+                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:90%"></div></div>
+                                <span class="sk-level sk-level--expert">Expert</span>
+                            </li>
+                            <li class="sk-item">
+                                <span class="sk-name">C</span>
+                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:50%"></div></div>
+                                <span class="sk-level sk-level--mid">Intermédiaire</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Outils bureautiques -->
+                    <div class="sk-card" data-delay="100">
+                        <div class="sk-card__header sk-card__header--office">
+                            <div class="sk-card__icon"><i class="fa-solid fa-table-columns"></i></div>
+                            <h3 class="sk-card__title">Bureautique & Data</h3>
+                        </div>
+                        <ul class="sk-list">
+                            <li class="sk-item">
+                                <span class="sk-name">Excel</span>
+                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:95%"></div></div>
+                                <span class="sk-level sk-level--expert">Expert</span>
+                            </li>
+                            <li class="sk-item">
+                                <span class="sk-name">PowerBI</span>
+                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:80%"></div></div>
+                                <span class="sk-level sk-level--high">Avancé</span>
+                            </li>
+                            <li class="sk-item">
+                                <span class="sk-name">Suite Microsoft 365</span>
+                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:90%"></div></div>
+                                <span class="sk-level sk-level--expert">Expert</span>
+                            </li>
+                            <li class="sk-item">
+                                <span class="sk-name">Ms Project</span>
+                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:75%"></div></div>
+                                <span class="sk-level sk-level--high">Avancé</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Logiciels BIM / Métier -->
+                    <div class="sk-card" data-delay="200">
+                        <div class="sk-card__header sk-card__header--bim">
+                            <div class="sk-card__icon"><i class="fa-solid fa-building"></i></div>
+                            <h3 class="sk-card__title">Logiciels métier</h3>
+                        </div>
+                        <ul class="sk-list">
+                            <li class="sk-item">
+                                <span class="sk-name">Revit / Autocad</span>
+                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:85%"></div></div>
+                                <span class="sk-level sk-level--high">Avancé</span>
+                            </li>
+                            <li class="sk-item">
+                                <span class="sk-name">Navisworks / SketchUp</span>
+                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:70%"></div></div>
+                                <span class="sk-level sk-level--high">Avancé</span>
+                            </li>
+                            <li class="sk-item">
+                                <span class="sk-name">Devisoc / Kreo</span>
+                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:80%"></div></div>
+                                <span class="sk-level sk-level--high">Avancé</span>
+                            </li>
+                            <li class="sk-item">
+                                <span class="sk-name">EveBIM / BIMvision</span>
+                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:75%"></div></div>
+                                <span class="sk-level sk-level--high">Avancé</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Création / Médias -->
+                    <div class="sk-card" data-delay="300">
+                        <div class="sk-card__header sk-card__header--media">
+                            <div class="sk-card__icon"><i class="fa-solid fa-film"></i></div>
+                            <h3 class="sk-card__title">Création & Médias</h3>
+                        </div>
+                        <ul class="sk-list">
+                            <li class="sk-item">
+                                <span class="sk-name">Premiere Pro</span>
+                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:75%"></div></div>
+                                <span class="sk-level sk-level--high">Avancé</span>
+                            </li>
+                            <li class="sk-item">
+                                <span class="sk-name">After Effects</span>
+                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:60%"></div></div>
+                                <span class="sk-level sk-level--mid">Intermédiaire</span>
+                            </li>
+                            <li class="sk-item">
+                                <span class="sk-name">Photoshop</span>
+                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:65%"></div></div>
+                                <span class="sk-level sk-level--mid">Intermédiaire</span>
+                            </li>
+                            <li class="sk-item">
+                                <span class="sk-name">OBS Studio</span>
+                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:80%"></div></div>
+                                <span class="sk-level sk-level--high">Avancé</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+
+                <!-- Soft Skills -->
+                <div class="sk-soft">
+                    <h3 class="sk-soft__title"><i class="fa-solid fa-star"></i> Soft Skills</h3>
+                    <div class="sk-tags">
+                        <span class="sk-tag"><i class="fa-solid fa-users-gear"></i> Leadership</span>
+                        <span class="sk-tag"><i class="fa-solid fa-comments"></i> Communication</span>
+                        <span class="sk-tag"><i class="fa-solid fa-lightbulb"></i> Résolution de problèmes</span>
+                        <span class="sk-tag"><i class="fa-solid fa-arrows-spin"></i> Adaptabilité</span>
+                        <span class="sk-tag"><i class="fa-solid fa-diagram-project"></i> Gestion de projet</span>
+                        <span class="sk-tag"><i class="fa-solid fa-chart-line"></i> Agile / Scrum</span>
+                        <span class="sk-tag"><i class="fa-solid fa-shield-halved"></i> Gestion des risques</span>
+                        <span class="sk-tag"><i class="fa-solid fa-calendar-check"></i> Planification stratégique</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- ========== Footer ========== -->
+    <footer class="footer" id="footer">
+        <div class="footer__top container">
+            <div class="footer__grid">
+                <div class="footer__col footer__newsletter">
+                    <h4 class="footer__title" data-translate="Contactez-moi">Contactez-moi</h4>
+                    <form id="footer-newsletter-form" class="newsletter-form" novalidate>
+                        <div class="newsletter-field">
+                            <input type="text" id="newsletter-subject" class="newsletter-subject" placeholder="Objet">
+                        </div>
+                        <div class="newsletter-field">
+                            <textarea id="newsletter-msg" class="newsletter-msg" placeholder="Message"></textarea>
+                        </div>
+                        <div class="newsletter-row">
+                            <div class="newsletter-input">
+                                <i class="fa-solid fa-envelope newsletter-icon" aria-hidden="true"></i>
+                                <input type="email" id="newsletter-email" class="newsletter-email" placeholder="Adresse mail" required>
+                            </div>
+                            <button type="submit" class="newsletter-button">Rejoindre</button>
+                        </div>
+                        <p class="newsletter-note">Inscrivez-vous pour recevoir les dernières nouveautés.</p>
+                    </form>
+                </div>
+                <div class="footer__col footer__links">
+                    <h4 class="footer__title" data-translate="Footer links">Footer links</h4>
+                    <ul class="footer-links-list">
+                        <li><a href="skills.html">Compétences</a></li>
+                        <li><a href="projects.html">Projets</a></li>
+                        <li><a href="about.html">À propos</a></li>
+                    </ul>
+                </div>
+                <div class="footer__col footer__about">
+                    <h4 class="footer__title" data-translate="Le Joë Portfolio">Le Joë Portfolio</h4>
+                    <p class="footer__about-text">Plus qu'un portfolio candidat.</p>
+                </div>
+            </div>
+        </div>
+        <div class="footer__bottom container">
+            <hr class="footer__divider">
+            <div class="footer__bottom-row">
+                <p class="footer__copy">Droit d'auteur © 2025 Deriu Joë.</p>
+                <a href="#top" class="back-to-top" aria-label="Remonter en haut"><i class="fa-solid fa-angle-up"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/translations.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/skills-anim.js"></script>
+</body>
+</html>

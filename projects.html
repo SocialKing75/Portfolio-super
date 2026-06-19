@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projets — Joë Deriu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- ========== Cursor ========== -->
+    <div class="mouse-cursor cursor-outer"></div>
+    <div class="mouse-cursor cursor-inner"></div>
+
+    <!-- ========== Header ========== -->
+    <header class="header" id="header">
+        <nav class="nav container">
+            <a class="nav__logo" href="index.html" data-translate="Portfolio">Portfolio</a>
+
+            <div class="nav__menu" id="nav-menu">
+                <ul class="nav__list">
+                    <li class="nav__item"><a class="nav__link" href="index.html" data-translate="Accueil">Accueil</a></li>
+                    <li class="nav__item"><a class="nav__link" href="skills.html" data-translate="Compétences">Compétences</a></li>
+                    <li class="nav__item"><a class="nav__link" href="projects.html" data-translate="Projets">Projets</a></li>
+                    <li class="nav__item"><a class="nav__link" href="about.html" data-translate="Mon Parcours">Mon Parcours</a></li>
+                </ul>
+                <div class="nav__close" id="nav-close">
+                    <i class="fa-solid fa-xmark"></i>
+                </div>
+            </div>
+
+            <div class="nav__controls">
+                <button class="language-toggle" id="language-toggle" aria-label="Changer la langue">
+                    <i class="fas fa-globe"></i>
+                </button>
+                <button class="theme-toggle" id="theme-toggle" aria-label="Changer le thème">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <div class="nav__toggle" id="nav-toggle">
+                    <i class="fa-solid fa-bars"></i>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ========== Main ========== -->
+    <main>
+        <section class="section projects" id="projects">
+            <div class="projects__container container">
+                <h2 class="section__title" data-translate="Mes projets">Mes projets</h2>
+
+                <div class="projects__grid">
+
+                    <!-- Projet 1 -->
+                    <div class="project__card" data-project="1">
+                        <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Outil d'analyse comparative" class="project__image">
+                        <div class="project__content">
+                            <h3 class="project__title" data-translate="Création d'outil d'analyse comparative">Création d'outil d'analyse comparative</h3>
+                            <p class="project__description" data-translate="description-projet-1">Création d'une interface interactive sur Powerbi regroupant plus de 1000 projets de construction pour des analyses comparatives</p>
+                            <div class="project__details">
+                                <div class="project__detail">
+                                    <i class="fa-solid fa-calendar"></i>
+                                    <span data-translate="Durée: 6 mois">Durée: 6 mois</span>
+                                </div>
+                                <div class="project__detail">
+                                    <i class="fa-solid fa-users"></i>
+                                    <span data-translate="Équipe: 8 personnes">Équipe: 8 personnes</span>
+                                </div>
+                                <div class="project__detail">
+                                    <i class="fa-solid fa-euro-sign"></i>
+                                    <span data-translate="Budget: 120K€">Budget: 120K€</span>
+                                </div>
+                            </div>
+                            <div class="project__tech">
+                                <span class="tech-tag">PowerBI</span>
+                                <span class="tech-tag">Excel</span>
+                                <span class="tech-tag">VBA</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Projet 2 -->
+                    <div class="project__card" data-project="2">
+                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Excel automatisés" class="project__image">
+                        <div class="project__content">
+                            <h3 class="project__title" data-translate="Excel automatisés">Excel automatisés</h3>
+                            <p class="project__description" data-translate="description-projet-2">Développement de plusieurs macros VBA afin d'automatiser la recherche de données dans un fichier Excel déjà alimenté</p>
+                            <div class="project__details">
+                                <div class="project__detail">
+                                    <i class="fa-solid fa-calendar"></i>
+                                    <span data-translate="Durée: 4 mois">Durée: 2 mois</span>
+                                </div>
+                                <div class="project__detail">
+                                    <i class="fa-solid fa-users"></i>
+                                    <span data-translate="Équipe: 6 personnes">Équipe: 2 personnes</span>
+                                </div>
+                            </div>
+                            <div class="project__tech">
+                                <span class="tech-tag">VBA</span>
+                                <span class="tech-tag">Excel</span>
+                                <span class="tech-tag">Macro</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Projet 3 -->
+                    <div class="project__card" data-project="3">
+                        <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Automatisation de rapports" class="project__image">
+                        <div class="project__content">
+                            <h3 class="project__title" data-translate="Automatisation de rapports">Automatisation de rapports</h3>
+                            <p class="project__description" data-translate="description-projet-3">Conception de macros pour automatiser la mise en page des données exportées depuis Revit, réduisant le temps de traitement de 20 %</p>
+                            <div class="project__details">
+                                <div class="project__detail">
+                                    <i class="fa-solid fa-calendar"></i>
+                                    <span data-translate="Durée: 3 mois">Durée: 3 mois</span>
+                                </div>
+                            </div>
+                            <div class="project__tech">
+                                <span class="tech-tag">VBA</span>
+                                <span class="tech-tag">Excel</span>
+                                <span class="tech-tag">Revit</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ========== Project Modals ========== -->
+    <div class="modal" id="modal-1">
+        <div class="modal__content">
+            <button class="modal__close">&times;</button>
+            <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Création d'outil d'analyse comparative" class="modal__image">
+            <div class="modal__body">
+                <h2 class="modal__title" data-translate="Création d'outil d'analyse comparative">Création d'outil d'analyse comparative</h2>
+                <p class="modal__description" data-translate="description-projet-1-modal">Développement d'une application mobile innovante de vente en ligne avec système de paiement sécurisé et gestion des stocks en temps réel.</p>
+                <div class="modal__details">
+                    <div class="modal__detail">
+                        <h4 data-translate="Contexte">Contexte</h4>
+                        <p data-translate="contexte-projet-1">Le client, une entreprise de vente au détail, souhaitait étendre sa présence digitale avec une application mobile performante.</p>
+                    </div>
+                    <div class="modal__detail">
+                        <h4 data-translate="Mission">Mission</h4>
+                        <p data-translate="mission-projet-1">Conception, développement et déploiement d'une application mobile cross-platform avec intégration des systèmes de paiement et de gestion des stocks existants.</p>
+                    </div>
+                    <div class="modal__detail">
+                        <h4 data-translate="Résultats">Résultats</h4>
+                        <p data-translate="resultats-projet-1">+150% de ventes mobiles, réduction de 30% du taux d'abandon de panier, et amélioration de la note moyenne sur les stores à 4.8/5.</p>
+                    </div>
+                </div>
+                <div class="modal__tech">
+                    <span class="tech-tag">PowerBI</span>
+                    <span class="tech-tag">Excel</span>
+                    <span class="tech-tag">VBA</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-2">
+        <div class="modal__content">
+            <button class="modal__close">&times;</button>
+            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Excel automatisés" class="modal__image">
+            <div class="modal__body">
+                <h2 class="modal__title" data-translate="Excel automatisés">Excel automatisés</h2>
+                <p class="modal__description" data-translate="description-projet-2-modal">Conception et déploiement d'une plateforme de business intelligence avancée permettant l'analyse en temps réel des données marketing.</p>
+                <div class="modal__details">
+                    <div class="modal__detail">
+                        <h4 data-translate="Contexte">Contexte</h4>
+                        <p data-translate="contexte-projet-2">Une entreprise du secteur financier avait besoin d'une solution unifiée pour analyser ses performances marketing et commerciales.</p>
+                    </div>
+                    <div class="modal__detail">
+                        <h4 data-translate="Mission">Mission</h4>
+                        <p data-translate="mission-projet-2">Développer une plateforme centralisée d'analyse de données avec intégration de multiples sources, création de rapports automatisés.</p>
+                    </div>
+                    <div class="modal__detail">
+                        <h4 data-translate="Résultats">Résultats</h4>
+                        <p data-translate="resultats-projet-2">Réduction de 70% du temps de génération de rapports, amélioration de 25% de l'efficacité des campagnes marketing.</p>
+                    </div>
+                </div>
+                <div class="modal__tech">
+                    <span class="tech-tag">VBA</span>
+                    <span class="tech-tag">Excel</span>
+                    <span class="tech-tag">Macro</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-3">
+        <div class="modal__content">
+            <button class="modal__close">&times;</button>
+            <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Automatisation de rapports" class="modal__image">
+            <div class="modal__body">
+                <h2 class="modal__title" data-translate="Automatisation de rapports">Automatisation de rapports</h2>
+                <p class="modal__description" data-translate="description-projet-3-modal">Refonte complète du site internet corporate d'une entreprise avec optimisation SEO avancée et amélioration de l'expérience utilisateur.</p>
+                <div class="modal__details">
+                    <div class="modal__detail">
+                        <h4 data-translate="Contexte">Contexte</h4>
+                        <p data-translate="contexte-projet-3">Le site web existant d'une PME française était obsolète, non responsive et ne répondait plus aux standards actuels en matière d'UX et de référencement.</p>
+                    </div>
+                    <div class="modal__detail">
+                        <h4 data-translate="Mission">Mission</h4>
+                        <p data-translate="mission-projet-3">Refonte complète du site avec migration vers une plateforme moderne, optimisation SEO, création de nouveaux contenus et formation de l'équipe.</p>
+                    </div>
+                    <div class="modal__detail">
+                        <h4 data-translate="Résultats">Résultats</h4>
+                        <p data-translate="resultats-projet-3">+200% de trafic organique, amélioration de 40% du taux de conversion, et réduction de 60% du taux de rebond.</p>
+                    </div>
+                </div>
+                <div class="modal__tech">
+                    <span class="tech-tag">VBA</span>
+                    <span class="tech-tag">Excel</span>
+                    <span class="tech-tag">Revit</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== Footer ========== -->
+    <footer class="footer" id="footer">
+        <div class="footer__top container">
+            <div class="footer__grid">
+                <div class="footer__col footer__newsletter">
+                    <h4 class="footer__title" data-translate="Contactez-moi">Contactez-moi</h4>
+                    <form id="footer-newsletter-form" class="newsletter-form" novalidate>
+                        <div class="newsletter-field">
+                            <input type="text" id="newsletter-subject" class="newsletter-subject" data-translate-placeholder="Objet" placeholder="Objet">
+                        </div>
+                        <div class="newsletter-field">
+                            <textarea id="newsletter-msg" class="newsletter-msg" data-translate-placeholder="Message" placeholder="Message"></textarea>
+                        </div>
+                        <div class="newsletter-row">
+                            <div class="newsletter-input">
+                                <i class="fa-solid fa-envelope newsletter-icon" aria-hidden="true"></i>
+                                <input type="email" id="newsletter-email" class="newsletter-email" data-translate-placeholder="Adresse mail" placeholder="Adresse mail" required>
+                            </div>
+                            <button type="submit" class="newsletter-button" data-translate="Rejoindre">Rejoindre</button>
+                        </div>
+                        <p class="newsletter-note" data-translate="Inscrivez-vous pour recevoir les dernières nouveautés.">Inscrivez-vous pour recevoir les dernières nouveautés.</p>
+                    </form>
+                </div>
+                <div class="footer__col footer__links">
+                    <h4 class="footer__title" data-translate="Footer links">Footer links</h4>
+                    <ul class="footer-links-list">
+                        <li><a href="skills.html" data-translate="Compétences">Compétences</a></li>
+                        <li><a href="projects.html" data-translate="Projets">Projets</a></li>
+                        <li><a href="about.html" data-translate="À propos">À propos</a></li>
+                    </ul>
+                </div>
+                <div class="footer__col footer__about">
+                    <h4 class="footer__title" data-translate="Le Joë Portfolio">Le Joë Portfolio</h4>
+                    <p class="footer__about-text" data-translate="Le blog le plus réel du game.">Plus qu'un portfolio candidat qu'il te faut.</p>
+                </div>
+            </div>
+        </div>
+        <div class="footer__bottom container">
+            <hr class="footer__divider">
+            <div class="footer__bottom-row">
+                <p class="footer__copy" data-translate="Droit d'auteur © 2025 Le Joë.">Droit d'auteur © 2025 Deriu Joë.</p>
+                <a href="#top" class="back-to-top" aria-label="Remonter en haut"><i class="fa-solid fa-angle-up"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/translations.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/modals.js"></script>
+</body>
+</html>
