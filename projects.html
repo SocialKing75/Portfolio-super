@@ -140,7 +140,7 @@
                                 </div>
                             </div>
                             <div class="project__tech">
-                                <span class="tech-tag"></span>
+                                <span class="tech-tag">Embeddings</span>
                                 <span class="tech-tag">Mémoire sémantique</span>
                                 <span class="tech-tag">LLM local</span>
                             </div>
@@ -151,16 +151,24 @@
                     <div class="project__card" data-project="5">
                         <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="SRP - System running pro" class="project__image">
                         <div class="project__content">
-                            <h3 class="project__title">SRP - System running pro</h3>
-                            <p class="project__description">Application web développée en autonomie (Next.js, TypeScript, Supabase, Stripe) : import GPX, moteur d'analyse de performance, abonnements, sécurité et RGPD. Développement assisté par IA.</p>
+                            <h3 class="project__title">Solo Runner Pro (SRP)</h3>
+                            <p class="project__description">Application web SaaS d'analyse de performance pour coureurs de distance. À partir d'un simple fichier GPX, SRP livre un tableau de bord de niveau « coach » : charge d'entraînement (CTL/ATL/TSB, modèle de Banister), VO2max/VDOT et allures cibles (méthode Daniels), zones cardiaques, intégration Strava et abonnements Stripe.</p>
                             <div class="project__details">
                                 <div class="project__detail">
-                                    <i class="fa-solid fa-calendar"></i>
-                                    <span>Durée: à venir</span>
+                                    <i class="fa-solid fa-user"></i>
+                                    <span>Conception & dev full-stack</span>
+                                </div>
+                                <div class="project__detail">
+                                    <i class="fa-solid fa-layer-group"></i>
+                                    <span>SaaS · 3 offres (Free / Pro / Elite)</span>
                                 </div>
                             </div>
                             <div class="project__tech">
-                                <span class="tech-tag">À définir</span>
+                                <span class="tech-tag">Next.js 15</span>
+                                <span class="tech-tag">React 19</span>
+                                <span class="tech-tag">TypeScript</span>
+                                <span class="tech-tag">Supabase</span>
+                                <span class="tech-tag">Stripe</span>
                             </div>
                         </div>
                     </div>
@@ -178,7 +186,9 @@
                                 </div>
                             </div>
                             <div class="project__tech">
-                                <span class="tech-tag">À définir</span>
+                                <span class="tech-tag">Anthropic</span>
+                                <span class="tech-tag"></span>
+                                <span class="tech-tag">Ollama</span>
                             </div>
                         </div>
                     </div>
@@ -312,16 +322,38 @@
     <div class="modal" id="modal-5">
         <div class="modal__content">
             <button class="modal__close">&times;</button>
-            <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Projet 5" class="modal__image">
+            <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Solo Runner Pro (SRP)" class="modal__image">
             <div class="modal__body">
-                <h2 class="modal__title">Projet 5</h2>
-                <p class="modal__description">Description à venir.</p>
+                <h2 class="modal__title">Solo Runner Pro (SRP)</h2>
+                <p class="modal__description">Application web SaaS d'analyse de performance pour coureurs de distance. SRP transforme de simples fichiers GPX en un tableau de bord d'entraînement complet, offrant une analyse de niveau « coach » sans dépendance à un écosystème matériel de marque.</p>
                 <div class="modal__details">
-                    <div class="modal__detail"><h4>Contexte</h4><p>À compléter.</p></div>
-                    <div class="modal__detail"><h4>Mission</h4><p>À compléter.</p></div>
-                    <div class="modal__detail"><h4>Résultats</h4><p>À compléter.</p></div>
+                    <div class="modal__detail">
+                        <h4>Contexte</h4>
+                        <p>Les plateformes d'entraînement grand public sont soit trop basiques, soit verrouillées derrière des écosystèmes matériels. SRP rend une analyse avancée accessible à partir d'un export GPX, quelle que soit la montre utilisée.</p>
+                    </div>
+                    <div class="modal__detail">
+                        <h4>Fonctionnalités</h4>
+                        <p>Import &amp; parsing GPX (validation, tracé Leaflet) · modèle de fitness Banister (TRIMP, CTL/ATL/TSB et recommandation contextualisée) · estimation VDOT/VO2max et allures cibles (Daniels/Gilbert) · zones cardiaques · génération de plans d'entraînement et dashboard analytique (Chart.js) · intégration Strava · abonnements Stripe (Free / Pro 6 €/mois / Elite 14 €/mois) gérés par webhooks.</p>
+                    </div>
+                    <div class="modal__detail">
+                        <h4>Architecture &amp; ingénierie</h4>
+                        <p>Next.js 15 (App Router) organisé en route groups (marketing, auth, app protégée, admin), server actions et API routes (handler GPX, webhook Stripe). Supabase pour l'auth, PostgreSQL et le stockage, avec Row Level Security (auth.uid() = user_id) sur toutes les tables. Middleware d'auth sur Edge Runtime et typage TypeScript de bout en bout (types DB générés depuis le schéma).</p>
+                    </div>
+                    <div class="modal__detail">
+                        <h4>Mon rôle</h4>
+                        <p>Conception et développement full-stack : modélisation des algorithmes sportifs, architecture Next.js/Supabase, intégrations Stripe &amp; Strava, et UI/UX dark theme custom.</p>
+                    </div>
                 </div>
-                <div class="modal__tech"><span class="tech-tag">À définir</span></div>
+                <div class="modal__tech">
+                    <span class="tech-tag">Next.js 15</span>
+                    <span class="tech-tag">React 19</span>
+                    <span class="tech-tag">TypeScript</span>
+                    <span class="tech-tag">Supabase</span>
+                    <span class="tech-tag">Stripe</span>
+                    <span class="tech-tag">Tailwind CSS</span>
+                    <span class="tech-tag">Chart.js</span>
+                    <span class="tech-tag">Leaflet</span>
+                </div>
             </div>
         </div>
     </div>
