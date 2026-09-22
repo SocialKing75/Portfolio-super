@@ -59,6 +59,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Escape') closeModal();
     });
 
+    // ===== Open a modal directly via URL hash, e.g. projects.html#project-10 =====
+    const hashMatch = window.location.hash.match(/^#project-(\d+)$/);
+    if (hashMatch) {
+        const modal = document.getElementById(`modal-${hashMatch[1]}`);
+        if (modal) {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
     // ===== Category filter =====
     const filterBtns = document.querySelectorAll('.projects__filter-btn');
     if (filterBtns.length) {

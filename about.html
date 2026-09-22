@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=2">
 </head>
 <body>
 
@@ -20,9 +20,12 @@
     <!-- ========== Header ========== -->
     <header class="header" id="header">
         <nav class="nav container">
-            <a class="nav__logo" href="index.html" aria-label="Portfolio — Joë Deriu">
-                <img src="assets/logo-jd-sunset.png" alt="Joë Deriu" class="nav__logo-img">
-            </a>
+            <div class="nav__brand">
+                <a class="nav__logo" href="index.html" aria-label="Portfolio — Joë Deriu">
+                    <img src="assets/logo-jd-sunset.png" alt="Joë Deriu" class="nav__logo-img">
+                </a>
+                <button class="nav__contact" type="button" data-contact-open aria-label="Contactez-moi"><i class="fa-solid fa-envelope" aria-hidden="true"></i><span class="nav__contact-text" data-translate="Contactez-moi">Contactez-moi</span></button>
+            </div>
 
             <div class="nav__menu" id="nav-menu">
                 <ul class="nav__list">
@@ -37,7 +40,6 @@
             </div>
 
             <div class="nav__controls">
-                <button class="nav__contact" type="button" data-contact-open aria-label="Contactez-moi"><i class="fa-solid fa-envelope" aria-hidden="true"></i><span class="nav__contact-text" data-translate="Contactez-moi">Contactez-moi</span></button>
                 <button class="language-toggle" id="language-toggle" aria-label="Changer la langue">
                     <i class="fas fa-globe"></i>
                 </button>
@@ -60,28 +62,30 @@
                 <div class="about__timeline">
                     <h2 class="section__title" data-translate="Formation">Formation</h2>
                     <div class="timeline__container">
-                        <div class="timeline__item">
+                        <div class="timeline__item timeline__item--master">
                             <div class="timeline__year">Actuellement</div>
                             <div class="timeline__content">
                                 <h4 data-translate="Master MSC IA transformation des organisations">Master MSC IA transformation des organisations</h4>
-                                <p data-translate="EPITECH">EPITECH</p>
+                                <p data-translate="EPITECH">EPITECH — 2e année</p>
                             </div>
                         </div>
-                        <div class="timeline__item">
+                        <div class="timeline__item timeline__item--licence">
                             <div class="timeline__year">2024</div>
                             <div class="timeline__content">
                                 <h4 data-translate="Licence Économie de la Construction Management de projet BIM">Licence Économie de la Construction Management de projet BIM</h4>
                                 <p data-translate="CFA Saint Lambert">CFA Saint Lambert</p>
+                                <a class="timeline__link" href="memoire-licence.html" data-translate="Voir le mémoire">Voir le mémoire <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
                             </div>
                         </div>
-                        <div class="timeline__item">
+                        <div class="timeline__item timeline__item--bts">
                             <div class="timeline__year">2023</div>
                             <div class="timeline__content">
                                 <h4 data-translate="BTS Etude et Economie de la Construction">BTS Etude et Economie de la Construction</h4>
                                 <p data-translate="CFA Saint Lambert">CFA Saint Lambert</p>
+                                <a class="timeline__link" href="etude-creche.html" data-translate="Voir le projet">Voir le projet <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
                             </div>
                         </div>
-                        <div class="timeline__item">
+                        <div class="timeline__item timeline__item--bacpro">
                             <div class="timeline__year">2019</div>
                             <div class="timeline__content">
                                 <h4 data-translate="Bac Pro Technicien d'Études du bâtiment Option : Étude et Économie">Bac Pro Technicien d'Études du bâtiment Option : Étude et Économie</h4>
@@ -96,27 +100,7 @@
                     <h3 class="experience__title" data-translate="Expérience professionnelle">Expérience professionnelle</h3>
                     <div class="experience__category">
                         <div class="experience__grid">
-                            <div class="experience__card">
-                                <span class="experience__period">2022 - 2024</span>
-                                <h5 data-translate="BIM Modeleur">BIM Modeleur</h5>
-                                <p data-translate="Meudon">SADIEM - Meudon</p>
-                                <ul class="experience__tasks">
-                                    <li data-translate="Analyse des besoins du bureau d'études">Analyse des besoins du bureau d'études</li>
-                                    <li data-translate="Préparation des données nécessaires (modélisation sous Revit)">Préparation des données nécessaires (modélisation sous Revit)</li>
-                                    <li data-translate="Elaboration et automatisation d'un tableau de bord (Macros VBA)">Elaboration et automatisation d'un tableau de bord (Macros VBA)</li>
-                                </ul>
-                            </div>
-                            <div class="experience__card">
-                                <span class="experience__period">2021 - 2022</span>
-                                <h5 data-translate="Économiste - métreur">Économiste métreur</h5>
-                                <p data-translate="Paris">Boréal - Paris</p>
-                                <ul class="experience__tasks">
-                                    <li data-translate="Rédaction des devis">Rédaction des devis</li>
-                                    <li data-translate="Négociation avec les fournisseurs">Négociation avec les fournisseurs</li>
-                                    <li data-translate="Elaboration des tableaux de bord : suivi du budget et des KPI">Elaboration des tableaux de bord : suivi du budget et des KPI</li>
-                                </ul>
-                            </div>
-                            <div class="experience__card">
+                            <div class="experience__card experience__card--chef">
                                 <span class="experience__period">2020 - 2021</span>
                                 <h5 data-translate="Assistant Chef de projet">Assistant Chef de projet</h5>
                                 <p data-translate="Sisco">Sisco - Vélizy</p>
@@ -127,6 +111,26 @@
                                     <li data-translate="Respect de la réglementation des produits : non dangereux - dangereux - inertes">Respect de la réglementation des produits : non dangereux - dangereux - inertes</li>
                                 </ul>
                             </div>
+                            <div class="experience__card experience__card--metreur">
+                                <span class="experience__period">2021 - 2022</span>
+                                <h5 data-translate="Économiste - métreur">Économiste métreur</h5>
+                                <p data-translate="Paris">Boréal - Paris</p>
+                                <ul class="experience__tasks">
+                                    <li data-translate="Rédaction des devis">Rédaction des devis</li>
+                                    <li data-translate="Négociation avec les fournisseurs">Négociation avec les fournisseurs</li>
+                                    <li data-translate="Elaboration des tableaux de bord : suivi du budget et des KPI">Elaboration des tableaux de bord : suivi du budget et des KPI</li>
+                                </ul>
+                            </div>
+                            <div class="experience__card experience__card--bim">
+                                <span class="experience__period">2022 - 2024</span>
+                                <h5 data-translate="BIM Modeleur">BIM Modeleur</h5>
+                                <p data-translate="Meudon">SADIEM - Meudon</p>
+                                <ul class="experience__tasks">
+                                    <li data-translate="Analyse des besoins du bureau d'études">Analyse des besoins du bureau d'études</li>
+                                    <li data-translate="Préparation des données nécessaires (modélisation sous Revit)">Préparation des données nécessaires (modélisation sous Revit)</li>
+                                    <li data-translate="Elaboration et automatisation d'un tableau de bord (Macros VBA)">Elaboration et automatisation d'un tableau de bord (Macros VBA)</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -135,7 +139,7 @@
                 <div class="about__internships">
                     <h3 class="experience__title" data-translate="Stages">Stages</h3>
                     <div class="experience__grid">
-                        <div class="experience__card">
+                        <div class="experience__card experience__card--pmo">
                             <span class="experience__period">01/2018 - 06/2018</span>
                             <h5>PMO</h5>
                             <p>Renault Group - Guyancourt</p>
@@ -144,7 +148,7 @@
                                 <li>Elaboration de compte-rendu des réunions de pilotage</li>
                             </ul>
                         </div>
-                        <div class="experience__card">
+                        <div class="experience__card experience__card--dessinateur">
                             <span class="experience__period">01/2019 - 06/2019</span>
                             <h5>Dessinateur / Projeteur</h5>
                             <p>QCS Services - Vélizy</p>
@@ -221,7 +225,7 @@
     </footer>
 
     <script src="js/translations.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/main.js?v=2"></script>
     <script src="js/animations.js"></script>
 </body>
 </html>

@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=2">
     <link rel="stylesheet" href="css/skills.css">
 </head>
 <body>
@@ -21,9 +21,12 @@
     <!-- ========== Header ========== -->
     <header class="header" id="header">
         <nav class="nav container">
-            <a class="nav__logo" href="index.html" aria-label="Portfolio — Joë Deriu">
-                <img src="assets/logo-jd-sunset.png" alt="Joë Deriu" class="nav__logo-img">
-            </a>
+            <div class="nav__brand">
+                <a class="nav__logo" href="index.html" aria-label="Portfolio — Joë Deriu">
+                    <img src="assets/logo-jd-sunset.png" alt="Joë Deriu" class="nav__logo-img">
+                </a>
+                <button class="nav__contact" type="button" data-contact-open aria-label="Contactez-moi"><i class="fa-solid fa-envelope" aria-hidden="true"></i><span class="nav__contact-text" data-translate="Contactez-moi">Contactez-moi</span></button>
+            </div>
             <div class="nav__menu" id="nav-menu">
                 <ul class="nav__list">
                     <li class="nav__item"><a class="nav__link" href="index.html" data-translate="Accueil">Accueil</a></li>
@@ -34,7 +37,6 @@
                 <div class="nav__close" id="nav-close"><i class="fa-solid fa-xmark"></i></div>
             </div>
             <div class="nav__controls">
-                <button class="nav__contact" type="button" data-contact-open aria-label="Contactez-moi"><i class="fa-solid fa-envelope" aria-hidden="true"></i><span class="nav__contact-text" data-translate="Contactez-moi">Contactez-moi</span></button>
                 <button class="language-toggle" id="language-toggle" aria-label="Changer la langue"><i class="fas fa-globe"></i></button>
                 <button class="theme-toggle" id="theme-toggle" aria-label="Changer le thème"><i class="fa-solid fa-moon"></i></button>
                 <div class="nav__toggle" id="nav-toggle"><i class="fa-solid fa-bars"></i></div>
@@ -63,19 +65,15 @@
                         <ul class="sk-list">
                             <li class="sk-item">
                                 <div class="sk-item__row"><span class="sk-name">HTML / CSS / JS</span><span class="sk-level sk-level--high">Avancé</span></div>
-                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:85%"></div></div>
                             </li>
                             <li class="sk-item">
                                 <div class="sk-item__row"><span class="sk-name">Python</span><span class="sk-level sk-level--mid">Intermédiaire</span></div>
-                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:65%"></div></div>
                             </li>
                             <li class="sk-item">
                                 <div class="sk-item__row"><span class="sk-name">VBA</span><span class="sk-level sk-level--expert">Expert</span></div>
-                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:90%"></div></div>
                             </li>
                             <li class="sk-item">
                                 <div class="sk-item__row"><span class="sk-name">C</span><span class="sk-level sk-level--mid">Intermédiaire</span></div>
-                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:50%"></div></div>
                             </li>
                         </ul>
                     </div>
@@ -89,19 +87,15 @@
                         <ul class="sk-list">
                             <li class="sk-item">
                                 <div class="sk-item__row"><span class="sk-name">Excel</span><span class="sk-level sk-level--expert">Expert</span></div>
-                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:95%"></div></div>
                             </li>
                             <li class="sk-item">
                                 <div class="sk-item__row"><span class="sk-name">PowerBI</span><span class="sk-level sk-level--high">Avancé</span></div>
-                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:80%"></div></div>
                             </li>
                             <li class="sk-item">
                                 <div class="sk-item__row"><span class="sk-name">Suite Microsoft 365</span><span class="sk-level sk-level--expert">Expert</span></div>
-                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:90%"></div></div>
                             </li>
                             <li class="sk-item">
                                 <div class="sk-item__row"><span class="sk-name">Ms Project</span><span class="sk-level sk-level--high">Avancé</span></div>
-                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:75%"></div></div>
                             </li>
                         </ul>
                     </div>
@@ -115,19 +109,15 @@
                         <ul class="sk-list">
                             <li class="sk-item">
                                 <div class="sk-item__row"><span class="sk-name">Revit / Autocad</span><span class="sk-level sk-level--high">Avancé</span></div>
-                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:85%"></div></div>
                             </li>
                             <li class="sk-item">
                                 <div class="sk-item__row"><span class="sk-name">Navisworks / SketchUp</span><span class="sk-level sk-level--high">Avancé</span></div>
-                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:70%"></div></div>
                             </li>
                             <li class="sk-item">
                                 <div class="sk-item__row"><span class="sk-name">Devisoc / Kreo</span><span class="sk-level sk-level--high">Avancé</span></div>
-                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:80%"></div></div>
                             </li>
                             <li class="sk-item">
                                 <div class="sk-item__row"><span class="sk-name">EveBIM / BIMvision</span><span class="sk-level sk-level--high">Avancé</span></div>
-                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:75%"></div></div>
                             </li>
                         </ul>
                     </div>
@@ -141,19 +131,15 @@
                         <ul class="sk-list">
                             <li class="sk-item">
                                 <div class="sk-item__row"><span class="sk-name">Premiere Pro</span><span class="sk-level sk-level--high">Avancé</span></div>
-                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:75%"></div></div>
                             </li>
                             <li class="sk-item">
                                 <div class="sk-item__row"><span class="sk-name">After Effects</span><span class="sk-level sk-level--mid">Intermédiaire</span></div>
-                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:60%"></div></div>
                             </li>
                             <li class="sk-item">
                                 <div class="sk-item__row"><span class="sk-name">Photoshop</span><span class="sk-level sk-level--mid">Intermédiaire</span></div>
-                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:65%"></div></div>
                             </li>
                             <li class="sk-item">
                                 <div class="sk-item__row"><span class="sk-name">OBS Studio</span><span class="sk-level sk-level--high">Avancé</span></div>
-                                <div class="sk-bar"><div class="sk-bar__fill" style="--pct:80%"></div></div>
                             </li>
                         </ul>
                     </div>
@@ -207,7 +193,7 @@
     </footer>
 
     <script src="js/translations.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/main.js?v=2"></script>
     <script src="js/skills-anim.js"></script>
 </body>
 </html>

@@ -15,7 +15,7 @@
     right: -200px;
     width: 600px;
     height: 600px;
-    background: radial-gradient(circle, hsla(var(--hue), 80%, 65%, 0.08) 0%, transparent 70%);
+    background: radial-gradient(circle, hsla(14, 80%, 65%, 0.08) 0%, transparent 70%);
     border-radius: 50%;
     pointer-events: none;
     z-index: 0;
@@ -86,50 +86,39 @@ body.dark-mode .sk-card { border-color: rgba(255,255,255,0.06); }
     box-shadow: 0 20px 48px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
 }
 
-/* ===== Header coloré ===== */
+/* ===== Header neutre + accent orange ===== */
 .sk-card__header {
     display: flex;
     align-items: center;
     gap: 1rem;
     padding: 1.4rem 1.5rem;
-    color: white;
+    background: var(--body-color);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
     position: relative;
     overflow: hidden;
 }
 
-.sk-card__header::after {
-    content: '';
-    position: absolute;
-    bottom: -20px;
-    right: -20px;
-    width: 80px;
-    height: 80px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 50%;
-}
-
-.sk-card__header--code   { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-.sk-card__header--office { background: linear-gradient(135deg, #0f9b8e 0%, #2dce89 100%); }
-.sk-card__header--bim    { background: linear-gradient(135deg, #f46b45 0%, #eea849 100%); }
-.sk-card__header--media  { background: linear-gradient(135deg, #e52d27 0%, #f09819 100%); }
+body.dark-mode .sk-card__header { border-bottom-color: rgba(255,255,255,0.07); }
 
 .sk-card__icon {
     width: 42px;
     height: 42px;
-    background: rgba(255,255,255,0.22);
+    background: hsla(14, 90%, 50%, 0.12);
+    color: var(--first-color);
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.1rem;
     flex-shrink: 0;
-    backdrop-filter: blur(4px);
 }
+
+body.dark-mode .sk-card__icon { background: hsla(14, 90%, 60%, 0.18); }
 
 .sk-card__title {
     font-size: 0.95rem;
     font-weight: 700;
-    color: white;
+    color: var(--title-color);
     margin: 0;
     letter-spacing: 0.01em;
 }
@@ -178,30 +167,6 @@ body.dark-mode .sk-card { border-color: rgba(255,255,255,0.06); }
 body.dark-mode .sk-level--expert { background: hsla(14,98%,50%,0.22); color: hsl(14,98%,68%); }
 body.dark-mode .sk-level--high   { background: hsla(220,80%,70%,0.18); color: hsl(220,80%,72%); }
 body.dark-mode .sk-level--mid    { background: hsla(160,60%,50%,0.18); color: hsl(160,60%,62%); }
-
-/* ===== Barre de progression ===== */
-.sk-bar {
-    height: 5px;
-    background: rgba(0,0,0,0.07);
-    border-radius: 99px;
-    overflow: hidden;
-}
-
-body.dark-mode .sk-bar { background: rgba(255,255,255,0.07); }
-
-.sk-bar__fill {
-    height: 100%;
-    width: 0;
-    border-radius: 99px;
-    transition: width 1.1s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.sk-card__header--code   ~ .sk-list .sk-bar__fill { background: linear-gradient(90deg, #667eea, #a78bfa); }
-.sk-card__header--office ~ .sk-list .sk-bar__fill { background: linear-gradient(90deg, #0f9b8e, #2dce89); }
-.sk-card__header--bim    ~ .sk-list .sk-bar__fill { background: linear-gradient(90deg, #f46b45, #eea849); }
-.sk-card__header--media  ~ .sk-list .sk-bar__fill { background: linear-gradient(90deg, #e52d27, #f09819); }
-
-.sk-card.visible .sk-bar__fill { width: var(--pct); }
 
 /* ===== Soft Skills ===== */
 .sk-soft {
@@ -264,7 +229,7 @@ body.dark-mode .sk-tag { border-color: rgba(255,255,255,0.07); }
     color: white;
     border-color: var(--first-color);
     transform: translateY(-3px);
-    box-shadow: 0 8px 20px hsla(var(--hue), 70%, 55%, 0.3);
+    box-shadow: 0 8px 20px hsla(14, 70%, 55%, 0.3);
 }
 
 .sk-tag:hover i { color: white; }

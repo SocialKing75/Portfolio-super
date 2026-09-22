@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=2">
 </head>
 <body>
 
@@ -20,9 +20,12 @@
     <!-- ========== Header ========== -->
     <header class="header" id="header">
         <nav class="nav container">
-            <a class="nav__logo" href="index.html" aria-label="Portfolio — Joë Deriu">
-                <img src="assets/logo-jd-sunset.png" alt="Joë Deriu" class="nav__logo-img">
-            </a>
+            <div class="nav__brand">
+                <a class="nav__logo" href="index.html" aria-label="Portfolio — Joë Deriu">
+                    <img src="assets/logo-jd-sunset.png" alt="Joë Deriu" class="nav__logo-img">
+                </a>
+                <button class="nav__contact" type="button" data-contact-open aria-label="Contactez-moi"><i class="fa-solid fa-envelope" aria-hidden="true"></i><span class="nav__contact-text" data-translate="Contactez-moi">Contactez-moi</span></button>
+            </div>
 
             <div class="nav__menu" id="nav-menu">
                 <ul class="nav__list">
@@ -37,7 +40,6 @@
             </div>
 
             <div class="nav__controls">
-                <button class="nav__contact" type="button" data-contact-open aria-label="Contactez-moi"><i class="fa-solid fa-envelope" aria-hidden="true"></i><span class="nav__contact-text" data-translate="Contactez-moi">Contactez-moi</span></button>
                 <button class="language-toggle" id="language-toggle" aria-label="Changer la langue">
                     <i class="fas fa-globe"></i>
                 </button>
@@ -112,6 +114,79 @@
                                 <span class="tech-tag">Workflows</span>
                                 <span class="tech-tag">QR dynamiques</span>
                                 <span class="tech-tag">Formation</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Projet 9 — Veille réglementaire (agent IA agentique) -->
+                    <div class="project__card" data-project="9" data-category="entreprise">
+                        <img src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Veille réglementaire — agent IA agentique" class="project__image">
+                        <div class="project__content">
+                            <h3 class="project__title">Veille réglementaire — Agent IA agentique</h3>
+                            <p class="project__description">Agent IA agentique surveillant en continu les sources réglementaires pertinentes pour l'entreprise, synthétisant les évolutions et alertant les équipes concernées, pour remplacer une veille manuelle chronophage.</p>
+                            <div class="project__details">
+                                <div class="project__detail">
+                                    <i class="fa-solid fa-robot"></i>
+                                    <span>Agent IA agentique</span>
+                                </div>
+                                <div class="project__detail">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                    <span>Veille · synthèse · alertes</span>
+                                </div>
+                            </div>
+                            <div class="project__tech">
+                                <span class="tech-tag">Agent IA</span>
+                                <span class="tech-tag">Veille réglementaire</span>
+                                <span class="tech-tag">Automatisation</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Projet 10 — Mémoire de fin d'étude Licence -->
+                    <div class="project__card" data-project="10" data-category="ecole">
+                        <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Étude comparative au choix du logiciel de métré" class="project__image">
+                        <div class="project__content">
+                            <h3 class="project__title">Étude comparative au choix du logiciel de métré</h3>
+                            <p class="project__description">Mémoire de fin d'étude réalisé dans le cadre de la Licence Économie de la Construction, Management de projet BIM.</p>
+                            <div class="project__details">
+                                <div class="project__detail">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                    <span>Licence — CFA Saint Lambert</span>
+                                </div>
+                                <div class="project__detail">
+                                    <i class="fa-solid fa-calendar"></i>
+                                    <span>2024</span>
+                                </div>
+                            </div>
+                            <div class="project__tech">
+                                <span class="tech-tag">BIM</span>
+                                <span class="tech-tag">Économie de la construction</span>
+                                <span class="tech-tag">Management de projet</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Projet 11 — Étude technique d'une crèche -->
+                    <div class="project__card" data-project="11" data-category="ecole">
+                        <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="La construction d'un équipement petite enfance — Louvigné-du-Désert" class="project__image">
+                        <div class="project__content">
+                            <h3 class="project__title">La construction d'un équipement petite enfance — Louvigné-du-Désert</h3>
+                            <p class="project__description">Épreuve du BTS Étude et Économie de la Construction : réalisation de l'ensemble des études d'un équipement petite enfance à Louvigné-du-Désert (métré, chiffrage, planning, dossier technique).</p>
+                            <div class="project__details">
+                                <div class="project__detail">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                    <span>BTS — CFA Saint Lambert</span>
+                                </div>
+                                <div class="project__detail">
+                                    <i class="fa-solid fa-calendar"></i>
+                                    <span>2023 — Durée: 6 mois</span>
+                                </div>
+                            </div>
+                            <div class="project__tech">
+                                <span class="tech-tag">Métré</span>
+                                <span class="tech-tag">Chiffrage</span>
+                                <span class="tech-tag">Planning</span>
+                                <span class="tech-tag">Bâtiment</span>
                             </div>
                         </div>
                     </div>
@@ -205,7 +280,7 @@
                         <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="SRP - System running pro" class="project__image">
                         <div class="project__content">
                             <h3 class="project__title">Solo Runner Pro (SRP)</h3>
-                            <p class="project__description">Application web SaaS d'analyse de performance pour coureurs de distance. À partir d'un simple fichier GPX, SRP livre un tableau de bord de niveau « coach » : charge d'entraînement (CTL/ATL/TSB, modèle de Banister), VO2max/VDOT et allures cibles (méthode Daniels), zones cardiaques, intégration Strava et abonnements Stripe.</p>
+                            <p class="project__description">Application web SaaS d'analyse et de coaching pour coureurs de distance, développée et déployée en production (VPS/OVH). Synchronisation automatique Strava & Garmin, plans d'entraînement générés par phases (Base, Affûtage, Build, Affinage), charge d'entraînement (CTL/ATL/TSB, modèle de Banister), VO2max/VDOT et allures cibles (méthode Daniels), efficacité cardiaque, carte de chaleur des parcours et bilans hebdomadaires par email.</p>
                             <div class="project__details">
                                 <div class="project__detail">
                                     <i class="fa-solid fa-user"></i>
@@ -258,19 +333,19 @@
             <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Création d'outil d'analyse comparative" class="modal__image">
             <div class="modal__body">
                 <h2 class="modal__title" data-translate="Création d'outil d'analyse comparative">Création d'outil d'analyse comparative</h2>
-                <p class="modal__description" data-translate="description-projet-1-modal">Développement d'une application mobile innovante de vente en ligne avec système de paiement sécurisé et gestion des stocks en temps réel.</p>
+                <p class="modal__description" data-translate="description-projet-1-modal">Création d'un tableau de bord PowerBI regroupant plus de 1000 affaires de construction pour permettre des analyses comparatives, alimenté depuis Excel via une macro qui exporte directement les données vers PowerBI.</p>
                 <div class="modal__details">
                     <div class="modal__detail">
                         <h4 data-translate="Contexte">Contexte</h4>
-                        <p data-translate="contexte-projet-1">Le client, une entreprise de vente au détail, souhaitait étendre sa présence digitale avec une application mobile performante.</p>
+                        <p data-translate="contexte-projet-1">Le suivi de plus de 1000 affaires de construction se faisait de façon dispersée, rendant les analyses comparatives longues et fastidieuses.</p>
                     </div>
                     <div class="modal__detail">
                         <h4 data-translate="Mission">Mission</h4>
-                        <p data-translate="mission-projet-1">Conception, développement et déploiement d'une application mobile cross-platform avec intégration des systèmes de paiement et de gestion des stocks existants.</p>
+                        <p data-translate="mission-projet-1">Structuration des données sous Excel, développement d'une macro VBA pour automatiser l'export vers PowerBI, et création d'une interface interactive de visualisation et d'analyse comparative.</p>
                     </div>
                     <div class="modal__detail">
                         <h4 data-translate="Résultats">Résultats</h4>
-                        <p data-translate="resultats-projet-1">+150% de ventes mobiles, réduction de 30% du taux d'abandon de panier, et amélioration de la note moyenne sur les stores à 4.8/5.</p>
+                        <p data-translate="resultats-projet-1">Un outil unique regroupant plus de 1000 affaires, permettant des analyses comparatives rapides et fiables directement dans PowerBI.</p>
                     </div>
                 </div>
                 <div class="modal__tech">
@@ -378,23 +453,23 @@
             <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Solo Runner Pro (SRP)" class="modal__image">
             <div class="modal__body">
                 <h2 class="modal__title">Solo Runner Pro (SRP)</h2>
-                <p class="modal__description">Application web SaaS d'analyse de performance pour coureurs de distance. SRP transforme de simples fichiers GPX en un tableau de bord d'entraînement complet, offrant une analyse de niveau « coach » sans dépendance à un écosystème matériel de marque.</p>
+                <p class="modal__description">Application web SaaS d'analyse et de coaching pour coureurs de distance, en production sur VPS/OVH. SRP transforme les données de course (GPX, Strava, Garmin) en un suivi d'entraînement complet, avec une analyse de niveau « coach » indépendante de tout écosystème matériel de marque.</p>
                 <div class="modal__details">
                     <div class="modal__detail">
                         <h4>Contexte</h4>
-                        <p>Les plateformes d'entraînement grand public sont soit trop basiques, soit verrouillées derrière des écosystèmes matériels. SRP rend une analyse avancée accessible à partir d'un export GPX, quelle que soit la montre utilisée.</p>
+                        <p>Les plateformes d'entraînement grand public sont soit trop basiques, soit verrouillées derrière des écosystèmes matériels. SRP rend une analyse avancée accessible quelle que soit la montre utilisée, via GPX, Strava ou Garmin.</p>
                     </div>
                     <div class="modal__detail">
                         <h4>Fonctionnalités</h4>
-                        <p>Import &amp; parsing GPX (validation, tracé Leaflet) · modèle de fitness Banister (TRIMP, CTL/ATL/TSB et recommandation contextualisée) · estimation VDOT/VO2max et allures cibles (Daniels/Gilbert) · zones cardiaques · génération de plans d'entraînement et dashboard analytique (Chart.js) · intégration Strava · abonnements Stripe (Free / Pro 6 €/mois / Elite 14 €/mois) gérés par webhooks.</p>
+                        <p>Import &amp; parsing GPX (validation, tracé Leaflet) et synchronisation automatique Strava &amp; Garmin · modèle de fitness Banister (TRIMP, CTL/ATL/TSB et recommandation contextualisée) · estimation VDOT/VO2max et allures cibles (Daniels/Gilbert) · zones cardiaques et efficacité cardiaque · génération de plans d'entraînement par phases (Base, Affûtage, Build, Affinage) et dashboard analytique (Chart.js) · carte de chaleur des parcours · bilan hebdomadaire par email · abonnements Stripe (Free / Pro 6 €/mois / Elite 14 €/mois) gérés par webhooks.</p>
                     </div>
                     <div class="modal__detail">
                         <h4>Architecture &amp; ingénierie</h4>
-                        <p>Next.js 15 (App Router) organisé en route groups (marketing, auth, app protégée, admin), server actions et API routes (handler GPX, webhook Stripe). Supabase pour l'auth, PostgreSQL et le stockage, avec Row Level Security (auth.uid() = user_id) sur toutes les tables. Middleware d'auth sur Edge Runtime et typage TypeScript de bout en bout (types DB générés depuis le schéma).</p>
+                        <p>Next.js 15 (App Router) organisé en route groups (marketing, auth, app protégée, admin), server actions et API routes (handler GPX, webhook Stripe). Supabase pour l'auth, PostgreSQL et le stockage, avec Row Level Security (auth.uid() = user_id) sur toutes les tables. Déploiement en production sur VPS OVH (pm2), typage TypeScript de bout en bout (types DB générés depuis le schéma).</p>
                     </div>
                     <div class="modal__detail">
                         <h4>Mon rôle</h4>
-                        <p>Conception et développement full-stack : modélisation des algorithmes sportifs, architecture Next.js/Supabase, intégrations Stripe &amp; Strava, et UI/UX dark theme custom.</p>
+                        <p>Conception et développement full-stack : modélisation des algorithmes sportifs, architecture Next.js/Supabase, intégrations Stripe, Strava &amp; Garmin, déploiement et exploitation en production, UI/UX dark theme custom.</p>
                     </div>
                 </div>
                 <div class="modal__tech">
@@ -507,6 +582,98 @@
         </div>
     </div>
 
+    <div class="modal" id="modal-9">
+        <div class="modal__content">
+            <button class="modal__close">&times;</button>
+            <img src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Veille réglementaire — agent IA agentique" class="modal__image">
+            <div class="modal__body">
+                <h2 class="modal__title">Veille réglementaire — Agent IA agentique</h2>
+                <p class="modal__description">Un agent IA agentique conçu pour automatiser la veille réglementaire d'une entreprise : surveillance continue des sources, synthèse des évolutions pertinentes et remontée d'alertes aux équipes concernées.</p>
+                <div class="modal__details">
+                    <div class="modal__detail">
+                        <h4>Contexte</h4>
+                        <p>La veille réglementaire était réalisée manuellement, de façon chronophage et avec un risque élevé de passer à côté d'une évolution importante.</p>
+                    </div>
+                    <div class="modal__detail">
+                        <h4>Solution</h4>
+                        <p>Un agent IA agentique parcourt et analyse en autonomie les sources réglementaires ciblées, identifie les changements significatifs, en produit une synthèse exploitable et déclenche des alertes vers les bonnes équipes.</p>
+                    </div>
+                    <div class="modal__detail">
+                        <h4>Impact</h4>
+                        <p>Une veille continue et fiable, qui libère du temps aux équipes tout en réduisant le risque de non-conformité lié à un retard d'information.</p>
+                    </div>
+                </div>
+                <div class="modal__tech">
+                    <span class="tech-tag">Agent IA</span>
+                    <span class="tech-tag">Veille réglementaire</span>
+                    <span class="tech-tag">Automatisation</span>
+                    <span class="tech-tag">Orchestration</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-10">
+        <div class="modal__content">
+            <button class="modal__close">&times;</button>
+            <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Étude comparative au choix du logiciel de métré" class="modal__image">
+            <div class="modal__body">
+                <h2 class="modal__title">Étude comparative au choix du logiciel de métré</h2>
+                <p class="modal__description">Mémoire de fin d'étude réalisé dans le cadre de la Licence Économie de la Construction, Management de projet BIM au CFA Saint Lambert.</p>
+                <div class="modal__details">
+                    <div class="modal__detail">
+                        <h4>Contexte</h4>
+                        <p>Travail de fin de cycle exigé pour la validation de la Licence Économie de la Construction, Management de projet BIM, portant sur le choix d'un logiciel de métré adapté aux besoins d'un bureau d'études.</p>
+                    </div>
+                    <div class="modal__detail">
+                        <h4>Mission</h4>
+                        <p>Étude comparative des principaux logiciels de métré du marché : critères de sélection, fonctionnalités, ergonomie et adéquation avec les processus métier.</p>
+                    </div>
+                    <div class="modal__detail">
+                        <h4>Résultats</h4>
+                        <p>Mémoire soutenu et validé, socle des compétences mobilisées ensuite sur les projets d'analyse et de gestion de projets construction.</p>
+                    </div>
+                </div>
+                <div class="modal__tech">
+                    <span class="tech-tag">BIM</span>
+                    <span class="tech-tag">Économie de la construction</span>
+                    <span class="tech-tag">Management de projet</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-11">
+        <div class="modal__content">
+            <button class="modal__close">&times;</button>
+            <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="La construction d'un équipement petite enfance — Louvigné-du-Désert" class="modal__image">
+            <div class="modal__body">
+                <h2 class="modal__title">La construction d'un équipement petite enfance — Louvigné-du-Désert</h2>
+                <p class="modal__description">Épreuve du BTS Étude et Économie de la Construction au CFA Saint Lambert (2023) : réalisation de l'ensemble des études d'un équipement petite enfance à Louvigné-du-Désert (métré, chiffrage, planning, dossier technique) — projet de 6 mois.</p>
+                <div class="modal__details">
+                    <div class="modal__detail">
+                        <h4>Contexte</h4>
+                        <p>Épreuve du BTS portant sur la réalisation de l'ensemble des études nécessaires à la construction d'un bâtiment public destiné à l'accueil de jeunes enfants, à Louvigné-du-Désert.</p>
+                    </div>
+                    <div class="modal__detail">
+                        <h4>Mission</h4>
+                        <p>Réalisation de toutes les études du projet : métré, chiffrage, planning des travaux et constitution du dossier technique complet.</p>
+                    </div>
+                    <div class="modal__detail">
+                        <h4>Résultats</h4>
+                        <p>Dossier technique complet (métré, chiffrage, planning), validé dans le cadre du BTS Étude et Économie de la Construction.</p>
+                    </div>
+                </div>
+                <div class="modal__tech">
+                    <span class="tech-tag">Métré</span>
+                    <span class="tech-tag">Chiffrage</span>
+                    <span class="tech-tag">Planning</span>
+                    <span class="tech-tag">Bâtiment</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ========== Footer ========== -->
     <footer class="footer" id="footer">
         <div class="footer__top container">
@@ -535,7 +702,7 @@
     </footer>
 
     <script src="js/translations.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/main.js?v=2"></script>
     <script src="js/modals.js"></script>
 </body>
 </html>

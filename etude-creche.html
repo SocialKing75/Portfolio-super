@@ -4,25 +4,18 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="assets/logo-jd-sunset.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio — Joë Deriu</title>
+    <title>La construction d'un équipement petite enfance — Louvigné-du-Désert — Joë Deriu</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css?v=2">
-    <style>body.preloading{background:#000;overflow:hidden}</style>
-    <script>if(sessionStorage.getItem('preloader-shown'))document.documentElement.className+=' no-preloader'</script>
 </head>
-<body class="preloading">
+<body>
 
     <!-- ========== Cursor ========== -->
     <div class="mouse-cursor cursor-outer"></div>
     <div class="mouse-cursor cursor-inner"></div>
-
-    <!-- ========== Preloader ========== -->
-    <div id="preloader" class="preloader" aria-hidden="true">
-        <div class="preloader__line"></div>
-    </div>
 
     <!-- ========== Header ========== -->
     <header class="header" id="header">
@@ -62,46 +55,40 @@
 
     <!-- ========== Main ========== -->
     <main>
-        <section class="home section" id="home">
-            <div class="home__container container grid">
-                <div class="home__data">
-                    <h1 class="home__title" data-translate="Bonjour, je suis Joë">Bonjour, je suis Joë</h1>
-                    <h2 class="home__subtitle" data-translate="Chef de Projet Digital">Chef de Projet Digital</h2>
-                    <p class="home__description" data-translate="home_description">
-                        
-                        </p>
-                    <div class="home__buttons">
-                        <a class="home__button" href="about.html" data-translate="Découvrir mon profil">Découvrir mon profil</a>
-                        <a class="home__button home__button--outline" href="projects.html" data-translate="Mes projets">Mes projets</a>
+        <section class="section project-page" id="project-page">
+            <div class="project-page__container container">
+
+                <a class="project-page__back" href="projects.html"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Retour aux projets</a>
+
+                <span class="project-page__eyebrow">Projet École — BTS</span>
+                <h1 class="project-page__title">La construction d'un équipement petite enfance — Louvigné-du-Désert</h1>
+                <p class="project-page__lead">Épreuve du BTS Étude et Économie de la Construction au CFA Saint Lambert (2023) : réalisation de l'ensemble des études d'un équipement petite enfance à Louvigné-du-Désert (métré, chiffrage, planning, dossier technique) — projet de 6 mois.</p>
+
+                <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80" alt="La construction d'un équipement petite enfance — Louvigné-du-Désert" class="project-page__image">
+
+                <div class="project-page__body">
+                    <div class="project-page__block">
+                        <h3>Contexte</h3>
+                        <p>Épreuve du BTS portant sur la réalisation de l'ensemble des études nécessaires à la construction d'un bâtiment public destiné à l'accueil de jeunes enfants, à Louvigné-du-Désert.</p>
+                    </div>
+                    <div class="project-page__block">
+                        <h3>Mission</h3>
+                        <p>Réalisation de toutes les études du projet : métré, chiffrage, planning des travaux et constitution du dossier technique complet.</p>
+                    </div>
+                    <div class="project-page__block">
+                        <h3>Résultats</h3>
+                        <p>Dossier technique complet (métré, chiffrage, planning), validé dans le cadre du BTS Étude et Économie de la Construction.</p>
                     </div>
                 </div>
 
-                <div class="home__image">
-                    <div class="blob-animated">
-                        <img src="portrait.jpg" alt="Joë Deriu" class="blob-photo">
-                        <div class="blob-ring"></div>
-                    </div>
+                <div class="project-page__tech">
+                    <span class="tech-tag">Métré</span>
+                    <span class="tech-tag">Chiffrage</span>
+                    <span class="tech-tag">Planning</span>
+                    <span class="tech-tag">Bâtiment</span>
                 </div>
-            </div>
 
-            <!-- About snippet -->
-            <div class="home__about container">
-                <h2 class="section__title" data-translate="À propos de Joë Deriu">À propos de Joë Deriu</h2>
-                <p class="home__about__text presentation__text" data-translate="presentation">Avec plus de 8 ans d'expérience en gestion de projets digitaux, j'ai accompagné de nombreuses entreprises dans leur transformation numérique. Mon approche allie rigueur méthodologique et créativité pour mener à bien des projets innovants.</p>
             </div>
-
-            <!-- Hackathon -->
-            <div class="home__hackathon container">
-                <div class="hackathon-card">
-                    <div class="hackathon-card__icon" aria-hidden="true"><i class="fa-solid fa-trophy"></i></div>
-                    <div class="hackathon-card__content">
-                        <h4 class="hackathon-card__title" data-translate="Participation à un hackathon">Participation à un hackathon</h4>
-                        <p class="hackathon-card__text" data-translate="hackathon-description">Participation au DAT Parkinson's Challenge sur DrivenData (juin - septembre 2026), un défi de data science autour du diagnostic de la maladie de Parkinson — 108e place sur 1010 participants.</p>
-                        <a class="hackathon-card__link" href="https://www.drivendata.org/competitions/311/dat-parkinsons-challenge/" target="_blank" rel="noopener" data-translate="Voir le challenge">Voir le challenge <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
-                    </div>
-                </div>
-            </div>
-
         </section>
     </main>
 
@@ -117,7 +104,6 @@
                         <li><a href="about.html" data-translate="À propos">À propos</a></li>
                     </ul>
                 </div>
-
                 <div class="footer__col footer__about">
                     <h4 class="footer__title" data-translate="Le Joë Portfolio">Le Joë Portfolio</h4>
                     <p class="footer__about-text" data-translate="Le blog le plus réel du game.">Plus qu'un portfolio candidat qu'il te faut.</p>
@@ -135,6 +121,5 @@
 
     <script src="js/translations.js"></script>
     <script src="js/main.js?v=2"></script>
-    <script src="js/animations.js"></script>
 </body>
 </html>

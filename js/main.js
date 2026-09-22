@@ -54,9 +54,11 @@ const header = document.querySelector('.header');
 function toggleMenu(show) {
     if (show) {
         navMenu.classList.add('show-menu');
+        document.body.classList.add('menu-open');
         document.body.style.overflow = 'hidden';
     } else {
         navMenu.classList.remove('show-menu');
+        document.body.classList.remove('menu-open');
         document.body.style.overflow = '';
     }
 }
