@@ -695,12 +695,17 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible {
 .home__about.in-view .home__about__text { animation: fadeInUp 0.8s ease forwards 0s; }
 .home__about.no-anim .home__about__text { opacity: 1; transform: none; animation: none !important; }
 
-.home__hackathon { grid-column: 1 / -1; max-width: 760px; margin: 0 auto 2rem; }
+.home__hackathon { grid-column: 1 / -1; max-width: 760px; margin-block: 0 2rem; margin-inline: auto; }
+@media screen and (max-width: 1120px) {
+    .home__hackathon { margin-inline: 1.5rem; }
+}
 .hackathon-card {
+    position: relative;
     display: flex;
     align-items: flex-start;
     gap: 1.25rem;
-    background: var(--container-color);
+    background: var(--body-color);
+    border: 1px solid hsla(0, 0%, 0%, 0.08);
     border-radius: 1rem;
     padding: 1.5rem;
     box-shadow: 0 4px 16px hsla(0, 0%, 0%, 0.1);
@@ -718,6 +723,26 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible {
     font-size: 1.1rem;
 }
 .hackathon-card__title { color: var(--title-color); font-size: var(--h3-font-size); margin-bottom: 0.4rem; }
+.badge-new {
+    display: inline-block;
+    vertical-align: middle;
+    background: var(--first-color);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: var(--font-semi-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 1rem;
+    margin-left: 0.4rem;
+}
+.badge-new--corner {
+    position: absolute;
+    top: -0.6rem;
+    right: 1.25rem;
+    margin-left: 0;
+    box-shadow: 0 2px 8px hsla(0, 0%, 0%, 0.15);
+}
 .hackathon-card__text { color: var(--text-color); line-height: 1.6; margin-bottom: 0.75rem; }
 .hackathon-card__link {
     display: inline-flex;
