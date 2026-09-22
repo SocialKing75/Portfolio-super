@@ -226,7 +226,9 @@ document.addEventListener('DOMContentLoaded', () => {
             throw new Error(data.message || 'Échec');
         } catch (err) {
             if (statusEl) {
-                statusEl.textContent = "L'envoi a échoué. Réessayez ou écrivez directement à jorechercher@protonmail.com.";
+                const user = ['j', 'o', 'r', 'e', 'c', 'h', 'e', 'r', 'c', 'h', 'e', 'r'].join('');
+                const domain = ['p', 'r', 'o', 't', 'o', 'n', 'm', 'a', 'i', 'l', '.', 'c', 'o', 'm'].join('');
+                statusEl.textContent = `L'envoi a échoué. Réessayez ou écrivez directement à ${user}@${domain}.`;
                 statusEl.className = 'form-status form-status--error';
             }
             return false;
