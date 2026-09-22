@@ -202,9 +202,9 @@ body.preloading { overflow: hidden; background: #000; }
 }
 
 /* ========== Reset ========== */
-html, body { height: 100%; margin: 0; padding: 0; }
+html, body { margin: 0; padding: 0; }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html { scroll-behavior: smooth; overflow-x: hidden; max-width: 100%; }
+html { scroll-behavior: smooth; overflow-x: hidden; overflow-y: visible; max-width: 100%; }
 
 body {
     display: flex;
@@ -216,6 +216,7 @@ body {
     color: var(--text-color);
     transition: var(--transition);
     overflow-x: hidden;
+    overflow-y: visible;
     -webkit-font-smoothing: antialiased;
 }
 
