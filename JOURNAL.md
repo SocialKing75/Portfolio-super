@@ -37,7 +37,14 @@ Lighthouse mobile en local sur le même code : accueil 94, projets 66, about 90.
 Test manuel : cartes affichées, modale ouverte avec son image, aucune erreur console.
 Les scores en ligne sont plus bas qu'en local (réseau réel, variabilité de PageSpeed ±10 pts).
 
-**Scores en ligne après déploiement : à mesurer.**
+**Scores en ligne après déploiement (PageSpeed mobile) :**
+
+| Page | Départ | Après lot 1 | Après lot 2 |
+|---|---|---|---|
+| Accueil | 48 | 67 | **91** |
+| Projets | — | 62 | **98** |
+| About | — | 72 | **95** |
+| Skills | — | — | **96** |
 
 ### Pistes restantes
 
