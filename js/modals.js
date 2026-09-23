@@ -32,7 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     projectCards.forEach(card => {
-        card.addEventListener('click', () => {
+        card.addEventListener('click', (e) => {
+            if (e.target.closest('a')) return;
             const projectId = card.getAttribute('data-project');
             const modal = document.getElementById(`modal-${projectId}`);
             if (modal) {

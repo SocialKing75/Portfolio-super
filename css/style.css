@@ -1067,6 +1067,8 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible {
 .project__card--parasitis .project__company { background: hsl(265, 70%, 58%); }
 .project__card--perso { border-top: 4px solid hsl(330, 80%, 55%); }
 .project__card--perso .project__company { background: hsl(330, 80%, 55%); }
+.project__link { display: inline-flex; align-items: center; gap: 0.4rem; margin-top: 1rem; color: hsl(330, 80%, 55%); font-size: var(--small-font-size); font-weight: var(--font-semi-bold); text-decoration: underline; text-underline-offset: 3px; transition: gap 0.2s ease; }
+.project__link:hover { gap: 0.6rem; }
 /* Projets école : couleur de la formation (alignée sur la timeline) */
 .project__card--master { border-top: 4px solid hsl(14, 98%, 50%); }
 .project__card--master .project__company { background: hsl(14, 98%, 50%); }
