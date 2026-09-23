@@ -283,7 +283,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const form = modal.querySelector('.contact-modal__form');
         const status = modal.querySelector('.form-status');
 
-        const openModal = () => { modal.classList.add('active'); document.body.style.overflow = 'hidden'; };
+        const defaultSubject = 'Contact via la modale du portfolio';
+        let subject = defaultSubject;
+
+        // Triggers may pre-fill the form via data-contact-subject / data-contact-message.
+        const openModal = (trigger) => {
+            subject = trigger?.dataset.contactSubject || defaultSubject;
+            if (trigger?.dataset.contactMessage && !form.message.value.trim()) {
+                form.message.value = trigger.dataset.contactMessage;
+            }
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
         const closeModal = () => {
             modal.classList.remove('active');
             document.body.style.overflow = '';
@@ -306,7 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const ok = await sendContact({
                 name: form.name.value.trim(),
                 email,
-                subject: 'Contact via la modale du portfolio',
+                subject,
                 message
             }, status);
             if (ok) form.reset();
@@ -314,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Triggers: any mailto link or element marked data-contact-open opens the modal.
         document.querySelectorAll('[data-contact-open], a[href^="mailto:"]').forEach(el => {
-            el.addEventListener('click', (e) => { e.preventDefault(); openModal(); });
+            el.addEventListener('click', (e) => { e.preventDefault(); openModal(el); });
         });
     }
 
