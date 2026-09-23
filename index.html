@@ -2,16 +2,21 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/png" href="assets/logo-jd-sunset.png">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio — Joë Deriu</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/@gouvfr/dsfr@1.11.2/dist/fonts/Marianne-Regular.woff2" as="font" type="font/woff2" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="preload" as="image" type="image/webp" imagesrcset="assets/portrait-400.webp 400w, assets/portrait-800.webp 800w" imagesizes="(max-width: 768px) 220px, 280px" fetchpriority="high">
     <link rel="stylesheet" href="css/style.css?v=2">
     <style>body.preloading{background:#000;overflow:hidden}</style>
-    <script>if(sessionStorage.getItem('preloader-shown'))document.documentElement.className+=' no-preloader'</script>
+    <script>if(sessionStorage.getItem('preloader-shown')||matchMedia('(max-width: 768px)').matches)document.documentElement.className+=' no-preloader'</script>
 </head>
 <body class="preloading">
 
@@ -29,7 +34,7 @@
         <nav class="nav container">
             <div class="nav__brand">
                 <a class="nav__logo" href="index.html" aria-label="Portfolio — Joë Deriu">
-                    <img src="assets/logo-jd-sunset.png" alt="Joë Deriu" class="nav__logo-img">
+                    <img src="assets/logo-jd-sunset-150.webp" alt="Joë Deriu" class="nav__logo-img" width="150" height="120">
                 </a>
                 <button class="nav__contact" type="button" data-contact-open aria-label="Contactez-moi"><i class="fa-solid fa-envelope" aria-hidden="true"></i><span class="nav__contact-text" data-translate="Contactez-moi">Contactez-moi</span></button>
             </div>
@@ -78,7 +83,10 @@
 
                 <div class="home__image">
                     <div class="blob-animated">
-                        <img src="portrait.jpg" alt="Joë Deriu" class="blob-photo">
+                        <picture>
+                            <source type="image/webp" srcset="assets/portrait-400.webp 400w, assets/portrait-800.webp 800w" sizes="(max-width: 768px) 220px, 280px">
+                            <img src="assets/portrait-800.jpg" alt="Joë Deriu" class="blob-photo" width="800" height="800" fetchpriority="high" decoding="async">
+                        </picture>
                         <div class="blob-ring"></div>
                     </div>
                 </div>
@@ -145,8 +153,8 @@
         </div>
     </footer>
 
-    <script src="js/translations.js"></script>
-    <script src="js/main.js?v=2"></script>
-    <script src="js/animations.js"></script>
+    <script src="js/translations.js" defer></script>
+    <script src="js/main.js?v=2" defer></script>
+    <script src="js/animations.js" defer></script>
 </body>
 </html>
