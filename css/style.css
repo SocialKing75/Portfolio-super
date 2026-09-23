@@ -202,9 +202,9 @@ body.preloading { overflow: hidden; background: #000; }
 }
 
 /* ========== Reset ========== */
-html, body { height: 100%; margin: 0; padding: 0; }
+html, body { margin: 0; padding: 0; }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html { scroll-behavior: smooth; overflow-x: hidden; max-width: 100%; }
+html { scroll-behavior: smooth; overflow-x: hidden; overflow-y: visible; max-width: 100%; }
 
 body {
     display: flex;
@@ -216,6 +216,7 @@ body {
     color: var(--text-color);
     transition: var(--transition);
     overflow-x: hidden;
+    overflow-y: visible;
     -webkit-font-smoothing: antialiased;
 }
 
@@ -895,6 +896,8 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible {
 .experience__card--chef .experience__period { background: hsl(200, 85%, 48%); }
 .experience__card--metreur { order: 2; }
 .experience__card--bim { order: 3; }
+.experience__card--parasitis { border-left-color: hsl(265, 70%, 58%); order: 4; }
+.experience__card--parasitis .experience__period { background: hsl(265, 70%, 58%); }
 .experience__card--pmo { border-left-color: hsl(160, 60%, 40%); }
 .experience__card--pmo .experience__period { background: hsl(160, 60%, 40%); }
 .experience__card--dessinateur { border-left-color: hsl(160, 60%, 40%); }
@@ -1286,7 +1289,7 @@ body.dark-mode .newsletter-input { border-color: rgba(255,255,255,0.08); }
 }
 
 @media screen and (max-width: 768px) {
-    .home { padding-top: 7rem; min-height: calc(100vh - 3.5rem); }
+    .home.section { padding-top: 7rem; min-height: calc(100vh - 3.5rem); }
     .home__container { gap: 1rem; }
     .home__title { font-size: 2rem; margin-bottom: 0.5rem; }
     .home__subtitle { font-size: 1.25rem; margin-bottom: 0.5rem; }
@@ -1296,7 +1299,7 @@ body.dark-mode .newsletter-input { border-color: rgba(255,255,255,0.08); }
     .home__data { order: 1; }
     .home__button { width: 100%; max-width: 280px; padding: 0.875rem 1.25rem; font-size: 0.9rem; }
     .blob-animated { width: 220px; height: 220px; } .blob-initials { font-size: 3rem; }
-    .section { padding-block: 4rem 1.5rem; }
+    .section { padding-block: 6rem 1.5rem; }
     .section__title { font-size: 1.5rem; margin-bottom: 2rem; }
     .about__passions { margin-top: 1rem; }
     .about__internships { margin-bottom: 2rem; }
@@ -1310,6 +1313,7 @@ body.dark-mode .newsletter-input { border-color: rgba(255,255,255,0.08); }
     .experience__card--chef { order: 3; }
     .experience__card--metreur { order: 2; }
     .experience__card--bim { order: 1; }
+    .experience__card--parasitis { order: 0; }
     .international__grid, .passions__grid { grid-template-columns: repeat(2, 1fr); }
     .modal__content { width: 100%; border-left: none; border-top: 3px solid var(--first-color); }
     .modal__body { padding: 0 1.5rem 2rem; }
