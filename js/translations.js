@@ -1,5 +1,6 @@
 const translations = {
     fr: {
+        "Projet perso": "Projet perso",
         "Portfolio": "Portfolio",
         "Accueil": "Accueil",
         "À propos": "À propos",
@@ -133,6 +134,7 @@ const translations = {
         "Droit d'auteur © 2025 Le Joë.": "Droit d'auteur © 2025 Deriu Joë."
     },
     en: {
+        "Projet perso": "Personal project",
         "Portfolio": "Portfolio",
         "Accueil": "Home",
         "À propos": "About",
@@ -261,6 +263,7 @@ const translations = {
         "Droit d'auteur © 2025 Le Joë.": "Copyright © 2025 Deriu Joë."
     },
     es: {
+        "Projet perso": "Proyecto personal",
         "Portfolio": "Portfolio",
         "Accueil": "Inicio",
         "À propos": "Sobre mí",
@@ -394,6 +397,7 @@ const translations = {
         "Droit d'auteur © 2025 Le Joë.": "Derechos de autor © 2025 Deriu Joë."
     },
     de: {
+        "Projet perso": "Privatprojekt",
         "Portfolio": "Portfolio",
         "Accueil": "Startseite",
         "À propos": "Über mich",
@@ -527,6 +531,7 @@ const translations = {
         "Droit d'auteur © 2025 Le Joë.": "Urheberrecht © 2025 Deriu Joë."
     },
     zh: {
+        "Projet perso": "个人项目",
         "Portfolio": "作品集",
         "Accueil": "首页",
         "À propos": "关于我",

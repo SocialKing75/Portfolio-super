@@ -1065,6 +1065,8 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible {
 .project__card--sadiem .project__company { background: linear-gradient(90deg, hsl(200, 85%, 48%), hsl(265, 70%, 58%)); }
 .project__card--parasitis { border-top: 4px solid hsl(265, 70%, 58%); }
 .project__card--parasitis .project__company { background: hsl(265, 70%, 58%); }
+.project__card--perso { border-top: 4px solid hsl(330, 80%, 55%); }
+.project__card--perso .project__company { background: hsl(330, 80%, 55%); }
 
 /* ========== Modal ========== */
 /* ===== Project dossier — slide-in side panel ===== */
