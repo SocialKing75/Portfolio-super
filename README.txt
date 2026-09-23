@@ -38,9 +38,4 @@ Hébergé sur Vercel (vercel.json inclus).
   vercel deploy
 
 CONTACT
--------
-  Email    : jo.deriu@gmail.com
-  LinkedIn : linkedin.com/in/joe-deriu
-  Adresse  : Versailles, France
-
 ================================================================================
