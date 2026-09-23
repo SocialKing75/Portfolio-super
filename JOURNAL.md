@@ -4,6 +4,48 @@ Chronologie des interventions sur le site, avec le constat, ce qui a été fait 
 
 ---
 
+## 2026-09-23 (suite) — Pages Projets et Parcours
+
+### Constat
+
+Scores mesurés en ligne après le premier lot : **accueil 67, projets 62, parcours (about) 72**.
+Lighthouse mobile en local sur le même code : accueil 94, projets 66, about 90.
+
+- **Projets** : 24 photos Unsplash chargées d'un coup (12 cartes en 800 px + 12 images de modales
+  en 1200 px, jusqu'à 470 Ko). L'image LCP (1re carte) s'affichait à **10,7 s**.
+- **About** : décalage de mise en page (CLS 0,07) sur la frise, dû à Marianne Bold qui arrivait tard
+  (changement de police pendant l'affichage).
+
+### Ce qui a été fait
+
+- **Cartes projets** : les 12 images auto-hébergées en WebP 400/600/800 px (ratio 2:1) dans
+  `assets/projects/`, avec `srcset`/`sizes`, `width`/`height`. 1re carte en `fetchpriority="high"`,
+  les autres en `loading="lazy"`.
+- **Modales projets** : image en `data-src`, chargée seulement à l'ouverture (`openModal()` dans
+  `js/modals.js`, utilisée par le clic sur une carte et par l'ouverture via `#project-N`).
+  Restent sur Unsplash, en 1000 px.
+- **Marianne Bold** préchargée sur les 6 pages (en plus de Regular).
+
+### Vérification (Lighthouse mobile en local)
+
+| Page | Avant | Après |
+|---|---|---|
+| Accueil | 94 | 95 |
+| Projets | 66 | 86 (LCP 10,7 s → 3,8 s) |
+| About | 90 | 93 (CLS 0,07 → 0) |
+
+Test manuel : cartes affichées, modale ouverte avec son image, aucune erreur console.
+Les scores en ligne sont plus bas qu'en local (réseau réel, variabilité de PageSpeed ±10 pts).
+
+**Scores en ligne après déploiement : à mesurer.**
+
+### Pistes restantes
+
+- `style.css` (56 Ko, non minifié) bloque encore le rendu : extraire le CSS critique ou le minifier.
+- Font Awesome : 147 Ko de police pour une vingtaine d'icônes → passer en SVG inline ou en sous-ensemble.
+
+---
+
 ## 2026-09-23 — Performance mobile (Lighthouse : 48)
 
 ### Constat
@@ -40,7 +82,7 @@ Score Performance mobile à **48**. Causes identifiées, par ordre d'impact :
 Test local en 390×844 (Playwright) : rendu correct, icônes présentes, traductions appliquées,
 aucune erreur console. L'image chargée est `portrait-400.webp`.
 
-**Score Lighthouse après déploiement : à mesurer.**
+**Score Lighthouse en ligne après déploiement : accueil 48 → 67.**
 
 ### Reste à faire / pistes
 
