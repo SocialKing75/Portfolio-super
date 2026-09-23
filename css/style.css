@@ -896,8 +896,8 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible {
 .experience__card--chef .experience__period { background: hsl(200, 85%, 48%); }
 .experience__card--metreur { order: 2; }
 .experience__card--bim { order: 3; }
-.experience__card--parasitis { border-left-color: hsl(265, 70%, 58%); order: 4; }
-.experience__card--parasitis .experience__period { background: hsl(265, 70%, 58%); }
+.experience__card--parasitis { border-left-color: hsl(14, 98%, 50%); order: 4; }
+.experience__card--parasitis .experience__period { background: hsl(14, 98%, 50%); }
 .experience__card--pmo { border-left-color: hsl(160, 60%, 40%); }
 .experience__card--pmo .experience__period { background: hsl(160, 60%, 40%); }
 .experience__card--dessinateur { border-left-color: hsl(160, 60%, 40%); }
@@ -1084,8 +1084,8 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible {
 .project__company { display: inline-block; color: white; padding: 0.2rem 0.7rem; border-radius: 1rem; font-size: var(--small-font-size); font-weight: 600; margin-bottom: 0.75rem; }
 .project__card--sadiem { border-top: 4px solid transparent; background: linear-gradient(var(--body-color), var(--body-color)) padding-box, linear-gradient(90deg, hsl(200, 85%, 48%), hsl(265, 70%, 58%)) border-box; }
 .project__card--sadiem .project__company { background: linear-gradient(90deg, hsl(200, 85%, 48%), hsl(265, 70%, 58%)); }
-.project__card--parasitis { border-top: 4px solid hsl(265, 70%, 58%); }
-.project__card--parasitis .project__company { background: hsl(265, 70%, 58%); }
+.project__card--parasitis { border-top: 4px solid hsl(14, 98%, 50%); }
+.project__card--parasitis .project__company { background: hsl(14, 98%, 50%); }
 .project__card--perso { border-top: 4px solid hsl(330, 80%, 55%); }
 .project__card--perso .project__company { background: hsl(330, 80%, 55%); }
 .project__link { display: inline-flex; align-items: center; gap: 0.4rem; margin-top: 1rem; color: hsl(330, 80%, 55%); font-size: var(--small-font-size); font-weight: var(--font-semi-bold); text-decoration: underline; text-underline-offset: 3px; transition: gap 0.2s ease; }
