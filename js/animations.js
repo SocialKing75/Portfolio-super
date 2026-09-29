@@ -3,7 +3,7 @@
     const preloader = document.getElementById('preloader');
     if (!preloader) return;
 
-    // Désactivé sur mobile
+    // Désactivé si l'utilisateur préfère réduire les animations
     if (document.documentElement.classList.contains('no-preloader')) {
         preloader.remove();
         document.body.classList.remove('preloading');
