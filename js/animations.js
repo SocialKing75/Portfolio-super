@@ -3,14 +3,12 @@
     const preloader = document.getElementById('preloader');
     if (!preloader) return;
 
-    // Déjà joué cette session
+    // Désactivé sur mobile
     if (document.documentElement.classList.contains('no-preloader')) {
         preloader.remove();
         document.body.classList.remove('preloading');
         return;
     }
-
-    sessionStorage.setItem('preloader-shown', '1');
 
     // Après l'animation (2.2s) : .preloaded → ligne disparaît + panneaux s'ouvrent
     setTimeout(function () {
