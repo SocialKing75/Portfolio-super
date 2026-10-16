@@ -787,13 +787,6 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible {
 
 /* ========== About ========== */
 .about { background-color: var(--container-color); padding-top: 7rem; }
-/* Parallaxe : halos de fond (js/parallax.js) */
-.has-orbs { position: relative; overflow: hidden; }
-.has-orbs > :not(.page-orb) { position: relative; z-index: 1; }
-.page-orb { position: absolute; border-radius: 50%; pointer-events: none; will-change: translate; z-index: 0; }
-.page-orb--1 { width: 460px; height: 460px; top: 8%; right: -140px; background: radial-gradient(circle, hsla(14, 98%, 50%, 0.32), transparent 70%); }
-.page-orb--2 { width: 540px; height: 540px; top: 38%; left: -180px; background: radial-gradient(circle, hsla(265, 70%, 58%, 0.30), transparent 70%); }
-.page-orb--3 { width: 420px; height: 420px; top: 72%; right: -120px; background: radial-gradient(circle, hsla(200, 85%, 48%, 0.32), transparent 70%); }
 .about__presentation { margin-bottom: 4rem; display: flex; justify-content: center; }
 .presentation__card {
     background: var(--body-color);
