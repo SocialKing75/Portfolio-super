@@ -2,11 +2,13 @@
 // Chaque élément [data-parallax="vitesse"] est décalé verticalement selon sa distance
 // au centre de l'écran. Vitesse négative = monte plus vite, positive = plus lent.
 (function () {
+    // Intensité globale de l'effet (1 = discret, 3 = marqué)
+    const INTENSITY = 3;
     const items = Array.from(document.querySelectorAll('[data-parallax]'));
     if (!items.length) return;
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    const state = items.map(el => ({ el, speed: parseFloat(el.dataset.parallax) || 0, offset: 0 }));
+    const state = items.map(el => ({ el, speed: (parseFloat(el.dataset.parallax) || 0) * INTENSITY, offset: 0 }));
     let ticking = false;
 
     function update() {

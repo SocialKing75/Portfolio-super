@@ -68,10 +68,13 @@
 
     <!-- ========== Main ========== -->
     <main>
-        <section class="home section" id="home">
+        <section class="has-orbs home section" id="home">
+            <div class="page-orb page-orb--1" data-parallax="-0.25" aria-hidden="true"></div>
+            <div class="page-orb page-orb--2" data-parallax="0.3" aria-hidden="true"></div>
+            <div class="page-orb page-orb--3" data-parallax="-0.4" aria-hidden="true"></div>
             <div class="home__container container grid">
                 <div class="home__data">
-                    <h1 class="home__title" data-translate="Bonjour, je suis Joë">Bonjour, je suis Joë</h1>
+                    <h1 class="home__title" data-parallax="0.1" data-translate="Bonjour, je suis Joë">Bonjour, je suis Joë</h1>
                     <h2 class="home__subtitle" data-translate="Chef de Projet Digital">Chef de Projet Digital</h2>
                     <p class="home__description" data-translate="home_description">
                         
@@ -95,7 +98,7 @@
 
             <!-- About snippet -->
             <div class="home__about container">
-                <h2 class="section__title" data-translate="À propos de Joë Deriu">À propos de Joë Deriu</h2>
+                <h2 class="section__title" data-parallax="0.08" data-translate="À propos de Joë Deriu">À propos de Joë Deriu</h2>
             </div>
 
             <!-- PWA terrain -->
@@ -157,5 +160,6 @@
     <script src="js/translations.js" defer></script>
     <script src="js/main.js?v=2" defer></script>
     <script src="js/animations.js" defer></script>
+    <script src="js/parallax.js" defer></script>
 </body>
 </html>

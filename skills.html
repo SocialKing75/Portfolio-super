@@ -50,11 +50,14 @@
     </header>
 
     <main>
-        <section class="section skills-page" id="skills">
+        <section class="has-orbs section skills-page" id="skills">
+            <div class="page-orb page-orb--1" data-parallax="-0.25" aria-hidden="true"></div>
+            <div class="page-orb page-orb--2" data-parallax="0.3" aria-hidden="true"></div>
+            <div class="page-orb page-orb--3" data-parallax="-0.4" aria-hidden="true"></div>
             <div class="container">
 
                 <div class="sk-hero">
-                    <h2 class="section__title" data-translate="Mes compétences">Mes compétences</h2>
+                    <h2 class="section__title" data-parallax="0.08" data-translate="Mes compétences">Mes compétences</h2>
                     <p class="sk-hero__sub" data-translate="skills_sub">Un ensemble de compétences techniques et humaines acquises au fil de projets concrets et d'une formation pluridisciplinaire.</p>
                 </div>
 
@@ -62,7 +65,7 @@
                 <div class="sk-grid">
 
                     <!-- Langages -->
-                    <div class="sk-card" data-delay="0">
+                    <div class="sk-card" data-parallax="-0.04" data-delay="0">
                         <div class="sk-card__header sk-card__header--code">
                             <div class="sk-card__icon"><i class="fa-solid fa-code"></i></div>
                             <h3 class="sk-card__title">Langages</h3>
@@ -84,7 +87,7 @@
                     </div>
 
                     <!-- Outils bureautiques -->
-                    <div class="sk-card" data-delay="100">
+                    <div class="sk-card" data-parallax="0.05" data-delay="100">
                         <div class="sk-card__header sk-card__header--office">
                             <div class="sk-card__icon"><i class="fa-solid fa-table-columns"></i></div>
                             <h3 class="sk-card__title">Bureautique & Data</h3>
@@ -106,7 +109,7 @@
                     </div>
 
                     <!-- Logiciels BIM / Métier -->
-                    <div class="sk-card" data-delay="200">
+                    <div class="sk-card" data-parallax="-0.04" data-delay="200">
                         <div class="sk-card__header sk-card__header--bim">
                             <div class="sk-card__icon"><i class="fa-solid fa-building"></i></div>
                             <h3 class="sk-card__title">Logiciels métier</h3>
@@ -128,7 +131,7 @@
                     </div>
 
                     <!-- Création / Médias -->
-                    <div class="sk-card" data-delay="300">
+                    <div class="sk-card" data-parallax="0.05" data-delay="300">
                         <div class="sk-card__header sk-card__header--media">
                             <div class="sk-card__icon"><i class="fa-solid fa-film"></i></div>
                             <h3 class="sk-card__title">Création & Médias</h3>
@@ -200,5 +203,6 @@
     <script src="js/translations.js" defer></script>
     <script src="js/main.js?v=2" defer></script>
     <script src="js/skills-anim.js" defer></script>
+    <script src="js/parallax.js" defer></script>
 </body>
 </html>
