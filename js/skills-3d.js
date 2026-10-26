@@ -70,20 +70,6 @@ function init() {
     const titleEl = $('.sk3d-title'), subEl = $('.sk3d-sub'), cardEl = $('.sk3d-card');
     const levelsEl = $('.sk3d-bar__levels');
 
-    // Grain léger par-dessus la scène, comme sur la référence.
-    {
-        const c = document.createElement('canvas');
-        c.width = c.height = 128;
-        const g = c.getContext('2d'), img = g.createImageData(128, 128);
-        for (let i = 0; i < img.data.length; i += 4) {
-            const v = 110 + Math.random() * 146;
-            img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
-            img.data[i + 3] = 255;
-        }
-        g.putImageData(img, 0, 0);
-        $('.sk3d-grain').style.backgroundImage = `url(${c.toDataURL()})`;
-    }
-
     // ---------------------------------------------------------------- Scène
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     // Résolution plafonnée : l'occlusion ambiante est coûteuse sur les écrans très denses.
@@ -91,6 +77,8 @@ function init() {
     const LITE = matchMedia('(pointer: coarse), (max-width: 768px)').matches;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, LITE ? 1.25 : 1.5));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
+    // Pas de lecture des journaux de compilation des shaders (coûteuse au démarrage).
+    renderer.debug.checkShaderErrors = false;
     renderer.toneMapping = THREE.NoToneMapping;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -1146,6 +1134,9 @@ function init() {
             <p class="sk3d-detail__date">${esc([e.org !== 'Et aussi' ? e.org : '', e.period].filter(Boolean).join(' · '))}</p>
             <div class="sk3d-detail__exp">${clean(tmp)}</div>`;
     }
+    // Préchargement discret des projets et du parcours : le panneau s'ouvre sans attente.
+    (window.requestIdleCallback || ((f) => setTimeout(f, 1200)))(() => { loadProjects(); loadExperiences(); });
+
     function closePanel() {
         panel.classList.remove('is-open');
         panel.setAttribute('aria-hidden', 'true');

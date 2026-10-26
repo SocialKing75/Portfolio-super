@@ -1,0 +1,12 @@
+{
+  "name": "portfolio-tools",
+  "private": true,
+  "description": "Outils de construction : regroupe la maquette 3D (js/skills-3d.js + Three.js) en un seul fichier minifié.",
+  "scripts": {
+    "build": "node build-skills-3d.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.24.0",
+    "three": "0.160.0"
+  }
+}

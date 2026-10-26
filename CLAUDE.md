@@ -18,3 +18,9 @@
   la date de l'événement (`time.project__event` + `data-event-start`/`data-event-end` ;
   `data-event-end="present"` = en cours). **Pas de date de publication sur les projets.**
   Sans date d'événement connue, pas de `project__meta`. Ne jamais inventer une date : la demander.
+
+## Compétences : maquette 3D
+
+- Le code source est `js/skills-3d.js` ; la page charge `js/skills-3d.min.js` (Three.js inclus, minifié).
+- Après toute modification de `js/skills-3d.js`, reconstruire : `cd tools && npm install && npm run build`,
+  puis committer `js/skills-3d.min.js`.
