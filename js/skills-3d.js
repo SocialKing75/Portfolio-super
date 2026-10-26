@@ -59,6 +59,67 @@ document.addEventListener('DOMContentLoaded', () => {
         return b;
     };
 
+    // --- Mobilier ---
+    // Chaque objet : [x, y, largeur, profondeur] en fraction de la pièce, puis hauteur et altitude
+    // en pixels (mises à l'échelle de la pièce), puis le matériau.
+    const desk = [
+        [0.18, 0.18, 0.64, 0.3, 20, 0, 'wood'],
+        [0.34, 0.2, 0.32, 0.05, 22, 20, 'screen'],
+        [0.4, 0.58, 0.2, 0.16, 12, 0, 'accent'],
+        [0.4, 0.74, 0.2, 0.04, 28, 0, 'accent']
+    ];
+    const plant = [
+        [0.84, 0.1, 0.09, 0.09, 12, 0, 'pot'],
+        [0.82, 0.08, 0.13, 0.13, 16, 12, 'plant']
+    ];
+    const ROOM_KINDS = [
+        // Langages : bureau de développeur, double écran.
+        [...desk, [0.2, 0.22, 0.12, 0.05, 18, 20, 'screen'], ...plant],
+        // Bureautique & Data : bureau, armoire à dossiers.
+        [...desk, [0.04, 0.12, 0.1, 0.34, 40, 0, 'white'], [0.04, 0.55, 0.1, 0.3, 30, 0, 'white']],
+        // Logiciels métier : table à maquettes avec un petit bâtiment.
+        [
+            [0.12, 0.22, 0.76, 0.46, 18, 0, 'wood'],
+            [0.3, 0.3, 0.2, 0.26, 26, 18, 'white'],
+            [0.5, 0.36, 0.16, 0.18, 14, 18, 'accent'],
+            [0.68, 0.32, 0.1, 0.12, 34, 18, 'white'],
+            [0.42, 0.76, 0.14, 0.12, 14, 0, 'accent'],
+            ...plant
+        ],
+        // Création & Médias : bureau de montage, caméra sur trépied, enceintes.
+        [
+            ...desk,
+            [0.08, 0.14, 0.08, 0.08, 26, 0, 'screen'],
+            [0.84, 0.66, 0.03, 0.03, 34, 0, 'screen'],
+            [0.8, 0.62, 0.1, 0.1, 10, 34, 'accent']
+        ],
+        // Soft Skills : salle de réunion.
+        [
+            [0.22, 0.3, 0.56, 0.36, 16, 0, 'wood'],
+            [0.3, 0.12, 0.14, 0.12, 12, 0, 'accent'],
+            [0.56, 0.12, 0.14, 0.12, 12, 0, 'accent'],
+            [0.3, 0.74, 0.14, 0.12, 12, 0, 'accent'],
+            [0.56, 0.74, 0.14, 0.12, 12, 0, 'accent'],
+            [0.44, 0.42, 0.12, 0.1, 6, 16, 'white'],
+            ...plant
+        ]
+    ];
+
+    function furnish(kind, rw, rd) {
+        const k = Math.max(0.55, Math.min(1.3, Math.min(rw, rd) / 130));
+        let top = 0;
+        const items = kind.map(([x, y, w, d, h, z, mat]) => {
+            const ow = Math.max(3, w * rw), od = Math.max(3, d * rd);
+            const b = box(ow, od, h * k, 'sk3d-obj sk3d-obj--' + mat);
+            b.style.left = x * rw + 'px';
+            b.style.top = y * rd + 'px';
+            if (z) b.style.transform = `translateZ(${z * k}px)`;
+            top = Math.max(top, (z + h) * k);
+            return b;
+        });
+        return { items, top: Math.round(top) };
+    }
+
     // --- Structure ---
     const info = el('div', 'sk3d-info');
     const infoTitle = el('h3', 'sk3d-info__title');
@@ -134,16 +195,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const room = el('div', 'sk3d-room');
             room.style.cssText = `left:${pad + c * (rw + gap)}px;top:${pad + r * (rd + gap)}px;width:${rw}px;height:${rd}px`;
 
-            const size = Math.min(rw, rd) * 0.42;
-            const block = box(size, size, s.rank * 16, 'sk3d-block sk3d-block--' + s.rank);
-            block.style.left = (rw - size) / 2 + 'px';
-            block.style.top = (rd - size) / 2 + 'px';
+            room.classList.add('sk3d-room--lvl' + s.rank);
+            const furniture = furnish(ROOM_KINDS[i % ROOM_KINDS.length], rw, rd);
 
             const pin = el('button', 'sk3d-pin');
             pin.type = 'button';
             pin.style.left = rw / 2 + 'px';
             pin.style.top = rd / 2 + 'px';
-            pin.style.setProperty('--lift', s.rank * 16 + 'px');
+            pin.style.setProperty('--lift', furniture.top + 'px');
             // Rangée du fond : tige plus longue pour que les étiquettes ne se chevauchent pas.
             pin.style.setProperty('--stem', (rows > 1 && r === 0 ? 62 : 22) + 'px');
             pin.setAttribute('aria-label', `${s.name} — ${s.level}`);
@@ -156,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
             pin.addEventListener('click', (e) => { e.stopPropagation(); selectSkill(i, k); });
             room.addEventListener('click', () => selectSkill(i, k));
 
-            room.append(block, pin);
+            room.append(...furniture.items, pin);
             shell.append(room);
             return { room, pin };
         });

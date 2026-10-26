@@ -316,11 +316,15 @@ body.dark-mode .sk3d {
 .sk3d-scene, .sk3d-scene * { transform-style: preserve-3d; }
 
 .sk3d-shadow {
+    /* Ombre portée au sol, projetée sur le côté gauche du bâtiment. */
     position: absolute;
-    inset: 0;
-    background: var(--sk3d-shadow);
-    filter: blur(14px);
-    transform: translate(-46px, 46px) scale(1.04);
+    top: 0;
+    bottom: 0;
+    left: -220px;
+    right: 70%;
+    background: linear-gradient(to right, transparent, var(--sk3d-shadow) 70%);
+    filter: blur(6px);
+    transform: translateZ(-1px);
 }
 
 .sk3d-floor {
@@ -390,15 +394,30 @@ body.dark-mode .sk3d-floor:not(.is-active):hover > .sk3d-shell > .sk3d-face--fro
 body.dark-mode .sk3d-room:hover { background: hsl(14, 30%, 26%); }
 body.dark-mode .sk3d-room.is-selected { background: hsl(14, 40%, 30%); }
 
-.sk3d-block .sk3d-face--front { background: hsl(14, 80%, 62%); }
-.sk3d-block .sk3d-face--left { background: hsl(14, 80%, 52%); }
-.sk3d-block .sk3d-face--top { background: hsl(14, 95%, 72%); }
-.sk3d-block--3 .sk3d-face--front { background: hsl(14, 90%, 52%); }
-.sk3d-block--3 .sk3d-face--left { background: hsl(14, 90%, 42%); }
-.sk3d-block--3 .sk3d-face--top { background: hsl(14, 98%, 60%); }
-.sk3d-block--1 .sk3d-face--front { background: hsl(24, 70%, 74%); }
-.sk3d-block--1 .sk3d-face--left { background: hsl(24, 60%, 66%); }
-.sk3d-block--1 .sk3d-face--top { background: hsl(24, 90%, 84%); }
+.sk3d-obj .sk3d-face { box-shadow: inset 0 0 0 .5px rgba(0, 0, 0, .06); }
+.sk3d-obj--white .sk3d-face--top { background: hsl(30, 20%, 99%); }
+.sk3d-obj--white .sk3d-face--front { background: hsl(30, 10%, 90%); }
+.sk3d-obj--white .sk3d-face--left { background: hsl(30, 8%, 84%); }
+.sk3d-obj--wood .sk3d-face--top { background: hsl(32, 35%, 90%); }
+.sk3d-obj--wood .sk3d-face--front { background: hsl(30, 22%, 80%); }
+.sk3d-obj--wood .sk3d-face--left { background: hsl(30, 18%, 74%); }
+.sk3d-obj--screen .sk3d-face--top { background: hsl(0, 0%, 30%); }
+.sk3d-obj--screen .sk3d-face--front { background: linear-gradient(160deg, hsl(220, 15%, 30%), hsl(220, 20%, 14%)); }
+.sk3d-obj--screen .sk3d-face--left { background: hsl(0, 0%, 20%); }
+.sk3d-obj--pot .sk3d-face--top { background: hsl(20, 40%, 55%); }
+.sk3d-obj--pot .sk3d-face--front { background: hsl(18, 40%, 48%); }
+.sk3d-obj--pot .sk3d-face--left { background: hsl(18, 38%, 40%); }
+.sk3d-obj--plant .sk3d-face { border-radius: 40%; }
+.sk3d-obj--plant .sk3d-face--top { background: hsl(120, 30%, 52%); }
+.sk3d-obj--plant .sk3d-face--front { background: hsl(120, 30%, 42%); }
+.sk3d-obj--plant .sk3d-face--left { background: hsl(120, 30%, 36%); }
+/* Couleur d'accent (sièges, objets) : plus soutenue selon le niveau de la compétence. */
+.sk3d-room { --lvl-h: 24; --lvl-s: 75%; --lvl-l: 76%; }
+.sk3d-room--lvl2 { --lvl-h: 16; --lvl-s: 85%; --lvl-l: 64%; }
+.sk3d-room--lvl3 { --lvl-h: 14; --lvl-s: 95%; --lvl-l: 54%; }
+.sk3d-obj--accent .sk3d-face--top { background: hsl(var(--lvl-h), var(--lvl-s), calc(var(--lvl-l) + 8%)); }
+.sk3d-obj--accent .sk3d-face--front { background: hsl(var(--lvl-h), var(--lvl-s), var(--lvl-l)); }
+.sk3d-obj--accent .sk3d-face--left { background: hsl(var(--lvl-h), var(--lvl-s), calc(var(--lvl-l) - 8%)); }
 
 /* Repère : toujours face à la caméra. */
 .sk3d-pin {
