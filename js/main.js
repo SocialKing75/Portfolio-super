@@ -147,6 +147,13 @@ themeToggle.addEventListener('click', () => {
 let currentLanguage = localStorage.getItem('lang') || 'fr';
 
 function updateLanguage() {
+    // Dates de publication : formatées dans la langue choisie à partir de l'attribut datetime.
+    const PUBLISHED = { fr: 'Publié le', en: 'Published on', es: 'Publicado el', de: 'Veröffentlicht am', zh: '发布于' };
+    document.querySelectorAll('time.hackathon-card__date[datetime]').forEach(el => {
+        const date = new Date(el.getAttribute('datetime') + 'T12:00:00');
+        const locale = { fr: 'fr-FR', en: 'en-GB', es: 'es-ES', de: 'de-DE', zh: 'zh-CN' }[currentLanguage] || 'fr-FR';
+        el.textContent = `${PUBLISHED[currentLanguage] || PUBLISHED.fr} ${date.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })}`;
+    });
     document.querySelectorAll('[data-translate]').forEach(el => {
         const key = el.getAttribute('data-translate');
         if (translations[currentLanguage] && translations[currentLanguage][key]) {

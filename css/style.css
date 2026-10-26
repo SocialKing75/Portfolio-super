@@ -724,6 +724,7 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible {
     font-size: 1.1rem;
 }
 .hackathon-card__title { color: var(--title-color); font-size: var(--h3-font-size); margin-bottom: 0.4rem; }
+.hackathon-card__date { display: block; margin-bottom: 0.3rem; font-size: var(--smaller-font-size, .75rem); font-weight: 500; letter-spacing: .02em; color: var(--text-color-light); }
 .badge-new {
     display: inline-block;
     vertical-align: middle;
