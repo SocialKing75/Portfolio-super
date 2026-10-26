@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
     <link rel="stylesheet" href="css/style.css?v=2">
+    <link rel="stylesheet" href="css/about.css">
 </head>
 <body>
 
@@ -63,10 +64,31 @@
     <!-- ========== Main ========== -->
     <main>
         <section class="section about" id="about">
+            <div class="ab-bg" aria-hidden="true"><span></span><span></span><span></span></div>
             <div class="about__container container">
 
+                <!-- En-tête dynamique -->
+                <header class="ab-hero">
+                    <p class="ab-hero__eyebrow" data-translate="Mon parcours">Mon parcours</p>
+                    <h1 class="ab-hero__title"><span data-translate="ab-hero-1">Du bâtiment</span> <span class="ab-hero__accent" data-translate="ab-hero-2">à l'IA</span></h1>
+                    <p class="ab-hero__sub" data-translate="ab-hero-sub">Économie de la construction, BIM, gestion de projet puis intelligence artificielle : un parcours construit pas à pas.</p>
+                    <div class="ab-stats">
+                        <div class="ab-stat"><strong data-count="120" data-prefix="+">+120</strong><span data-translate="exp-sadiem-stat">affaires de métrés</span></div>
+                        <div class="ab-stat"><strong data-count="30" data-prefix="≈ ">≈ 30</strong><span data-translate="exp-boreal-stat">chiffrages de chantier</span></div>
+                        <div class="ab-stat"><strong data-count-from=".about__experience .experience__card">4</strong><span data-translate="entreprises">entreprises</span></div>
+                        <div class="ab-stat"><strong data-count-from=".timeline__item">6</strong><span data-translate="formations">formations</span></div>
+                    </div>
+                </header>
+
+                <nav class="ab-nav" aria-label="Sections du parcours">
+                    <a href="#ab-formation" data-translate="Formation">Formation</a>
+                    <a href="#ab-experience" data-translate="Expérience professionnelle">Expérience professionnelle</a>
+                    <a href="#ab-stages" data-translate="Stages">Stages</a>
+                    <a href="#ab-aussi" data-translate="Et aussi">Et aussi</a>
+                </nav>
+
                 <!-- Formation -->
-                <div class="about__timeline">
+                <div class="about__timeline" id="ab-formation">
                     <h2 class="section__title" data-translate="Formation">Formation</h2>
                     <div class="timeline__container">
                         <div id="form-master" class="timeline__item timeline__item--master">
@@ -159,7 +181,7 @@
                 </div>
 
                 <!-- Expérience professionnelle -->
-                <div class="about__experience">
+                <div class="about__experience" id="ab-experience">
                     <h3 class="experience__title" data-translate="Expérience professionnelle">Expérience professionnelle</h3>
                     <div class="experience__category">
                         <div class="experience__grid">
@@ -271,7 +293,7 @@
                 </div>
 
                 <!-- Stages -->
-                <div class="about__internships">
+                <div class="about__internships" id="ab-stages">
                     <h3 class="experience__title" data-translate="Stages">Stages</h3>
                     <div class="experience__grid">
                         <div id="exp-renault" class="experience__card experience__card--pmo">
@@ -307,7 +329,7 @@
                 </div>
 
                 <!-- Et aussi -->
-                <div class="about__passions">
+                <div class="about__passions" id="ab-aussi">
                     <h3 class="passions__title" data-translate="Et aussi">Et aussi</h3>
                     <div class="passions__blog">
                         <article id="colonies" class="blog-card">
@@ -413,5 +435,6 @@
     <script src="js/translations.js" defer></script>
     <script src="js/main.js?v=2" defer></script>
     <script src="js/animations.js" defer></script>
+    <script src="js/about-dynamic.js" defer></script>
 </body>
 </html>
