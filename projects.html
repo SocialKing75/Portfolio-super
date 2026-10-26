@@ -269,6 +269,50 @@
                         </div>
                     </div>
 
+                    <!-- Projet 13 -->
+                    <div class="project__card project__card--perso" data-project="13" data-category="perso">
+                        <img src="assets/projects/photo-1558002038-1055907df827-600.webp" srcset="assets/projects/photo-1558002038-1055907df827-400.webp 400w, assets/projects/photo-1558002038-1055907df827-600.webp 600w, assets/projects/photo-1558002038-1055907df827-800.webp 800w" sizes="(max-width: 768px) 92vw, 400px" width="600" height="300" loading="lazy" decoding="async" alt="Domotique pilotée par les gestes de la main" class="project__image">
+                        <div class="project__content">
+                            <span class="project__company" data-translate="Projet perso">Projet perso</span>
+                            <h3 class="project__title">Domotique par gestes</h3>
+                            <p class="project__description">Outil qui pilote la domotique de la maison à partir des gestes de la main, captés par une caméra : chaque geste reconnu déclenche une action sur les équipements connectés.</p>
+                            <div class="project__details">
+                                <div class="project__detail">
+                                    <i class="fa-solid fa-hand"></i>
+                                    <span>Conception & développement</span>
+                                </div>
+                            </div>
+                            <div class="project__tech">
+                                <span class="tech-tag">Vision par ordinateur</span>
+                                <span class="tech-tag">Reconnaissance de gestes</span>
+                                <span class="tech-tag">Caméra</span>
+                                <span class="tech-tag">Domotique</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Projet 14 -->
+                    <div class="project__card project__card--perso" data-project="14" data-category="perso">
+                        <img src="assets/projects/photo-1490645935967-10de6ba17061-600.webp" srcset="assets/projects/photo-1490645935967-10de6ba17061-400.webp 400w, assets/projects/photo-1490645935967-10de6ba17061-600.webp 600w, assets/projects/photo-1490645935967-10de6ba17061-800.webp 800w" sizes="(max-width: 768px) 92vw, 400px" width="600" height="300" loading="lazy" decoding="async" alt="Agent IA de menus et listes de courses" class="project__image">
+                        <div class="project__content">
+                            <span class="project__company" data-translate="Projet perso">Projet perso</span>
+                            <h3 class="project__title">Agent IA menus & courses</h3>
+                            <p class="project__description">Agent IA qui propose les menus de la semaine et génère automatiquement la liste de courses en fonction de ce qui est déjà disponible à la maison.</p>
+                            <div class="project__details">
+                                <div class="project__detail">
+                                    <i class="fa-solid fa-robot"></i>
+                                    <span>Conception & développement</span>
+                                </div>
+                            </div>
+                            <div class="project__tech">
+                                <span class="tech-tag">Agent IA</span>
+                                <span class="tech-tag">Planification de menus</span>
+                                <span class="tech-tag">Gestion du stock</span>
+                                <span class="tech-tag">Liste de courses</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Projet 12 — NidBuyer (RAG immobilier) -->
                     <div class="project__card project__card--perso" data-project="12" data-category="perso">
                         <img src="assets/projects/photo-1560518883-ce09059eeffa-600.webp" srcset="assets/projects/photo-1560518883-ce09059eeffa-400.webp 400w, assets/projects/photo-1560518883-ce09059eeffa-600.webp 600w, assets/projects/photo-1560518883-ce09059eeffa-800.webp 800w" sizes="(max-width: 768px) 92vw, 400px" width="600" height="300" loading="lazy" decoding="async" alt="NidBuyer — RAG immobilier" class="project__image">
@@ -373,6 +417,60 @@
     </main>
 
     <!-- ========== Project Modals ========== -->
+    <div class="modal" id="modal-13">
+        <div class="modal__content">
+            <button class="modal__close">&times;</button>
+            <img data-src="assets/projects/photo-1558002038-1055907df827-800.webp" alt="Domotique pilotée par les gestes de la main" class="modal__image" decoding="async">
+            <div class="modal__body">
+                <h2 class="modal__title">Domotique pilotée par les gestes</h2>
+                <p class="modal__description">Un outil qui permet de contrôler la domotique de la maison avec de simples gestes de la main, détectés par une caméra.</p>
+                <div class="modal__details">
+                    <div class="modal__detail">
+                        <h4>Principe</h4>
+                        <p>La caméra filme la main en continu ; l'outil reconnaît les gestes effectués et associe chacun à une commande domotique.</p>
+                    </div>
+                    <div class="modal__detail">
+                        <h4>Mon rôle</h4>
+                        <p>Conception et développement de l'outil, de la reconnaissance des gestes jusqu'au pilotage des équipements.</p>
+                    </div>
+                </div>
+                <div class="modal__tech">
+                    <span class="tech-tag">Vision par ordinateur</span>
+                    <span class="tech-tag">Reconnaissance de gestes</span>
+                    <span class="tech-tag">Caméra</span>
+                    <span class="tech-tag">Domotique</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-14">
+        <div class="modal__content">
+            <button class="modal__close">&times;</button>
+            <img data-src="assets/projects/photo-1490645935967-10de6ba17061-800.webp" alt="Agent IA de menus et listes de courses" class="modal__image" decoding="async">
+            <div class="modal__body">
+                <h2 class="modal__title">Agent IA — menus & liste de courses</h2>
+                <p class="modal__description">Un agent IA qui s'occupe de trouver les menus de la semaine et de préparer la liste de courses.</p>
+                <div class="modal__details">
+                    <div class="modal__detail">
+                        <h4>Principe</h4>
+                        <p>L'agent propose un menu pour chaque jour de la semaine, puis compare les ingrédients nécessaires avec ce qui est déjà disponible pour ne mettre sur la liste de courses que ce qui manque.</p>
+                    </div>
+                    <div class="modal__detail">
+                        <h4>Mon rôle</h4>
+                        <p>Conception et développement de l'agent : génération des menus, suivi de ce qui est disponible et création de la liste de courses.</p>
+                    </div>
+                </div>
+                <div class="modal__tech">
+                    <span class="tech-tag">Agent IA</span>
+                    <span class="tech-tag">Planification de menus</span>
+                    <span class="tech-tag">Gestion du stock</span>
+                    <span class="tech-tag">Liste de courses</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal" id="modal-1">
         <div class="modal__content">
             <button class="modal__close">&times;</button>
