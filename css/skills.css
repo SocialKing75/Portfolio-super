@@ -396,8 +396,8 @@ body.dark-mode .header { background: rgba(24, 22, 20, .88); backdrop-filter: blu
     align-items: center;
     height: 58px;
     border-radius: 14px;
-    border: 2px solid transparent;
-    background: linear-gradient(#636262, #636262) padding-box, linear-gradient(90deg, #ff8a3d, #fc3d03 55%, #ff8a3d) border-box;
+    border: 0;
+    background: #636262;
 }
 .sk3d-bar__main { padding: 4px 18px; }
 .sk3d-bar__levels { display: flex; gap: 14px; }
@@ -426,7 +426,7 @@ body.dark-mode .header { background: rgba(24, 22, 20, .88); backdrop-filter: blu
 }
 .sk3d-bar__side span { display: block; width: 18px; height: 1.6px; border-radius: 1px; background: #f2f0ee; transition: background .25s ease, width .25s ease; }
 .sk3d-bar__side { transition: background .25s ease, transform .25s ease; }
-.sk3d-bar__side:hover { background: linear-gradient(#fc3d03, #fc3d03) padding-box, linear-gradient(135deg, #ff8a3d, #fc3d03) border-box; transform: translateY(-2px); }
+.sk3d-bar__side:hover { background: #fc3d03; transform: translateY(-2px); }
 .sk3d-bar__side:hover span { background: #fff; width: 18px; }
 .sk3d-bar__side span:nth-child(2) { width: 13px; }
 .sk3d-bar__side span:nth-child(3) { width: 18px; }
