@@ -475,6 +475,17 @@ body.dark-mode .header { background: rgba(24, 22, 20, .88); backdrop-filter: blu
 }
 .sk3d-panel__close:hover { background: #fc3d03; color: #fff; }
 .sk3d-panel__list { flex: 1; overflow-y: auto; padding: .75rem; display: flex; flex-direction: column; gap: .6rem; }
+.sk3d-panel__section { display: flex; align-items: center; gap: .4rem; margin: .35rem .25rem 0; font-size: .7rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: #8b8885; }
+.sk3d-panel__section span { padding: 0 .4rem; border-radius: 1rem; background: #fff0e8; color: #fc3d03; letter-spacing: 0; }
+.sk3d-exp {
+    display: flex; align-items: center; gap: .8rem; padding: .6rem;
+    border-radius: 12px; background: #fff; border: 1px solid #f0e9e4;
+    color: inherit; text-decoration: none;
+    transition: border-color .25s ease, transform .25s ease, box-shadow .25s ease;
+}
+.sk3d-exp:hover { border-color: #ffb48a; transform: translateX(-3px); box-shadow: 0 8px 20px rgba(252, 61, 3, .12); }
+.sk3d-exp:hover .sk3d-proj__go { color: #fc3d03; transform: translateX(2px); }
+.sk3d-exp__icon { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 10px; background: #fff0e8; color: #fc3d03; font-size: 1rem; }
 .sk3d-panel__empty { padding: 1rem .5rem; color: #8b8885; font-size: .9rem; }
 .sk3d-proj {
     display: flex;

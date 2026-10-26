@@ -53,10 +53,10 @@ function init() {
             <button class="sk3d-bar__side" type="button" aria-label="Vue d'ensemble du bâtiment"><span></span><span></span><span></span></button>
         </div>
         <div class="sk3d-grain" aria-hidden="true"></div>
-        <aside class="sk3d-panel" aria-label="Projets liés à la compétence" aria-hidden="true">
+        <aside class="sk3d-panel" aria-label="Projets, expériences et formations liés à la compétence" aria-hidden="true">
             <div class="sk3d-panel__head">
                 <div>
-                    <p class="sk3d-panel__eyebrow">Projets liés</p>
+                    <p class="sk3d-panel__eyebrow">Utilisé dans</p>
                     <h3 class="sk3d-panel__title"></h3>
                     <p class="sk3d-panel__level"></p>
                 </div>
@@ -985,7 +985,7 @@ function init() {
         'C': [],
         'Excel': ['excel'],
         'PowerBI': ['powerbi', 'power bi'],
-        'Suite Microsoft 365': ['microsoft 365', 'office 365', 'word', 'powerpoint', 'outlook', 'teams'],
+        'Suite Microsoft 365': ['suite office', 'microsoft 365', 'office 365', 'word', 'powerpoint', 'outlook', 'teams'],
         'Ms Project': ['ms project', 'microsoft project'],
         'Revit / Autocad': ['revit', 'autocad'],
         'Navisworks / SketchUp': ['navisworks', 'sketchup'],
@@ -1023,6 +1023,22 @@ function init() {
             .catch(() => []);
         return projectsPromise;
     }
+    // Expériences et formations (about.html) : liées par les outils listés sur chaque carte.
+    let expPromise = null;
+    function loadExperiences() {
+        expPromise ||= fetch('about.html')
+            .then(r => (r.ok ? r.text() : ''))
+            .then(html => [...new DOMParser().parseFromString(html, 'text/html').querySelectorAll('[id].experience__card, [id].timeline__item')].map(c => ({
+                id: c.id,
+                school: c.classList.contains('timeline__item'),
+                title: c.querySelector('h5, h4')?.textContent.trim() || '',
+                org: c.querySelector('h5 + p, h4 + p')?.textContent.trim() || '',
+                period: (c.querySelector('.experience__period, .timeline__year')?.textContent || '').trim(),
+                haystack: [...c.querySelectorAll('.experience__tools span:not(.experience__tools-label)')].map(t => t.textContent.toLowerCase()).join(' | ')
+            })).filter(e => e.haystack))
+            .catch(() => []);
+        return expPromise;
+    }
     const panel = $('.sk3d-panel'), panelList = $('.sk3d-panel__list');
     const esc = (t) => t.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
     // Mot-clé court (≤ 3 lettres) : mot entier, pour éviter les faux positifs.
@@ -1035,10 +1051,20 @@ function init() {
         panel.setAttribute('aria-hidden', 'false');
         root.classList.add('has-panel');
         const keywords = SKILL_KEYWORDS[skill.name] ?? [skill.name.toLowerCase()];
-        const projects = (await loadProjects()).filter(p => keywords.some(k => matches(p.haystack, k)));
+        const [allProjects, allExps] = await Promise.all([loadProjects(), loadExperiences()]);
+        const projects = allProjects.filter(p => keywords.some(k => matches(p.haystack, k)));
+        const exps = allExps.filter(e => keywords.some(k => matches(e.haystack, k)));
         if ($('.sk3d-panel__title').textContent !== skill.name) return;
         const locale = document.documentElement.lang || 'fr';
-        panelList.innerHTML = projects.length ? projects.map(p => {
+        const expHtml = exps.map(e => `<a class="sk3d-exp" href="about.html#${e.id}">
+                <span class="sk3d-exp__icon"><i class="fa-solid ${e.school ? 'fa-graduation-cap' : 'fa-briefcase'}" aria-hidden="true"></i></span>
+                <span class="sk3d-proj__body">
+                    <span class="sk3d-proj__title">${esc(e.title)}</span>
+                    <span class="sk3d-proj__meta">${esc([e.org, e.period].filter(Boolean).join(' · '))}</span>
+                </span>
+                <i class="fa-solid fa-arrow-right sk3d-proj__go" aria-hidden="true"></i>
+            </a>`).join('');
+        const projHtml = projects.map(p => {
             const pub = p.published ? new Date(p.published + 'T12:00:00').toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' }) : '';
             return `<a class="sk3d-proj" href="projects.html#project-${p.id}">
                 <img class="sk3d-proj__img" src="${esc(p.image)}" alt="" loading="lazy" width="96" height="48">
@@ -1049,7 +1075,11 @@ function init() {
                 </span>
                 <i class="fa-solid fa-arrow-right sk3d-proj__go" aria-hidden="true"></i>
             </a>`;
-        }).join('') : '<p class="sk3d-panel__empty">Aucun projet lié pour l\'instant.</p>';
+        }).join('');
+        panelList.innerHTML =
+            `<p class="sk3d-panel__section">Projets <span>${projects.length}</span></p>` +
+            (projHtml || '<p class="sk3d-panel__empty">Aucun projet lié pour l\'instant.</p>') +
+            (exps.length ? `<p class="sk3d-panel__section">Expériences &amp; formations <span>${exps.length}</span></p>${expHtml}` : '');
     }
     function closePanel() {
         panel.classList.remove('is-open');
