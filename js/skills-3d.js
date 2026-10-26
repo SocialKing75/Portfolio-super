@@ -281,10 +281,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const p = el('div', 'sk3d-person');
         p.style.left = x + 'px';
         p.style.top = y + 'px';
-        const body = box(10 * k, 8 * k, 28 * k, 'sk3d-obj sk3d-obj--person');
-        const head = box(9 * k, 8 * k, 9 * k, 'sk3d-obj sk3d-obj--person sk3d-obj--head');
-        head.style.transform = `translate(${0.5 * k}px, 0) translateZ(${29 * k}px)`;
-        p.append(body, head);
+        // Jambes, buste, bras et tête : une silhouette simple, blanche, à l'échelle de la maquette.
+        const part = ([px, py, w, d, h, z], cls = '') => {
+            const b = box(w * k, d * k, h * k, 'sk3d-obj sk3d-obj--person ' + cls);
+            b.style.left = px * k + 'px';
+            b.style.top = py * k + 'px';
+            b.style.transform = `translateZ(${z * k}px)`;
+            return b;
+        };
+        p.append(
+            part([1, 1, 3, 4, 13, 0]),
+            part([6, 1, 3, 4, 13, 0]),
+            part([0, 0, 10, 6, 13, 13]),
+            part([-3, 1, 3, 4, 12, 13]),
+            part([10, 1, 3, 4, 12, 13]),
+            part([1.5, 0, 7, 6, 8, 27], 'sk3d-obj--head')
+        );
         return p;
     }
 
@@ -417,7 +429,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 room.append(wall);
             }
 
-            room.classList.add('sk3d-room--lvl' + s.rank);
             const seq = FLOOR_ZONES[i % FLOOR_ZONES.length];
             const kind = seq[k % seq.length];
             const furniture = furnish(ZONE_KINDS[kind], rw, rd);
