@@ -188,6 +188,11 @@ const WEB3FORMS_ACCESS_KEY = '6be6fe95-5533-4d50-bdc4-02b138268892';
 document.addEventListener('DOMContentLoaded', () => {
     applyLang();
 
+    // Règle « À propos » : seul l'élément le plus récent (le premier) garde le badge « Nouveau ».
+    document.querySelectorAll('.home__hackathon').forEach((block, i) => {
+        if (i > 0) block.querySelectorAll('.badge-new').forEach(b => b.remove());
+    });
+
     // Envoi générique vers Web3Forms. Renvoie une promesse résolue à true/false.
     async function sendContact({ name, email, subject, message, botcheck }, statusEl) {
         if (!WEB3FORMS_ACCESS_KEY || WEB3FORMS_ACCESS_KEY === 'YOUR_ACCESS_KEY') {

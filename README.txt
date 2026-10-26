@@ -39,3 +39,9 @@ Hébergé sur Vercel (vercel.json inclus).
 
 CONTACT
 ================================================================================
+
+RÈGLES DE CONTENU
+-----------------
+  À propos (accueil) : chaque nouvel élément est ajouté en premier avec le
+  badge « Nouveau », et le badge est retiré des éléments précédents
+  (seul le plus récent le garde). Détail dans CLAUDE.md.
