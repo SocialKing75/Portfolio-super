@@ -1517,6 +1517,7 @@ body.dark-mode .newsletter-input { border-color: rgba(255,255,255,0.08); }
     transition: border-color 0.2s ease;
 }
 .contact-modal__input::placeholder { color: var(--text-color-light); }
+.contact-modal__hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .contact-modal__input:focus { outline: none; border-color: var(--first-color); }
 .contact-modal__textarea { min-height: 120px; resize: vertical; }
 .contact-modal__submit {

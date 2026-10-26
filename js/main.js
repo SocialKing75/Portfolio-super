@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
     applyLang();
 
     // Envoi générique vers Web3Forms. Renvoie une promesse résolue à true/false.
-    async function sendContact({ name, email, subject, message }, statusEl) {
+    async function sendContact({ name, email, subject, message, botcheck }, statusEl) {
         if (!WEB3FORMS_ACCESS_KEY || WEB3FORMS_ACCESS_KEY === 'YOUR_ACCESS_KEY') {
             if (statusEl) {
                 statusEl.textContent = "Le formulaire n'est pas encore configuré (clé Web3Forms manquante).";
@@ -212,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     email,
                     subject: subject || 'Message depuis le portfolio',
                     message: message || '',
-                    botcheck: ''
+                    botcheck: botcheck || ''
                 })
             });
             const data = await res.json();
@@ -270,6 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h3 class="contact-modal__title" id="contact-modal-title">Me contacter</h3>
                 <p class="contact-modal__intro">Une question, un projet, une opportunité ? Écrivez-moi, je réponds rapidement.</p>
                 <form class="contact-modal__form" novalidate>
+                    <input type="text" name="website" class="contact-modal__hp" tabindex="-1" autocomplete="off" aria-hidden="true">
                     <input type="text" name="name" class="contact-modal__input" placeholder="Votre nom" autocomplete="name">
                     <input type="email" name="email" class="contact-modal__input" placeholder="Votre email" autocomplete="email" required>
                     <textarea name="message" class="contact-modal__input contact-modal__textarea" placeholder="Votre message" required></textarea>
@@ -285,6 +286,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const defaultSubject = 'Contact via la modale du portfolio';
         let subject = defaultSubject;
+        // Anti-spam : un robot remplit le champ piège, soumet trop vite ou en rafale.
+        const MIN_FILL_MS = 3000;
+        const MIN_INTERVAL_MS = 60000;
+        let openedAt = 0;
+        let lastSentAt = 0;
 
         // Triggers may pre-fill the form via data-contact-subject / data-contact-message.
         const openModal = (trigger) => {
@@ -292,6 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (trigger?.dataset.contactMessage && !form.message.value.trim()) {
                 form.message.value = trigger.dataset.contactMessage;
             }
+            openedAt = Date.now();
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
         };
@@ -314,13 +321,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 status.className = 'form-status form-status--error';
                 return;
             }
+            const now = Date.now();
+            if (form.website.value || now - openedAt < MIN_FILL_MS) {
+                // Robot présumé : on simule un succès sans rien envoyer.
+                status.textContent = 'Message envoyé, merci ! Je reviens vers vous rapidement.';
+                status.className = 'form-status form-status--ok';
+                form.reset();
+                return;
+            }
+            if (now - lastSentAt < MIN_INTERVAL_MS) {
+                status.textContent = 'Merci de patienter une minute avant un nouvel envoi.';
+                status.className = 'form-status form-status--error';
+                return;
+            }
             const ok = await sendContact({
                 name: form.name.value.trim(),
                 email,
                 subject,
-                message
+                message,
+                botcheck: form.website.value
             }, status);
-            if (ok) form.reset();
+            if (ok) { lastSentAt = now; form.reset(); }
         });
 
         // Triggers: any mailto link or element marked data-contact-open opens the modal.
