@@ -163,7 +163,9 @@ function updateLanguage() {
             : new Date(v + '-15T12:00:00').toLocaleDateString(locale, withYear ? { month: 'long', year: 'numeric' } : { month: 'long' });
         const start = el.dataset.eventStart, end = el.dataset.eventEnd;
         const sameYear = end && start.slice(0, 4) === end.slice(0, 4);
-        let txt = end ? `${month(start, !sameYear)} – ${month(end, true)}` : month(start, true);
+        const ONGOING = { fr: 'en cours', en: 'ongoing', es: 'en curso', de: 'laufend', zh: '进行中' };
+        let txt = end === 'present' ? `${month(start, true)} – ${ONGOING[currentLanguage] || ONGOING.fr}`
+            : end ? `${month(start, !sameYear)} – ${month(end, true)}` : month(start, true);
         el.textContent = txt.charAt(0).toUpperCase() + txt.slice(1);
     });
     document.querySelectorAll('[data-translate]').forEach(el => {
