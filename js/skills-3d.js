@@ -50,7 +50,8 @@ function init() {
             <div class="sk3d-bar__main">
                 <div class="sk3d-bar__levels" role="group" aria-label="Choisir un étage"></div>
             </div>
-            <button class="sk3d-bar__side" type="button" aria-label="Vue d'ensemble du bâtiment"><span></span><span></span><span></span></button>
+            <button class="sk3d-bar__side" type="button" aria-label="Menu des niveaux" aria-haspopup="true" aria-expanded="false"><span></span><span></span><span></span></button>
+            <div class="sk3d-menu" role="menu" hidden></div>
         </div>
         <div class="sk3d-grain" aria-hidden="true"></div>
         <aside class="sk3d-panel" aria-label="Projets, expériences et formations liés à la compétence" aria-hidden="true">
@@ -909,6 +910,8 @@ function init() {
             setOpacity(obj, o0 + (opacity - o0) * t);
         }, delay);
     }
+    // Vue d'ensemble : le bâtiment complet occupe l'écran (plus serré sur mobile, écran étroit).
+    const overviewZoom = () => (width < 700 ? 0.95 : 0.66);
     function animateBuilding(y) {
         const y0 = building.position.y;
         return tween(1100, (t) => { building.position.y = y0 + (y - y0) * t; });
@@ -1166,6 +1169,7 @@ function init() {
         b.type = 'button';
         b.textContent = i;
         b.setAttribute('aria-label', `Étage ${i} : ${f.title}`);
+        b.title = f.title;
         b.addEventListener('click', () => selectFloor(i));
         levelsEl.append(b);
         return b;
@@ -1210,9 +1214,36 @@ function init() {
             const t = animateStack(o, 0, 1, 0);
             if (j === top) t.then(() => { if (current < 0) floorObjs.forEach((f, n) => { f.inner.visible = n === top; }); invalidate(); });
         });
-        animateCamera(new THREE.Vector3(0, (floors.length * H) / 2, 0), 0.66, 0.06);
+        animateCamera(new THREE.Vector3(0, (floors.length * H) / 2, 0), overviewZoom(), 0.06);
     }
-    $('.sk3d-bar__side').addEventListener('click', showOverview);
+    // Menu des niveaux : bâtiment complet + chaque étage avec son nom (du haut vers le bas).
+    const menu = $('.sk3d-menu'), menuBtn = $('.sk3d-bar__side');
+    const menuItem = (label, num, active, onPick) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.setAttribute('role', 'menuitem');
+        b.className = 'sk3d-menu__item' + (active ? ' is-active' : '');
+        b.innerHTML = `<span class="sk3d-menu__num">${num}</span><span>${esc(label)}</span>`;
+        b.addEventListener('click', () => { closeMenu(); onPick(); });
+        return b;
+    };
+    function openMenu() {
+        menu.innerHTML = '';
+        menu.append(menuItem('Bâtiment complet', '<i class="fa-solid fa-building" aria-hidden="true"></i>', current < 0, showOverview));
+        for (let i = floors.length - 1; i >= 0; i--) {
+            menu.append(menuItem(floors[i].title, i, current === i, () => selectFloor(i)));
+        }
+        menu.hidden = false;
+        menuBtn.setAttribute('aria-expanded', 'true');
+        menu.querySelector('.is-active, .sk3d-menu__item')?.focus();
+    }
+    function closeMenu() {
+        menu.hidden = true;
+        menuBtn.setAttribute('aria-expanded', 'false');
+    }
+    menuBtn.addEventListener('click', (e) => { e.stopPropagation(); menu.hidden ? openMenu() : closeMenu(); });
+    document.addEventListener('click', (e) => { if (!menu.hidden && !menu.contains(e.target)) closeMenu(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.hidden) { closeMenu(); menuBtn.focus(); } });
 
     // Clic et survol directement sur les zones de la maquette.
     const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
@@ -1256,10 +1287,10 @@ function init() {
     requestAnimationFrame(loop);
     if (/[?&]perf\b/.test(location.search)) window.__sk3dInfo = renderer.info;
 
-    // Arrivée : le bâtiment fermé apparaît, puis l'étage 0 s'ouvre.
+    // Arrivée : le bâtiment complet apparaît.
     setTitle('compétences', `${floors.length} étages · ${floors.reduce((a, f) => a + f.skills.length, 0)} zones`);
-    cam.target.set(0, (floors.length * H) / 2, 0); cam.zoom = 0.6; cam.shift = 0.06;
-    animateCamera(new THREE.Vector3(0, (floors.length * H) / 2, 0), 0.66, 0.06);
+    cam.target.set(0, (floors.length * H) / 2, 0); cam.zoom = overviewZoom() * 0.9; cam.shift = 0.06;
+    animateCamera(new THREE.Vector3(0, (floors.length * H) / 2, 0), overviewZoom(), 0.06);
     root.classList.add('is-ready');
-    setTimeout(() => { if (current === -1) selectFloor(0); }, reduced ? 0 : 1500);
+    // Arrivée : le bâtiment complet est affiché ; on choisit un niveau dans la barre ou le menu.
 }
