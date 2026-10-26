@@ -693,6 +693,10 @@ function init() {
             setOpacity(obj, o0 + (opacity - o0) * t);
         }, delay);
     }
+    function animateBuilding(y) {
+        const y0 = building.position.y;
+        return tween(1100, (t) => { building.position.y = y0 + (y - y0) * t; });
+    }
     function animateCamera(target, zoom, shift) {
         const t0 = cam.target.clone(), z0 = cam.zoom, s0 = cam.shift;
         return tween(1300, (t) => {
@@ -736,7 +740,7 @@ function init() {
         if (current < 0) return;
         const g = floorObjs[current].group;
         for (const p of pins) {
-            v.set(p.zone.x, SLAB + 0.05, p.zone.z).add(OFFSET);
+            v.set(p.zone.x, SLAB + 0.05, p.zone.z).add(building.position);
             v.y += g.position.y;
             v.project(camera);
             p.el.style.setProperty('--x', ((v.x + 1) / 2) * width + 'px');
@@ -788,12 +792,16 @@ function init() {
         levelBtns.forEach((b, n) => b.classList.toggle('is-active', n === i));
         root.classList.add('is-level');
         setTitle(floors[i].title, 'sélectionnez une zone');
+        // Seul l'étage choisi reste : ceux du dessus s'envolent, ceux du dessous s'enfoncent,
+        // en fondu, puis ne sont plus dessinés. Le bâtiment descend pour poser l'étage au sol.
         floorObjs.forEach((o, j) => {
-            o.inner.visible = j >= i;
+            o.inner.visible = true;
             o.zones.forEach(z => z.floor.material.color.copy(z.floor.userData.base));
-            animateStack(o, j > i ? 40 + (j - i) * 6 : 0, j > i ? 0 : 1, j > i ? (j - i) * 60 : 0);
+            const lift = j > i ? 40 + (j - i) * 6 : j < i ? -8 - (i - j) * 4 : 0;
+            animateStack(o, lift, j === i ? 1 : 0, j > i ? (j - i) * 60 : 0);
         });
-        animateCamera(new THREE.Vector3(0, i * H - 0.5, 0), 1.0, 0.1);
+        animateBuilding(-i * H);
+        animateCamera(new THREE.Vector3(0, -0.5, 0), 1.0, 0.1);
         buildPins(i);
     }
 
@@ -806,6 +814,7 @@ function init() {
         setTitle('compétences', `${floors.length} étages · ${floors.reduce((a, f) => a + f.skills.length, 0)} zones`);
         // Pas de toit : l'étage du haut reste ouvert ; ceux du dessous, recouverts, ne sont plus dessinés.
         const top = floorObjs.length - 1;
+        animateBuilding(0);
         floorObjs.forEach((o, j) => {
             o.inner.visible = true;
             const t = animateStack(o, 0, 1, 0);
