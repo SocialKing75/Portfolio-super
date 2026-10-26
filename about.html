@@ -63,29 +63,40 @@
 
     <!-- ========== Main ========== -->
     <main>
-        <section class="section about" id="about">
-            <div class="ab-bg" aria-hidden="true"><span></span><span></span><span></span></div>
-            <div class="about__container container">
+        <!-- Ouverture plein écran -->
+        <section class="ab-open" aria-label="Mon parcours">
+            <div class="ab-open__media">
+                <img src="assets/about-hero-1600.webp" srcset="assets/about-hero-1000.webp 1000w, assets/about-hero-1600.webp 1600w, assets/about-hero-2000.webp 2000w" sizes="100vw" alt="" width="1600" height="960" fetchpriority="high">
+            </div>
+            <div class="ab-open__inner">
+                <p class="ab-open__eyebrow" data-translate="Mon parcours">Mon parcours</p>
+                <h1 class="ab-open__title"><span data-translate="ab-hero-1">Du bâtiment</span> <span class="ab-open__accent" data-translate="ab-hero-2">à l'IA</span></h1>
+            </div>
+            <a class="ab-open__cue" href="#ab-story"><i class="fa-solid fa-arrow-down" aria-hidden="true"></i><span data-translate="ab-scroll">défiler pour explorer</span></a>
+        </section>
 
-                <!-- En-tête dynamique -->
-                <header class="ab-hero">
-                    <p class="ab-hero__eyebrow" data-translate="Mon parcours">Mon parcours</p>
-                    <h1 class="ab-hero__title"><span data-translate="ab-hero-1">Du bâtiment</span> <span class="ab-hero__accent" data-translate="ab-hero-2">à l'IA</span></h1>
-                    <p class="ab-hero__sub" data-translate="ab-hero-sub">Économie de la construction, BIM, gestion de projet puis intelligence artificielle : un parcours construit pas à pas.</p>
-                    <div class="ab-stats">
-                        <div class="ab-stat"><strong data-count="120" data-prefix="+">+120</strong><span data-translate="exp-sadiem-stat">affaires de métrés</span></div>
-                        <div class="ab-stat"><strong data-count="30" data-prefix="≈ ">≈ 30</strong><span data-translate="exp-boreal-stat">chiffrages de chantier</span></div>
-                        <div class="ab-stat"><strong data-count-from=".about__experience .experience__card">4</strong><span data-translate="entreprises">entreprises</span></div>
-                        <div class="ab-stat"><strong data-count-from=".timeline__item">6</strong><span data-translate="formations">formations</span></div>
+        <!-- Texte qui se révèle au défilement -->
+        <section class="ab-story" id="ab-story">
+            <div class="ab-story__sticky">
+                <div class="ab-story__grid">
+                    <p class="ab-story__text" data-translate="ab-story" data-words>Économie de la construction, *BIM*, *gestion de projet* puis *intelligence artificielle* : un parcours construit pas à pas, sur le terrain comme en formation.</p>
+                    <div class="ab-story__stack" aria-hidden="true">
+                        <img src="assets/projects/photo-1503387762-592deb58ef4e-400.webp" alt="" width="400" height="200">
+                        <img src="assets/projects/photo-1460925895917-afdab827c52f-400.webp" alt="" width="400" height="200">
+                        <img src="assets/projects/photo-1485827404703-89b55fcc595e-400.webp" alt="" width="400" height="200">
                     </div>
-                </header>
+                </div>
+                <div class="ab-stats">
+                    <div class="ab-stat"><strong data-count="120" data-prefix="+">+120</strong><span data-translate="exp-sadiem-stat">affaires de métrés</span></div>
+                    <div class="ab-stat"><strong data-count="30" data-prefix="≈ ">≈ 30</strong><span data-translate="exp-boreal-stat">chiffrages de chantier</span></div>
+                    <div class="ab-stat"><strong data-count-from=".about__experience .experience__card">4</strong><span data-translate="entreprises">entreprises</span></div>
+                    <div class="ab-stat"><strong data-count-from=".timeline__item">5</strong><span data-translate="formations">formations</span></div>
+                </div>
+            </div>
+        </section>
 
-                <nav class="ab-nav" aria-label="Sections du parcours">
-                    <a href="#ab-formation" data-translate="Formation">Formation</a>
-                    <a href="#ab-experience" data-translate="Expérience professionnelle">Expérience professionnelle</a>
-                    <a href="#ab-stages" data-translate="Stages">Stages</a>
-                    <a href="#ab-aussi" data-translate="Et aussi">Et aussi</a>
-                </nav>
+        <section class="section about" id="about">
+            <div class="about__container container">
 
                 <!-- Formation -->
                 <div class="about__timeline" id="ab-formation">
@@ -209,47 +220,6 @@
                                     <li data-translate="Formation et accompagnement des utilisateurs à l'adoption de l'outil">Formation et accompagnement des utilisateurs à l'adoption de l'outil</li>
                                 </ul>
                             </div>
-                            <div id="exp-sisco" class="experience__card experience__card--chef">
-                                <span class="experience__period">2020 - 2021</span>
-                                <h5 data-translate="Assistant Chef de projet">Assistant Chef de projet</h5>
-                                <p data-translate="Sisco">Sisco - Vélizy</p>
-                                <div class="experience__tools">
-                                    <span class="experience__tools-label" data-translate="Outils">Outils</span>
-                                    <span>Excel</span>
-                                    <span>VBA</span>
-                                    <span>AutoCAD</span>
-                                    <span>Suite Office</span>
-                                </div>
-                                <ul class="experience__tasks">
-                                    <li data-translate="Réalisation de plans de démolition : tâches, planning, budget">Réalisation de plans de démolition : tâches, planning, budget</li>
-                                    <li data-translate="Création d'un tableau de bord : visualisation optimisée de l'ensemble des matériaux (Macro VBA)">Création d'un tableau de bord : visualisation optimisée de l'ensemble des matériaux (Macro VBA)</li>
-                                    <li data-translate="Elaboration de diagnostics de traitement des déchets">Elaboration de diagnostics de traitement des déchets</li>
-                                    <li data-translate="Respect de la réglementation des produits : non dangereux - dangereux - inertes">Respect de la réglementation des produits : non dangereux - dangereux - inertes</li>
-                                </ul>
-                            </div>
-                            <div id="exp-boreal" class="experience__card experience__card--metreur">
-                                <span class="experience__period">2021 - 2022</span>
-                                <h5 data-translate="Économiste - métreur">Économiste métreur</h5>
-                                <p data-translate="Paris">Boréal - Paris</p>
-                                <p class="experience__stat"><strong>≈ 30</strong> <span data-translate="exp-boreal-stat">chiffrages de chantier</span></p>
-                                <div class="experience__types">
-                                    <span data-translate="Hôtel">Hôtel</span>
-                                    <span data-translate="Logements">Logements</span>
-                                    <span data-translate="Bureaux">Bureaux</span>
-                                </div>
-                                <div class="experience__tools">
-                                    <span class="experience__tools-label" data-translate="Outils">Outils</span>
-                                    <span>Excel</span>
-                                    <span>AutoCAD</span>
-                                    <span>Devisoc</span>
-                                    <span>Suite Office</span>
-                                </div>
-                                <ul class="experience__tasks">
-                                    <li data-translate="Rédaction des devis">Rédaction des devis</li>
-                                    <li data-translate="Négociation avec les fournisseurs">Négociation avec les fournisseurs</li>
-                                    <li data-translate="Elaboration des tableaux de bord : suivi du budget et des KPI">Elaboration des tableaux de bord : suivi du budget et des KPI</li>
-                                </ul>
-                            </div>
                             <div id="exp-sadiem" class="experience__card experience__card--bim">
                                 <span class="experience__period">2022 - 2024</span>
                                 <h5 data-translate="BIM Modeleur">BIM Modeleur</h5>
@@ -286,6 +256,47 @@
                                     <li data-translate="Analyse des besoins du bureau d'études">Analyse des besoins du bureau d'études</li>
                                     <li data-translate="Préparation des données nécessaires (modélisation sous Revit)">Préparation des données nécessaires (modélisation sous Revit)</li>
                                     <li data-translate="Elaboration et automatisation d'un tableau de bord (Macros VBA)">Elaboration et automatisation d'un tableau de bord (Macros VBA)</li>
+                                </ul>
+                            </div>
+                            <div id="exp-boreal" class="experience__card experience__card--metreur">
+                                <span class="experience__period">2021 - 2022</span>
+                                <h5 data-translate="Économiste - métreur">Économiste métreur</h5>
+                                <p data-translate="Paris">Boréal - Paris</p>
+                                <p class="experience__stat"><strong>≈ 30</strong> <span data-translate="exp-boreal-stat">chiffrages de chantier</span></p>
+                                <div class="experience__types">
+                                    <span data-translate="Hôtel">Hôtel</span>
+                                    <span data-translate="Logements">Logements</span>
+                                    <span data-translate="Bureaux">Bureaux</span>
+                                </div>
+                                <div class="experience__tools">
+                                    <span class="experience__tools-label" data-translate="Outils">Outils</span>
+                                    <span>Excel</span>
+                                    <span>AutoCAD</span>
+                                    <span>Devisoc</span>
+                                    <span>Suite Office</span>
+                                </div>
+                                <ul class="experience__tasks">
+                                    <li data-translate="Rédaction des devis">Rédaction des devis</li>
+                                    <li data-translate="Négociation avec les fournisseurs">Négociation avec les fournisseurs</li>
+                                    <li data-translate="Elaboration des tableaux de bord : suivi du budget et des KPI">Elaboration des tableaux de bord : suivi du budget et des KPI</li>
+                                </ul>
+                            </div>
+                            <div id="exp-sisco" class="experience__card experience__card--chef">
+                                <span class="experience__period">2020 - 2021</span>
+                                <h5 data-translate="Assistant Chef de projet">Assistant Chef de projet</h5>
+                                <p data-translate="Sisco">Sisco - Vélizy</p>
+                                <div class="experience__tools">
+                                    <span class="experience__tools-label" data-translate="Outils">Outils</span>
+                                    <span>Excel</span>
+                                    <span>VBA</span>
+                                    <span>AutoCAD</span>
+                                    <span>Suite Office</span>
+                                </div>
+                                <ul class="experience__tasks">
+                                    <li data-translate="Réalisation de plans de démolition : tâches, planning, budget">Réalisation de plans de démolition : tâches, planning, budget</li>
+                                    <li data-translate="Création d'un tableau de bord : visualisation optimisée de l'ensemble des matériaux (Macro VBA)">Création d'un tableau de bord : visualisation optimisée de l'ensemble des matériaux (Macro VBA)</li>
+                                    <li data-translate="Elaboration de diagnostics de traitement des déchets">Elaboration de diagnostics de traitement des déchets</li>
+                                    <li data-translate="Respect de la réglementation des produits : non dangereux - dangereux - inertes">Respect de la réglementation des produits : non dangereux - dangereux - inertes</li>
                                 </ul>
                             </div>
                         </div>
@@ -435,6 +446,20 @@
     <script src="js/translations.js" defer></script>
     <script src="js/main.js?v=2" defer></script>
     <script src="js/animations.js" defer></script>
+    <nav class="ab-dock" aria-label="Sections du parcours">
+        <button class="ab-dock__main" type="button" aria-haspopup="true" aria-expanded="false">
+            <span class="ab-dock__icon"><i class="fa-solid fa-route" aria-hidden="true"></i></span>
+            <span class="ab-dock__label">Mon parcours</span>
+            <span class="ab-dock__burger" aria-hidden="true"><span></span><span></span><span></span></span>
+        </button>
+        <div class="ab-dock__menu" hidden>
+            <a href="#ab-story" data-translate="Mon parcours">Mon parcours</a>
+            <a href="#ab-formation" data-translate="Formation">Formation</a>
+            <a href="#ab-experience" data-translate="Expérience professionnelle">Expérience professionnelle</a>
+            <a href="#ab-stages" data-translate="Stages">Stages</a>
+            <a href="#ab-aussi" data-translate="Et aussi">Et aussi</a>
+        </div>
+    </nav>
     <script src="js/about-dynamic.js" defer></script>
 </body>
 </html>
