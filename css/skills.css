@@ -233,3 +233,273 @@ body.dark-mode .sk-tag { border-color: rgba(255,255,255,0.07); }
 }
 
 .sk-tag:hover i { color: white; }
+
+/* ========== Maquette 3D ========== */
+.sk3d {
+    --sk3d-bg: hsl(36, 60%, 97%);
+    --sk3d-slab: hsl(20, 18%, 92%);
+    --sk3d-wall: hsl(20, 12%, 86%);
+    --sk3d-wall-dark: hsl(20, 10%, 80%);
+    --sk3d-roof: hsl(20, 20%, 94%);
+    --sk3d-room: hsl(20, 30%, 97%);
+    --sk3d-room-line: hsl(20, 14%, 84%);
+    --sk3d-shadow: hsla(30, 20%, 40%, 0.22);
+    --sk3d-ink: hsl(0, 0%, 10%);
+    --sk3d-chip: hsl(0, 0%, 100%);
+    position: relative;
+    margin: 0 0 3.5rem;
+    padding: 1.5rem 1.5rem 1.25rem;
+    border-radius: 1.5rem;
+    background: var(--sk3d-bg);
+    overflow: hidden;
+    user-select: none;
+}
+body.dark-mode .sk3d {
+    --sk3d-bg: hsl(0, 0%, 12%);
+    --sk3d-slab: hsl(0, 0%, 24%);
+    --sk3d-wall: hsl(0, 0%, 30%);
+    --sk3d-wall-dark: hsl(0, 0%, 22%);
+    --sk3d-roof: hsl(0, 0%, 34%);
+    --sk3d-room: hsl(0, 0%, 28%);
+    --sk3d-room-line: hsl(0, 0%, 38%);
+    --sk3d-shadow: hsla(0, 0%, 0%, 0.45);
+    --sk3d-ink: hsl(0, 0%, 95%);
+    --sk3d-chip: hsl(0, 0%, 18%);
+}
+
+.sk3d-info {
+    position: absolute;
+    top: 1.75rem;
+    left: 1.75rem;
+    z-index: 2;
+    max-width: 260px;
+    pointer-events: none;
+}
+.sk3d-info__title { font-size: clamp(1.6rem, 3.4vw, 2.6rem); line-height: 1.05; color: var(--sk3d-ink); margin-bottom: .5rem; }
+.sk3d-info__sub { font-size: .9rem; color: var(--text-color); }
+.sk3d-info__card {
+    margin-top: 1rem;
+    padding: .9rem 1rem;
+    border-radius: 1rem;
+    background: var(--sk3d-chip);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
+    animation: sk3dPop .35s ease;
+}
+.sk3d-info__name { font-weight: 600; color: var(--sk3d-ink); }
+.sk3d-info__level { font-size: .85rem; color: var(--first-color); margin: .15rem 0 .5rem; }
+.sk3d-info__bar { display: flex; gap: 4px; }
+.sk3d-info__bar span { flex: 1; height: 6px; border-radius: 3px; background: var(--sk3d-room-line); }
+.sk3d-info__bar span.on { background: var(--first-color); }
+
+.sk3d-viewport { position: relative; height: 660px; overflow: hidden; cursor: grab; touch-action: pan-y; }
+.sk3d.is-dragging .sk3d-viewport { cursor: grabbing; }
+
+.sk3d-stage {
+    position: absolute;
+    inset: 0;
+    --rx: 58deg; --rz: -38deg; --scale: 1; --focus: 0px;
+    transform: translateY(calc(var(--focus) * var(--scale)));
+    transition: transform .8s cubic-bezier(.65, 0, .25, 1);
+}
+.sk3d-scene {
+    position: absolute;
+    left: 50%;
+    top: 64%;
+    margin-left: -300px;
+    margin-top: -170px;
+    transform-style: preserve-3d;
+    transform: scale(var(--scale)) rotateX(var(--rx)) rotateZ(var(--rz));
+}
+.sk3d-scene, .sk3d-scene * { transform-style: preserve-3d; }
+
+.sk3d-shadow {
+    position: absolute;
+    inset: 0;
+    background: var(--sk3d-shadow);
+    filter: blur(14px);
+    transform: translate(-46px, 46px) scale(1.04);
+}
+
+.sk3d-floor {
+    position: absolute;
+    left: 0; top: 0;
+    transform: translateZ(var(--z));
+    transition: transform .8s cubic-bezier(.65, 0, .25, 1);
+    cursor: pointer;
+}
+.sk3d-floor.is-above { transform: translateZ(calc(var(--z) + 520px)); pointer-events: none; }
+.sk3d-floor.is-active { cursor: default; }
+
+.sk3d-box { position: absolute; left: 0; top: 0; }
+.sk3d-face { position: absolute; left: 0; top: 0; transform-origin: 0 0; backface-visibility: visible; transition: opacity .6s ease, background-color .3s ease; }
+.sk3d-slab { position: absolute; inset: 0; background: var(--sk3d-slab); }
+.sk3d-shell > .sk3d-face--front { background: var(--sk3d-wall); border-top: 2px solid var(--sk3d-roof); }
+.sk3d-shell > .sk3d-face--left { background: var(--sk3d-wall-dark); border-top: 2px solid var(--sk3d-roof); }
+.sk3d-shell > .sk3d-face--top { background: var(--sk3d-roof); box-shadow: inset 0 0 0 1px var(--sk3d-room-line); }
+.sk3d-wall { background: var(--sk3d-wall-dark); opacity: 0; }
+/* La dalle d'un étage est confondue avec le toit du précédent : on ne l'affiche qu'à l'étage ouvert, légèrement surélevée. */
+.sk3d-floor:not(.is-active) .sk3d-slab { visibility: hidden; }
+.sk3d-floor.is-active .sk3d-slab { transform: translateZ(1px); }
+
+.sk3d-floor.is-above .sk3d-face,
+.sk3d-floor.is-above .sk3d-slab,
+.sk3d-floor.is-above .sk3d-floor__label { opacity: 0; transition: opacity .4s ease; }
+
+/* Étage ouvert : on retire le toit et les murs avant, on montre les murs du fond. */
+.sk3d-floor.is-active > .sk3d-shell > .sk3d-face--top { opacity: 0; pointer-events: none; }
+.sk3d-floor.is-active > .sk3d-shell > .sk3d-face--front,
+.sk3d-floor.is-active > .sk3d-shell > .sk3d-face--left { opacity: .35; }
+.sk3d-floor.is-active .sk3d-wall { opacity: 1; }
+
+.sk3d-floor:not(.is-active):hover > .sk3d-shell > .sk3d-face--front { background: hsl(14, 70%, 80%); }
+body.dark-mode .sk3d-floor:not(.is-active):hover > .sk3d-shell > .sk3d-face--front { background: hsl(14, 40%, 32%); }
+
+.sk3d-floor__label {
+    position: absolute;
+    left: 16px;
+    top: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    transform: scaleY(-1);
+    font-size: 15px;
+    color: var(--sk3d-ink);
+    opacity: .5;
+    white-space: nowrap;
+    transition: opacity .4s ease;
+}
+.sk3d-floor__label b { font-size: 22px; }
+.sk3d-floor.is-active .sk3d-floor__label { opacity: 0; }
+
+.sk3d-room {
+    position: absolute;
+    transform: translateZ(2px);
+    background: var(--sk3d-room);
+    box-shadow: inset 0 0 0 2px var(--sk3d-room-line);
+    opacity: 0;
+    transition: opacity .5s ease .25s, background-color .3s ease;
+    pointer-events: none;
+}
+.sk3d-floor.is-active .sk3d-room { opacity: 1; pointer-events: auto; cursor: pointer; }
+.sk3d-room:hover { background: hsl(14, 100%, 95%); }
+.sk3d-room.is-selected { background: hsl(14, 100%, 90%); }
+body.dark-mode .sk3d-room:hover { background: hsl(14, 30%, 26%); }
+body.dark-mode .sk3d-room.is-selected { background: hsl(14, 40%, 30%); }
+
+.sk3d-block .sk3d-face--front { background: hsl(14, 80%, 62%); }
+.sk3d-block .sk3d-face--left { background: hsl(14, 80%, 52%); }
+.sk3d-block .sk3d-face--top { background: hsl(14, 95%, 72%); }
+.sk3d-block--3 .sk3d-face--front { background: hsl(14, 90%, 52%); }
+.sk3d-block--3 .sk3d-face--left { background: hsl(14, 90%, 42%); }
+.sk3d-block--3 .sk3d-face--top { background: hsl(14, 98%, 60%); }
+.sk3d-block--1 .sk3d-face--front { background: hsl(24, 70%, 74%); }
+.sk3d-block--1 .sk3d-face--left { background: hsl(24, 60%, 66%); }
+.sk3d-block--1 .sk3d-face--top { background: hsl(24, 90%, 84%); }
+
+/* Repère : toujours face à la caméra. */
+.sk3d-pin {
+    position: absolute;
+    width: 0; height: 0;
+    padding: 0; border: 0; background: none;
+    transform-origin: 0 0;
+    transform: translateZ(var(--lift)) rotateZ(calc(var(--rz) * -1)) rotateX(calc(var(--rx) * -1));
+    cursor: pointer;
+}
+.sk3d-pin__inner {
+    position: absolute;
+    transform-origin: 50% 100%;
+    left: 0; bottom: 0;
+    width: max-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translateX(-50%) translateY(14px) scale(.6);
+    opacity: 0;
+    transition: opacity .35s ease, transform .45s cubic-bezier(.3, 1.5, .5, 1);
+    pointer-events: none;
+}
+.sk3d-floor.is-active .sk3d-pin__inner { opacity: 1; transform: translateX(-50%) translateY(0) scale(var(--pin-scale, 1)); pointer-events: auto; transition-delay: .45s; }
+.sk3d-pin__icon {
+    display: grid;
+    place-items: center;
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(160deg, hsl(14, 100%, 94%), hsl(14, 100%, 86%));
+    color: hsl(14, 90%, 40%);
+    font-size: 17px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .12);
+    transition: transform .2s ease, background .2s ease, color .2s ease;
+}
+.sk3d-pin__label {
+    margin-top: 5px;
+    max-width: 130px;
+    font-size: 11.5px;
+    font-weight: 600;
+    line-height: 1.15;
+    text-align: center;
+    color: var(--sk3d-ink);
+    text-shadow: 0 0 6px var(--sk3d-bg), 0 0 3px var(--sk3d-bg);
+}
+.sk3d-pin__stem { width: 2px; height: var(--stem, 34px); margin-top: 4px; background: var(--sk3d-ink); }
+.sk3d-pin__dot {
+    width: 14px; height: 14px;
+    margin-bottom: -7px;
+    border-radius: 50%;
+    border: 2px solid var(--first-color);
+    background: radial-gradient(circle, var(--first-color) 0 2px, var(--sk3d-chip) 3px);
+}
+.sk3d-pin:hover .sk3d-pin__icon,
+.sk3d-room.is-selected .sk3d-pin__icon { transform: translateY(-4px); background: var(--first-color); color: #fff; }
+
+.sk3d-controls {
+    display: flex;
+    justify-content: center;
+    gap: .5rem;
+    margin-top: .25rem;
+}
+.sk3d-controls__floors {
+    display: flex;
+    gap: .35rem;
+    padding: .35rem;
+    border-radius: 999px;
+    background: hsl(0, 0%, 20%);
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.sk3d-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .55rem .9rem;
+    border: 0;
+    border-radius: 999px;
+    background: hsl(0, 0%, 30%);
+    color: hsl(0, 0%, 90%);
+    font: inherit;
+    font-size: .8rem;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background .25s ease, color .25s ease;
+}
+.sk3d-btn:hover { background: hsl(0, 0%, 38%); }
+.sk3d-btn.is-active { background: var(--first-color); color: #fff; }
+.sk3d-btn--overview { padding: .55rem .95rem; background: hsl(0, 0%, 20%); }
+
+.sk3d-hint { margin-top: .75rem; text-align: center; font-size: .78rem; color: var(--text-color-light); }
+
+@keyframes sk3dPop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+@media (max-width: 768px) {
+    .sk3d { padding: 1rem .75rem; }
+    .sk3d-info { position: static; max-width: none; margin-bottom: .5rem; }
+    .sk3d-btn span { display: none; }
+    .sk3d-btn { padding: .6rem .75rem; }
+    /* Sur mobile, seule l'étiquette de la compétence choisie s'affiche. */
+    .sk3d-pin__label { display: none; }
+    .sk3d-room.is-selected .sk3d-pin__label { display: block; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sk3d *, .sk3d *::before, .sk3d *::after { transition: none !important; animation: none !important; }
+}
