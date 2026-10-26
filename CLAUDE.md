@@ -14,6 +14,7 @@
 
 ## Projets (`projects.html`)
 
-- Chaque carte porte, entre l'étiquette et le titre, `<p class="project__meta">` avec la date de
-  l'événement (`time.project__event` + `data-event-start`/`data-event-end`, si elle est connue) et
-  la date de publication (`time.project__date`, jour de l'ajout). Ne jamais inventer une date d'événement.
+- Chaque carte porte, entre l'étiquette et le titre, `<p class="project__meta">` avec **uniquement**
+  la date de l'événement (`time.project__event` + `data-event-start`/`data-event-end` ;
+  `data-event-end="present"` = en cours). **Pas de date de publication sur les projets.**
+  Sans date d'événement connue, pas de `project__meta`. Ne jamais inventer une date : la demander.

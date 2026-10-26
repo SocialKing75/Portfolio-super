@@ -1015,7 +1015,6 @@ function init() {
                 company: c.querySelector('.project__company')?.textContent.trim() || '',
                 image: c.querySelector('.project__image')?.getAttribute('src') || '',
                 event: c.querySelector('.project__event')?.textContent.trim() || '',
-                published: c.querySelector('.project__date')?.getAttribute('datetime') || '',
                 tags: [...c.querySelectorAll('.tech-tag')].map(t => t.textContent.trim()),
                 haystack: [c.querySelector('.project__title'), ...c.querySelectorAll('.tech-tag, .project__detail span')]
                     .map(e => e?.textContent || '').join(' | ').toLowerCase()
@@ -1065,13 +1064,12 @@ function init() {
                 <i class="fa-solid fa-arrow-right sk3d-proj__go" aria-hidden="true"></i>
             </a>`).join('');
         const projHtml = projects.map(p => {
-            const pub = p.published ? new Date(p.published + 'T12:00:00').toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' }) : '';
             return `<a class="sk3d-proj" href="projects.html#project-${p.id}">
                 <img class="sk3d-proj__img" src="${esc(p.image)}" alt="" loading="lazy" width="96" height="48">
                 <span class="sk3d-proj__body">
                     <span class="sk3d-proj__company">${esc(p.company)}</span>
                     <span class="sk3d-proj__title">${esc(p.title)}</span>
-                    <span class="sk3d-proj__meta">${[p.event, pub && 'Publié le ' + pub].filter(Boolean).map(esc).join(' · ')}</span>
+                    <span class="sk3d-proj__meta">${esc(p.event)}</span>
                 </span>
                 <i class="fa-solid fa-arrow-right sk3d-proj__go" aria-hidden="true"></i>
             </a>`;
