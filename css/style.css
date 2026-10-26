@@ -839,6 +839,7 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible {
 .timeline__item--licence .timeline__year { background: hsl(265, 70%, 58%); }
 .timeline__item--bts .timeline__year { background: hsl(200, 85%, 48%); }
 .timeline__item--bacpro .timeline__year { background: hsl(160, 60%, 40%); }
+.timeline__item--42 .timeline__year { background: hsl(0, 0%, 12%); }
 .timeline__item--licence .timeline__link { color: hsl(265, 70%, 58%); }
 .timeline__item--bts .timeline__link { color: hsl(200, 85%, 48%); }
 

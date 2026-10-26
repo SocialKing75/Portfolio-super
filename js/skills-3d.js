@@ -982,7 +982,7 @@ function init() {
         'HTML / CSS / JS': ['html', 'css', 'javascript', 'next.js', 'react', 'typescript', 'pwa'],
         'Python': ['python', 'streamlit', 'fastapi'],
         'VBA': ['vba', 'macro'],
-        'C': [],
+        'C': ['c'],
         'Excel': ['excel'],
         'PowerBI': ['powerbi', 'power bi'],
         'Suite Microsoft 365': ['suite office', 'microsoft 365', 'office 365', 'word', 'powerpoint', 'outlook', 'teams'],
