@@ -486,6 +486,35 @@ body.dark-mode .header { background: rgba(24, 22, 20, .88); backdrop-filter: blu
 .sk3d-exp:hover { border-color: #ffb48a; transform: translateX(-3px); box-shadow: 0 8px 20px rgba(252, 61, 3, .12); }
 .sk3d-exp:hover .sk3d-proj__go { color: #fc3d03; transform: translateX(2px); }
 .sk3d-exp__icon { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 10px; background: #fff0e8; color: #fc3d03; font-size: 1rem; }
+button.sk3d-proj, button.sk3d-exp { width: 100%; font: inherit; text-align: left; cursor: pointer; }
+.sk3d-panel__back {
+    align-self: flex-start;
+    display: inline-flex; align-items: center; gap: .45rem;
+    padding: .4rem .75rem; border: 0; border-radius: 999px;
+    background: #f1ece8; color: #111; font: 500 .8rem 'Outfit', sans-serif; cursor: pointer;
+    transition: background .25s ease, color .25s ease;
+}
+.sk3d-panel__back:hover { background: #fc3d03; color: #fff; }
+.sk3d-detail { display: flex; flex-direction: column; gap: .55rem; padding: .25rem .25rem 1rem; animation: sk3dCard .35s ease both; color: #3a3735; font-size: .86rem; line-height: 1.5; }
+.sk3d-detail__img { width: 100%; aspect-ratio: 2 / 1; object-fit: cover; border-radius: 12px; background: #f1ece8; }
+.sk3d-detail__title { font-size: 1.15rem; font-weight: 700; color: #000; line-height: 1.2; }
+.sk3d-detail__date { margin-top: -.3rem; font-size: .78rem; font-weight: 600; color: #fc3d03; }
+.sk3d-detail__lead { color: #111; }
+.sk3d-detail__block { padding-top: .55rem; border-top: 1px solid #efe8e3; }
+.sk3d-detail__block h5 { margin-bottom: .25rem; font-size: .7rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: #8b8885; }
+.sk3d-detail__block ul, .sk3d-detail__exp ul { padding-left: 1.1rem; margin: 0; }
+.sk3d-detail__block li, .sk3d-detail__exp li { margin-bottom: .2rem; }
+.sk3d-detail .modal__stack { list-style: none; padding: 0; }
+.sk3d-detail .modal__stack li { display: grid; grid-template-columns: 7rem 1fr; gap: .5rem; }
+.sk3d-detail__tags, .sk3d-detail .experience__types, .sk3d-detail .experience__tools { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; margin: .2rem 0 .4rem; }
+.sk3d-detail__tags span, .sk3d-detail .experience__tools span:not(.experience__tools-label) { padding: .15rem .55rem; border-radius: 1rem; font-size: .72rem; font-weight: 600; color: #111; border: 1px solid #e6dfda; }
+.sk3d-detail .experience__tools-label { font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #8b8885; }
+.sk3d-detail .experience__types span { padding: .15rem .55rem; border-radius: 1rem; font-size: .72rem; color: #fc3d03; background: #fff0e8; }
+.sk3d-detail .experience__stat { display: flex; align-items: baseline; gap: .4rem; }
+.sk3d-detail .experience__stat strong { font-size: 1.5rem; color: #fc3d03; }
+.sk3d-detail__exp { display: flex; flex-direction: column; gap: .5rem; }
+.sk3d-detail__exp p { margin: 0; }
+.sk3d-detail__link { align-self: flex-start; margin-top: .3rem; color: #fc3d03; font-weight: 600; text-decoration: underline; }
 .sk3d-panel__empty { padding: 1rem .5rem; color: #8b8885; font-size: .9rem; }
 .sk3d-proj {
     display: flex;

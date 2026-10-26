@@ -1012,8 +1012,10 @@ function init() {
     function loadProjects() {
         projectsPromise ||= fetch('projects.html')
             .then(r => (r.ok ? r.text() : ''))
-            .then(html => [...new DOMParser().parseFromString(html, 'text/html').querySelectorAll('.project__card')].map(c => ({
+            .then(html => new DOMParser().parseFromString(html, 'text/html'))
+            .then(doc => [...doc.querySelectorAll('.project__card')].map(c => ({
                 id: c.dataset.project,
+                modal: doc.getElementById('modal-' + c.dataset.project),
                 category: c.dataset.category,
                 title: c.querySelector('.project__title')?.textContent.trim() || '',
                 company: c.querySelector('.project__company')?.textContent.trim() || '',
@@ -1033,6 +1035,7 @@ function init() {
             .then(r => (r.ok ? r.text() : ''))
             .then(html => [...new DOMParser().parseFromString(html, 'text/html').querySelectorAll('[id].experience__card, [id].timeline__item, [id].blog-card')].map(c => ({
                 id: c.id,
+                node: c,
                 school: c.classList.contains('timeline__item'),
                 hobby: c.classList.contains('blog-card'),
                 title: c.querySelector('h5, h4')?.textContent.trim() || '',
@@ -1060,29 +1063,82 @@ function init() {
         const exps = allExps.filter(e => keywords.some(k => matches(e.haystack, k)));
         if ($('.sk3d-panel__title').textContent !== skill.name) return;
         const locale = document.documentElement.lang || 'fr';
-        const expHtml = exps.map(e => `<a class="sk3d-exp" href="about.html#${e.id}">
+        const expHtml = exps.map((e, n) => `<button type="button" class="sk3d-exp" data-exp="${n}">
                 <span class="sk3d-exp__icon"><i class="fa-solid ${e.hobby ? ({ colonies: 'fa-campground', contenu: 'fa-clapperboard' }[e.id] || 'fa-video') : e.school ? 'fa-graduation-cap' : 'fa-briefcase'}" aria-hidden="true"></i></span>
                 <span class="sk3d-proj__body">
                     <span class="sk3d-proj__title">${esc(e.title)}</span>
                     <span class="sk3d-proj__meta">${esc([e.org, e.period].filter(Boolean).join(' · '))}</span>
                 </span>
-                <i class="fa-solid fa-arrow-right sk3d-proj__go" aria-hidden="true"></i>
-            </a>`).join('');
-        const projHtml = projects.map(p => {
-            return `<a class="sk3d-proj" href="projects.html#project-${p.id}">
+                <i class="fa-solid fa-chevron-right sk3d-proj__go" aria-hidden="true"></i>
+            </button>`).join('');
+        const projHtml = projects.map((p, n) => {
+            return `<button type="button" class="sk3d-proj" data-proj="${n}">
                 <img class="sk3d-proj__img" src="${esc(p.image)}" alt="" loading="lazy" width="96" height="48">
                 <span class="sk3d-proj__body">
                     <span class="sk3d-proj__company">${esc(p.company)}</span>
                     <span class="sk3d-proj__title">${esc(p.title)}</span>
                     <span class="sk3d-proj__meta">${esc(p.event)}</span>
                 </span>
-                <i class="fa-solid fa-arrow-right sk3d-proj__go" aria-hidden="true"></i>
-            </a>`;
+                <i class="fa-solid fa-chevron-right sk3d-proj__go" aria-hidden="true"></i>
+            </button>`;
         }).join('');
-        panelList.innerHTML =
+        const listHtml =
             `<p class="sk3d-panel__section">Projets <span>${projects.length}</span></p>` +
             (projHtml || '<p class="sk3d-panel__empty">Aucun projet lié pour l\'instant.</p>') +
             (exps.length ? `<p class="sk3d-panel__section">Expériences &amp; formations <span>${exps.length}</span></p>${expHtml}` : '');
+        const showList = () => {
+            panelList.innerHTML = listHtml;
+            panelList.scrollTop = 0;
+            panelList.querySelectorAll('[data-proj]').forEach(b => b.addEventListener('click', () => showDetail(projectDetail(projects[+b.dataset.proj]))));
+            panelList.querySelectorAll('[data-exp]').forEach(b => b.addEventListener('click', () => showDetail(expDetail(exps[+b.dataset.exp]))));
+        };
+        // Le détail s'affiche dans le panneau, sans quitter la page.
+        const showDetail = (html) => {
+            panelList.innerHTML = `<button type="button" class="sk3d-panel__back"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Retour à la liste</button>
+                <article class="sk3d-detail">${html}</article>`;
+            panelList.scrollTop = 0;
+            panelList.querySelector('.sk3d-panel__back').addEventListener('click', showList);
+            panelList.querySelector('.sk3d-panel__back').focus();
+        };
+        showList();
+    }
+
+    // Contenu d'origine (fiche projet ou carte de parcours), sans attributs de traduction ni identifiants.
+    const clean = (node) => {
+        const n = node.cloneNode(true);
+        n.querySelectorAll('[id]').forEach(e => e.removeAttribute('id'));
+        n.querySelectorAll('a[href]').forEach(a => {
+            if (/^https?:/.test(a.getAttribute('href'))) { a.target = '_blank'; a.rel = 'noopener'; }
+            else a.remove();
+        });
+        return n.innerHTML;
+    };
+    function projectDetail(p) {
+        const m = p.modal?.querySelector('.modal__body');
+        const img = p.modal?.querySelector('.modal__image')?.getAttribute('data-src') || p.image;
+        const details = m ? [...m.querySelectorAll('.modal__detail')].map(d =>
+            `<section class="sk3d-detail__block"><h5>${esc(d.querySelector('h4')?.textContent || '')}</h5>${clean(d).replace(/<h4[^>]*>.*?<\/h4>/s, '')}</section>`).join('') : '';
+        const tags = (m ? [...m.querySelectorAll('.modal__tech .tech-tag')] : []).map(t => `<span>${esc(t.textContent)}</span>`).join('');
+        const link = m?.querySelector('a.project__link[href^="http"]');
+        return `<img class="sk3d-detail__img" src="${esc(img)}" alt="" loading="lazy">
+            <p class="sk3d-proj__company">${esc(p.company)}</p>
+            <h4 class="sk3d-detail__title">${esc(p.title)}</h4>
+            ${p.event ? `<p class="sk3d-detail__date">${esc(p.event)}</p>` : ''}
+            ${m?.querySelector('.modal__description') ? `<p class="sk3d-detail__lead">${esc(m.querySelector('.modal__description').textContent)}</p>` : ''}
+            ${details}
+            ${tags ? `<div class="sk3d-detail__tags">${tags}</div>` : ''}
+            ${link ? `<a class="sk3d-detail__link" href="${esc(link.href)}" target="_blank" rel="noopener">${esc(link.textContent.trim())} <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>` : ''}`;
+    }
+    function expDetail(e) {
+        const c = e.node;
+        const part = (sel) => [...c.querySelectorAll(sel)].map(n => n.outerHTML).join('');
+        const tmp = document.createElement('div');
+        tmp.innerHTML = part('.blog-card__intro, .blog-card__uses, .experience__stat, .experience__types, .experience__tools, .experience__tasks')
+            + (c.querySelector('.blog-card__details') ? [...c.querySelector('.blog-card__details').children].filter(n => n.tagName !== 'SUMMARY').map(n => n.outerHTML).join('') : '');
+        return `<p class="sk3d-proj__company">${esc(e.hobby ? 'Et aussi' : e.school ? 'Formation' : 'Expérience')}</p>
+            <h4 class="sk3d-detail__title">${esc(e.title)}</h4>
+            <p class="sk3d-detail__date">${esc([e.org !== 'Et aussi' ? e.org : '', e.period].filter(Boolean).join(' · '))}</p>
+            <div class="sk3d-detail__exp">${clean(tmp)}</div>`;
     }
     function closePanel() {
         panel.classList.remove('is-open');
