@@ -64,6 +64,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h3 class="xs__name">${[...org].map((c, k) => `<span class="ch" style="--k:${k}">${c === ' ' ? '&nbsp;' : c}</span>`).join('')}</h3>
                 <p class="xs__role">${role}</p>
             </div>`;
+        // Texte de l'entreprise : chiffres, types, outils, soft skills et missions.
+        const panel = document.createElement('div');
+        panel.className = 'xs__panel';
+        const side = document.createElement('div');
+        side.className = 'xs__panel-side';
+        card.querySelectorAll(':scope > .experience__stat, :scope > .experience__types, :scope > .experience__tools').forEach(el => side.append(el.cloneNode(true)));
+        const tasks = card.querySelector(':scope > .experience__tasks')?.cloneNode(true);
+        if (side.children.length) panel.append(side);
+        if (tasks) panel.append(tasks);
+        layer.querySelector('.xs__head').after(panel);
         sticky.append(layer);
         card.hidden = true;
         return { card, layer, org, photos: [...layer.querySelectorAll('.xs__photos img')], chars: [...layer.querySelectorAll('.ch')] };
@@ -75,7 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const dots = document.createElement('div');
     dots.className = 'xs__dots';
     dots.innerHTML = layers.map(() => '<span></span>').join('');
-    sticky.append(cta, dots);
+    // Le texte est affiché dans chaque écran : pas de bouton « Voir le détail ».
+    sticky.append(dots);
     if (cards.length) {
         cards[0].parentElement.after(stage);
         document.body.append(sheet);
