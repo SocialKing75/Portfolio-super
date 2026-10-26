@@ -75,7 +75,9 @@ function init() {
     // ---------------------------------------------------------------- Scène
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     // Résolution plafonnée : l'occlusion ambiante est coûteuse sur les écrans très denses.
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth < 700 ? 1.25 : 1.5));
+    // Téléphones et tablettes : rendu allégé (pas d'occlusion ambiante, résolution et ombre réduites).
+    const LITE = matchMedia('(pointer: coarse), (max-width: 768px)').matches;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, LITE ? 1.25 : 1.5));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.NoToneMapping;
     renderer.shadowMap.enabled = true;
@@ -97,7 +99,7 @@ function init() {
     const sun = new THREE.DirectionalLight(0xfff8f0, 1.35);
     sun.position.set(22, 26, -30);
     sun.castShadow = true;
-    sun.shadow.mapSize.set(2048, 2048);
+    sun.shadow.mapSize.set(LITE ? 1024 : 2048, LITE ? 1024 : 2048);
     Object.assign(sun.shadow.camera, { left: -60, right: 60, top: 60, bottom: -60, near: 1, far: 200 });
     sun.shadow.bias = -0.0004;
     sun.shadow.normalBias = 0.03;
@@ -598,26 +600,20 @@ function init() {
         return { group: g, inner, mats: [...list], zones, walkers: zoneWalkers, lift: 0, opacity: 1 };
     });
 
-    // Toit (et acrotère) : s'envole avec les étages supérieurs.
-    const roofMats = makeMaterials();
-    const roof = new THREE.Group();
-    roof.position.y = floors.length * H;
-    roof.add(mesh(SLAB_GEO, roofMats.slab));
-    FOOT.forEach((p, k) => roof.add(wallBetween(p, FOOT[(k + 1) % FOOT.length], 0.45, WALL_T, roofMats.wall)));
-    bake(roof, () => false);
-    building.add(roof);
-    const roofObj = { group: roof, mats: Object.values(roofMats), lift: 0, opacity: 1 };
 
     // ---------------------------------------------------------------- Post-traitement
-    const composer = new EffectComposer(renderer);
-    composer.addPass(new RenderPass(scene, camera));
-    const ao = new GTAOPass(scene, camera, 1, 1);
-    ao.output = GTAOPass.OUTPUT.Default;
-    ao.blendIntensity = 1;
-    ao.updateGtaoMaterial({ radius: 0.9, distanceExponent: 1.4, thickness: 1.2, scale: 1, samples: 12 });
-    ao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 8 });
-    composer.addPass(ao);
-    composer.addPass(new OutputPass());
+    let composer = null, ao = null;
+    if (!LITE) {
+        composer = new EffectComposer(renderer);
+        composer.addPass(new RenderPass(scene, camera));
+        ao = new GTAOPass(scene, camera, 1, 1);
+        ao.output = GTAOPass.OUTPUT.Default;
+        ao.blendIntensity = 1;
+        ao.updateGtaoMaterial({ radius: 0.9, distanceExponent: 1.4, thickness: 1.2, scale: 1, samples: 12 });
+        ao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 8 });
+        composer.addPass(ao);
+        composer.addPass(new OutputPass());
+    }
 
     // ---------------------------------------------------------------- Caméra et rendu
     let width = 1, height = 1, dirty = true;
@@ -642,8 +638,10 @@ function init() {
         const r = root.getBoundingClientRect();
         width = Math.max(1, r.width); height = Math.max(1, r.height);
         renderer.setSize(width, height);
-        composer.setSize(width, height);
-        ao.setSize(width * renderer.getPixelRatio(), height * renderer.getPixelRatio());
+        if (composer) {
+            composer.setSize(width, height);
+            ao.setSize(width * renderer.getPixelRatio(), height * renderer.getPixelRatio());
+        }
         invalidate();
     }
     new ResizeObserver(resize).observe(root);
@@ -685,7 +683,6 @@ function init() {
         obj.group.visible = o > 0.001;
     }
     floorObjs.forEach(o => o.mats.forEach(m => { m.userData.baseTransparent = m.transparent; m.userData.noDepth = !m.depthWrite; }));
-    roofObj.mats.forEach(m => { m.userData.baseTransparent = m.transparent; m.userData.noDepth = !m.depthWrite; });
 
     function animateStack(obj, lift, opacity, delay) {
         const l0 = obj.lift, o0 = obj.opacity, y0 = obj.group.position.y - l0;
@@ -796,7 +793,6 @@ function init() {
             o.zones.forEach(z => z.floor.material.color.copy(z.floor.userData.base));
             animateStack(o, j > i ? 40 + (j - i) * 6 : 0, j > i ? 0 : 1, j > i ? (j - i) * 60 : 0);
         });
-        animateStack(roofObj, 46 + (floors.length - i) * 6, 0, 0);
         animateCamera(new THREE.Vector3(0, i * H - 0.5, 0), 1.0, 0.1);
         buildPins(i);
     }
@@ -808,9 +804,13 @@ function init() {
         levelBtns.forEach(b => b.classList.remove('is-active'));
         root.classList.remove('is-level');
         setTitle('compétences', `${floors.length} étages · ${floors.reduce((a, f) => a + f.skills.length, 0)} zones`);
-        floorObjs.forEach(o => { o.inner.visible = true; animateStack(o, 0, 1, 0); });
-        // Une fois le toit reposé, les intérieurs sont invisibles : on ne les dessine plus.
-        animateStack(roofObj, 0, 1, 0).then(() => { if (current < 0) floorObjs.forEach(o => { o.inner.visible = false; }); invalidate(); });
+        // Pas de toit : l'étage du haut reste ouvert ; ceux du dessous, recouverts, ne sont plus dessinés.
+        const top = floorObjs.length - 1;
+        floorObjs.forEach((o, j) => {
+            o.inner.visible = true;
+            const t = animateStack(o, 0, 1, 0);
+            if (j === top) t.then(() => { if (current < 0) floorObjs.forEach((f, n) => { f.inner.visible = n === top; }); invalidate(); });
+        });
         animateCamera(new THREE.Vector3(0, (floors.length * H) / 2, 0), 0.66, 0.06);
     }
     $('.sk3d-bar__side').addEventListener('click', showOverview);
@@ -841,7 +841,7 @@ function init() {
         requestAnimationFrame(loop);
         const animating = stepTweens(now);
         let walking = false;
-        if (current >= 0 && !reduced && !document.hidden && now - lastWalk > 40) {
+        if (current >= 0 && !reduced && !document.hidden && now - lastWalk > (LITE ? 50 : 40)) {
             const dtw = Math.min(0.1, (now - lastWalk) / 1000);
             lastWalk = now;
             floorObjs[current].walkers.forEach(w => stepWalker(w, dtw));
@@ -850,7 +850,7 @@ function init() {
         if (!onScreen || (!animating && !dirty && !walking)) return;
         if (animating || dirty) renderer.shadowMap.needsUpdate = true;
         updateCamera();
-        composer.render();
+        if (composer) composer.render(); else renderer.render(scene, camera);
         placePins();
         dirty = false;
     }
