@@ -924,8 +924,8 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible {
 @media (max-width: 576px) { .modal__stack li { grid-template-columns: 1fr; gap: 0; } }
 .blog-card__uses { margin: .35rem 0 .5rem; font-size: var(--small-font-size); color: var(--text-color); }
 .blog-card .experience__tools { margin: 0 0 .6rem; }
-#vlog, #colonies { scroll-margin-top: 6rem; }
-#vlog:target, #colonies:target { box-shadow: 0 0 0 2px var(--first-color), 0 10px 30px hsla(14, 98%, 50%, .18); }
+#vlog, #colonies, #contenu { scroll-margin-top: 6rem; }
+#vlog:target, #colonies:target, #contenu:target { box-shadow: 0 0 0 2px var(--first-color), 0 10px 30px hsla(14, 98%, 50%, .18); }
 [id].experience__card, [id].timeline__item { scroll-margin-top: 6rem; }
 .experience__card:target, .timeline__item:target .timeline__content { box-shadow: 0 0 0 2px var(--first-color), 0 10px 30px hsla(14, 98%, 50%, .18); }
 .experience__tasks { list-style: none; padding: 0; }

@@ -999,7 +999,7 @@ function init() {
         'After Effects': ['after effects'],
         'Photoshop': ['photoshop'],
         'OBS Studio': ['obs'],
-        'Leadership': ['leadership', 'management'],
+        'Leadership': ['leadership'],
         'Communication': ['communication', 'formation'],
         'Résolution de problèmes': ['résolution', 'diagnostic'],
         'Adaptabilité': ['adaptabilité'],
@@ -1061,7 +1061,7 @@ function init() {
         if ($('.sk3d-panel__title').textContent !== skill.name) return;
         const locale = document.documentElement.lang || 'fr';
         const expHtml = exps.map(e => `<a class="sk3d-exp" href="about.html#${e.id}">
-                <span class="sk3d-exp__icon"><i class="fa-solid ${e.hobby ? (e.id === 'colonies' ? 'fa-campground' : 'fa-video') : e.school ? 'fa-graduation-cap' : 'fa-briefcase'}" aria-hidden="true"></i></span>
+                <span class="sk3d-exp__icon"><i class="fa-solid ${e.hobby ? ({ colonies: 'fa-campground', contenu: 'fa-clapperboard' }[e.id] || 'fa-video') : e.school ? 'fa-graduation-cap' : 'fa-briefcase'}" aria-hidden="true"></i></span>
                 <span class="sk3d-proj__body">
                     <span class="sk3d-proj__title">${esc(e.title)}</span>
                     <span class="sk3d-proj__meta">${esc([e.org, e.period].filter(Boolean).join(' · '))}</span>
