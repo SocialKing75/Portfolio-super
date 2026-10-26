@@ -491,6 +491,13 @@ body.dark-mode .sk3d-room.is-selected { background: hsl(14, 40%, 30%); }
 
 .sk3d-hint { margin-top: .75rem; text-align: center; font-size: .78rem; color: var(--text-color-light); }
 
+/* Animation d'arrivée : chaque étage descend à sa place, du bas vers le haut. */
+.sk3d.is-intro .sk3d-floor { transform: translateZ(calc(var(--z) + 280px)); transition: none; }
+.sk3d.is-intro .sk3d-shell > .sk3d-face,
+.sk3d.is-intro .sk3d-floor__label { opacity: 0; transition: none; }
+.sk3d.is-building .sk3d-floor { transition-duration: .9s; transition-delay: calc(var(--i) * 160ms); }
+.sk3d.is-building .sk3d-shell > .sk3d-face { transition: opacity .6s ease calc(var(--i) * 160ms); }
+
 /* Page Compétences : la maquette occupe tout l'écran sous la barre de navigation. */
 .skills-page { padding: 0; min-height: 0; }
 .skills-page .container { max-width: none; margin: 0; padding: 0; }

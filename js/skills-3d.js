@@ -104,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const floorEls = floors.map((f, i) => {
         const floor = el('div', 'sk3d-floor');
         floor.style.setProperty('--z', i * H + 'px');
+        floor.style.setProperty('--i', i);
         const [fx, fy, fw, fd] = FOOTPRINTS[Math.min(i, FOOTPRINTS.length - 1)];
         floor.style.left = fx + 'px'; floor.style.top = fy + 'px';
         floor.style.width = fw + 'px'; floor.style.height = fd + 'px';
@@ -221,6 +222,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     overviewBtn.addEventListener('click', showOverview);
     showOverview();
+
+    // Animation d'arrivée : les étages se posent un à un, puis l'étage 0 s'ouvre.
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        selectFloor(0);
+    } else {
+        root.classList.add('is-intro');
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            root.classList.add('is-building');
+            root.classList.remove('is-intro');
+        }));
+        setTimeout(() => {
+            root.classList.remove('is-building');
+            if (current === -1) selectFloor(0);
+        }, floors.length * 160 + 1100);
+    }
 
     // --- Rotation au glisser ---
     let rx = 58, rz = -38;
