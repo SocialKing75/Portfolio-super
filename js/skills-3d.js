@@ -37,7 +37,6 @@ function init() {
 
 
     // ---------------------------------------------------------------- Interface
-    const SVG_LEVELS = '<svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="sk3dGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b78bff"/><stop offset="1" stop-color="#f06bd2"/></linearGradient></defs><path d="M7 9.5 12 4.5l5 5M7 14.5l5 5 5-5" fill="none" stroke="url(#sk3dGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     root.innerHTML = `
         <div class="sk3d-canvas"></div>
         <div class="sk3d-pins"></div>
@@ -46,10 +45,8 @@ function init() {
             <p class="sk3d-sub"></p>
             <div class="sk3d-card" hidden></div>
         </div>
-        <button class="sk3d-fs" type="button" aria-label="Afficher la maquette en plein écran"><i class="fa-solid fa-expand" aria-hidden="true"></i></button>
         <div class="sk3d-bar">
             <div class="sk3d-bar__main">
-                <span class="sk3d-bar__icon">${SVG_LEVELS}</span>
                 <div class="sk3d-bar__levels" role="group" aria-label="Choisir un étage"></div>
             </div>
             <button class="sk3d-bar__side" type="button" aria-label="Vue d'ensemble du bâtiment"><span></span><span></span><span></span></button>
@@ -138,9 +135,6 @@ function init() {
             white: std(0xf7f2f0),
             wall: std(0xf6f0ee),
             slab: std(0xf2ebe8),
-            floorA: std(0xf7ece7),
-            floorB: std(0xf4e5df),
-            hover: std(0xf0d8ce),
             wood: std(0xf1e8e3),
             screen: std(0xded8d5),
             slat: std(0xffffff, { map: SLAT }),
@@ -165,6 +159,8 @@ function init() {
         return g;
     }
     const SLAB_GEO = slabGeometry(SLAB);
+    // Une couleur de sol par zone : teintes claires, distinctes, en accord avec l'orange du site.
+    const ZONE_COLORS = [0xffdcc8, 0xdcebd6, 0xd6e6f2, 0xf5e8c4, 0xd3ece7, 0xeadfd2, 0xdfe3ec, 0xffe9b8];
 
     function mesh(geo, mat, cast = true, receive = true) {
         const m = new THREE.Mesh(geo, mat);
@@ -415,22 +411,6 @@ function init() {
             [0.42, 0.72, 0.12, 0.12, 12, 0, 'accent']
         ]
     };
-    // Personnages (position [x, y] en fraction de la zone), comme les silhouettes de la maquette Renault.
-    const PEOPLE = {
-        openspace: [[0.3, 0.82], [0.76, 0.84]], labo: [[0.3, 0.42], [0.82, 0.72]],
-        tableur: [[0.18, 0.8]], electronique: [[0.48, 0.62]],
-        archives: [[0.38, 0.5], [0.86, 0.82]], dashboards: [[0.12, 0.22], [0.7, 0.32]],
-        accueil: [[0.62, 0.2], [0.62, 0.6]], planning: [[0.9, 0.5]],
-        dessin: [[0.46, 0.62], [0.9, 0.4]], maquette: [[0.2, 0.82], [0.86, 0.76]],
-        metre: [[0.4, 0.46]], projection: [[0.88, 0.82], [0.46, 0.26]],
-        montage: [[0.3, 0.66]], motion: [[0.56, 0.62]],
-        photo: [[0.5, 0.3], [0.5, 0.66]], streaming: [[0.58, 0.56]],
-        direction: [[0.5, 0.56], [0.1, 0.82]], agora: [[0.2, 0.82], [0.76, 0.84]],
-        creatif: [[0.5, 0.22], [0.86, 0.42]], flex: [[0.24, 0.46], [0.72, 0.4], [0.54, 0.84]],
-        warroom: [[0.16, 0.22], [0.62, 0.22]], scrum: [[0.4, 0.54], [0.58, 0.56], [0.2, 0.22]],
-        securite: [[0.24, 0.62]], strategie: [[0.2, 0.52], [0.72, 0.78]]
-    };
-
     // Espaces de chaque étage, dans l'ordre des compétences.
     const FLOOR_ZONES = [
         ['openspace', 'labo', 'tableur', 'electronique'],
@@ -466,7 +446,7 @@ function init() {
     // Le mobilier d'un espace est un module d'environ 5 × 4 m, répété pour remplir la zone :
     // des objets à taille réelle, nombreux et serrés, comme sur la maquette de référence.
     const MOD_W = 7.5, MOD_D = 6.2, HK = 0.04;
-    function furnish(group, kind, people, mats, x0, z0, rw, rd) {
+    function furnish(group, kind, mats, x0, z0, rw, rd) {
         const nx = Math.max(1, Math.round(rw / MOD_W)), nz = Math.max(1, Math.round(rd / MOD_D));
         const mw = rw / nx, md = rd / nz, pad = 0.9;
         const cw = mw - pad * 2, cd = md - pad * 2;
@@ -479,16 +459,48 @@ function init() {
                     m.position.set(ox + fx * cw + w / 2, SLAB + z * HK + hh / 2, oz + fy * cd + d / 2);
                     group.add(m);
                 }
-                // Une ou deux silhouettes par module, en alternance.
-                (people || []).forEach(([px, pz], n) => {
-                    if ((ix + iz + n) % 2) return;
-                    const p = person(mats);
-                    p.position.set(ox + px * cw, SLAB, oz + pz * cd);
-                    p.rotation.y = (ix * 3 + n) * 1.3;
-                    group.add(p);
-                });
             }
         }
+        return { nx, nz, mw, md };
+    }
+
+    // Personnages qui se déplacent : ils marchent d'un carrefour à l'autre dans les allées
+    // laissées libres entre les modules de mobilier, donc sans traverser les meubles.
+    function walkers(group, mats, x0, z0, rw, rd, { nx, nz, mw, md }) {
+        const m = 0.45;
+        const node = (ix, iz) => new THREE.Vector2(
+            THREE.MathUtils.clamp(x0 + ix * mw, x0 + m, x0 + rw - m),
+            THREE.MathUtils.clamp(z0 + iz * md, z0 + m, z0 + rd - m));
+        const count = Math.min(3, Math.max(1, Math.round(nx * nz * 0.8)));
+        return Array.from({ length: count }, (_, n) => {
+            const p = person(mats);
+            const at = [(n * 2) % (nx + 1), (n + 1) % (nz + 1)];
+            const pos = node(...at);
+            p.position.set(pos.x, SLAB, pos.y);
+            group.add(p);
+            return { p, at, prev: null, from: pos.clone(), to: pos.clone(), t: 1, len: 0, speed: 0.9 + Math.random() * 0.4, wait: Math.random() * 2, node, nx, nz };
+        });
+    }
+    function stepWalker(w, dt) {
+        if (w.wait > 0) { w.wait -= dt; return; }
+        if (w.t >= 1) {
+            // Carrefour voisin au hasard, en évitant de revenir sur ses pas.
+            const [ix, iz] = w.at;
+            const options = [[ix + 1, iz], [ix - 1, iz], [ix, iz + 1], [ix, iz - 1]]
+                .filter(([a, b]) => a >= 0 && b >= 0 && a <= w.nx && b <= w.nz)
+                .filter(([a, b]) => !w.prev || a !== w.prev[0] || b !== w.prev[1]);
+            const next = options[Math.floor(Math.random() * options.length)] || w.prev;
+            w.prev = w.at; w.at = next;
+            w.from.copy(w.to); w.to = w.node(...next);
+            w.len = Math.max(0.01, w.from.distanceTo(w.to));
+            w.t = 0;
+            if (Math.random() < 0.25) w.wait = 1 + Math.random() * 2;
+            w.p.rotation.y = Math.atan2(w.to.x - w.from.x, w.to.y - w.from.y);
+        }
+        w.t = Math.min(1, w.t + (w.speed * dt) / w.len);
+        w.p.position.x = w.from.x + (w.to.x - w.from.x) * w.t;
+        w.p.position.z = w.from.y + (w.to.y - w.from.y) * w.t;
+        w.p.position.y = SLAB + Math.abs(Math.sin(w.t * w.len * 3.2)) * 0.04;
     }
 
     const floorObjs = floors.map((f, i) => {
@@ -520,10 +532,11 @@ function init() {
         const layout = zoneLayout(f.skills.length, i);
         const seq = FLOOR_ZONES[i % FLOOR_ZONES.length];
         const iw = INNER.x1 - INNER.x0, id = INNER.z1 - INNER.z0;
+        const zoneWalkers = [];
         const zones = f.skills.map((s, k) => {
             const [fx, fz, fw, fd] = layout[k];
             const x0 = INNER.x0 + fx * iw, z0 = INNER.z0 + fz * id, rw = fw * iw, rd = fd * id;
-            const zmat = (k % 2 ? mats.floorB : mats.floorA).clone();
+            const zmat = std(ZONE_COLORS[k % ZONE_COLORS.length]);
             const floor = mesh(new THREE.BoxGeometry(rw - 0.12, 0.03, rd - 0.12), zmat, false, true);
             floor.position.set(x0 + rw / 2, SLAB + 0.015, z0 + rd / 2);
             floor.userData = { floor: i, zone: k, base: zmat.color.clone() };
@@ -532,7 +545,8 @@ function init() {
             if (fx > 0.01) g.add(wallBetween([x0, z0 + rd * 0.4], [x0, z0 + rd], 1.15, 0.14, mats.wall));
             if (fz > 0.01) g.add(wallBetween([x0 + rw * 0.42, z0], [x0 + rw, z0], 1.15, 0.14, mats.wall));
             const kind = seq[k % seq.length];
-            furnish(g, ZONE_KINDS[kind], PEOPLE[kind], mats, x0, z0, rw, rd);
+            const grid = furnish(g, ZONE_KINDS[kind], mats, x0, z0, rw, rd);
+            zoneWalkers.push(...walkers(g, mats, x0, z0, rw, rd, grid));
             // Colonne vitrée à l'angle des zones du fond, comme les colonnes de verre de la référence.
             if (fx > 0.01 && fz < 0.01) {
                 const col = mesh(new THREE.CylinderGeometry(0.42, 0.42, WALL_H, 24), mats.glass, false, false);
@@ -542,11 +556,9 @@ function init() {
             return { skill: s, floor, x: x0 + rw / 2, z: z0 + rd / 2, back: fz < 0.01 };
         });
 
-        if (i === 0) g.add(terrace(mats));
-
         const list = new Set();
         g.traverse(o => { if (o.material) list.add(o.material); });
-        return { group: g, mats: [...list], zones, lift: 0, opacity: 1 };
+        return { group: g, mats: [...list], zones, walkers: zoneWalkers, lift: 0, opacity: 1 };
     });
 
     // Toit (et acrotère) : s'envole avec les étages supérieurs.
@@ -557,35 +569,6 @@ function init() {
     FOOT.forEach((p, k) => roof.add(wallBetween(p, FOOT[(k + 1) % FOOT.length], 0.45, WALL_T, roofMats.wall)));
     building.add(roof);
     const roofObj = { group: roof, mats: Object.values(roofMats), lift: 0, opacity: 1 };
-
-    function terrace(mats) {
-        const t = new THREE.Group();
-        const deck = mesh(new THREE.BoxGeometry(6.4, 0.16, 16), mats.slab);
-        deck.position.set(0, 0.08, 0);
-        t.add(deck);
-        for (let r = 0; r < 6; r++) {
-            for (let c = 0; c < 2; c++) {
-                const x = -1.5 + c * 3, z = -6.3 + r * 2.5;
-                const tab = mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.06, 20), mats.white);
-                tab.position.set(x, 0.86, z);
-                const foot = mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.72, 8), mats.white);
-                foot.position.set(x, 0.5, z);
-                t.add(tab, foot);
-                for (const dz of [-0.75, 0.75]) {
-                    const ch = rbox(0.42, 0.45, 0.42, mats.white, 0.05);
-                    ch.position.set(x, 0.38, z + dz);
-                    const back = rbox(0.42, 0.45, 0.06, mats.white, 0.02);
-                    back.position.set(x, 0.8, z + dz + Math.sign(dz) * 0.2);
-                    t.add(ch, back);
-                }
-            }
-        }
-        const a = person(mats); a.position.set(2.6, 0.16, -7.2);
-        const b = person(mats); b.position.set(-2.4, 0.16, 6.6);
-        t.add(a, b);
-        t.position.set(LEN + 5.5, 0, DEP * 0.62);
-        return t;
-    }
 
     // ---------------------------------------------------------------- Post-traitement
     const composer = new EffectComposer(renderer);
@@ -726,13 +709,15 @@ function init() {
         }
     }
 
-    const HOVER = new THREE.Color(0xf0d8ce);
+    // Survol et sélection : la couleur de la zone tirée vers la couleur du site.
+    const SITE = new THREE.Color(0xfc3d03);
     let hovered = -1;
     function hoverZone(k) {
         if (current < 0) return;
         floorObjs[current].zones.forEach((z, n) => {
             const on = n === k || n === selected;
-            z.floor.material.color.copy(on ? HOVER : z.floor.userData.base);
+            z.floor.material.color.copy(z.floor.userData.base);
+            if (on) z.floor.material.color.lerp(SITE, 0.28);
         });
         pins.forEach((p, n) => p.el.classList.toggle('is-hover', n === k));
         hovered = k;
@@ -807,23 +792,21 @@ function init() {
     });
     renderer.domElement.addEventListener('click', (e) => { const k = pick(e); if (k >= 0) selectSkill(k); });
 
-    // Plein écran.
-    const fsBtn = $('.sk3d-fs');
-    if (!document.fullscreenEnabled) fsBtn.hidden = true;
-    fsBtn.addEventListener('click', () => {
-        if (document.fullscreenElement) document.exitFullscreen();
-        else root.requestFullscreen().catch(() => {});
-    });
-    document.addEventListener('fullscreenchange', () => {
-        const on = document.fullscreenElement === root;
-        fsBtn.innerHTML = `<i class="fa-solid ${on ? 'fa-compress' : 'fa-expand'}" aria-hidden="true"></i>`;
-    });
-
     // ---------------------------------------------------------------- Boucle
+    // Les personnages de l'étage ouvert marchent en continu (environ 30 images/s) ;
+    // sinon, rendu uniquement pendant les transitions.
+    let lastWalk = 0;
     function loop(now) {
         requestAnimationFrame(loop);
         const animating = stepTweens(now);
-        if (!animating && !dirty) return;
+        let walking = false;
+        if (current >= 0 && !reduced && !document.hidden && now - lastWalk > 32) {
+            const dtw = Math.min(0.1, (now - lastWalk) / 1000);
+            lastWalk = now;
+            floorObjs[current].walkers.forEach(w => stepWalker(w, dtw));
+            walking = true;
+        }
+        if (!animating && !dirty && !walking) return;
         updateCamera();
         composer.render();
         placePins();
