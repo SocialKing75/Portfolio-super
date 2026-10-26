@@ -75,7 +75,8 @@ function init() {
     // Résolution plafonnée : l'occlusion ambiante est coûteuse sur les écrans très denses.
     // Téléphones et tablettes : rendu allégé (pas d'occlusion ambiante, résolution et ombre réduites).
     const LITE = matchMedia('(pointer: coarse), (max-width: 768px)').matches;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, LITE ? 1.25 : 1.5));
+    let pixelRatio = Math.min(window.devicePixelRatio || 1, LITE ? 1.25 : 1.25);
+    renderer.setPixelRatio(pixelRatio);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     // Pas de lecture des journaux de compilation des shaders (coûteuse au démarrage).
     renderer.debug.checkShaderErrors = false;
@@ -799,8 +800,8 @@ function init() {
         ao = new GTAOPass(scene, camera, 1, 1);
         ao.output = GTAOPass.OUTPUT.Default;
         ao.blendIntensity = 1;
-        ao.updateGtaoMaterial({ radius: 0.9, distanceExponent: 1.4, thickness: 1.2, scale: 1, samples: 12 });
-        ao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 8 });
+        ao.updateGtaoMaterial({ radius: 0.9, distanceExponent: 1.4, thickness: 1.2, scale: 1, samples: 8 });
+        ao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 4 });
         composer.addPass(ao);
         composer.addPass(new OutputPass());
     }
@@ -845,7 +846,8 @@ function init() {
         renderer.setSize(width, height);
         if (composer) {
             composer.setSize(width, height);
-            ao.setSize(width * renderer.getPixelRatio(), height * renderer.getPixelRatio());
+            // Occlusion ambiante calculée à demi-résolution : l'effet est doux, le coût divisé par 4.
+            ao.setSize(Math.round(width * renderer.getPixelRatio() / 2), Math.round(height * renderer.getPixelRatio() / 2));
         }
         invalidate();
     }
@@ -1267,18 +1269,41 @@ function init() {
     // Les personnages de l'étage ouvert marchent en continu (environ 30 images/s) ;
     // sinon, rendu uniquement pendant les transitions.
     let lastWalk = 0, onScreen = true;
+    // Qualité adaptative : si l'ordinateur n'arrive pas à suivre (images trop espacées),
+    // on retire l'occlusion ambiante, puis on baisse la résolution, puis on ralentit les personnages.
+    // Mesure : délai entre deux rappels d'affichage juste après une image dessinée (60 Hz ≈ 17 ms).
+    let walkStep = 50, prevFrame = 0, prevRendered = false, slow = 0, samples = 0, level = 0;
+    function adapt(now, rendered) {
+        const d = now - prevFrame;
+        const measured = prevRendered && d < 1000;
+        prevFrame = now;
+        prevRendered = rendered;
+        if (!measured) return;
+        samples++;
+        if (d > 26) slow++;
+        if (samples < 40) return;
+        if (slow / samples > 0.5 && level < 3) {
+            level++;
+            if (level === 1 && composer) composer = null;
+            else if (level <= 2 && pixelRatio > 1) { pixelRatio = 1; renderer.setPixelRatio(1); resize(); }
+            else { level = 3; walkStep = 80; }
+            invalidate();
+        }
+        samples = 0; slow = 0;
+    }
     new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; invalidate(); }).observe(root);
     function loop(now) {
         requestAnimationFrame(loop);
         const animating = stepTweens(now);
         let walking = false;
-        if (current >= 0 && !reduced && !document.hidden && now - lastWalk > (LITE ? 50 : 40)) {
+        if (current >= 0 && !reduced && !document.hidden && now - lastWalk > walkStep) {
             const dtw = Math.min(0.1, (now - lastWalk) / 1000);
             lastWalk = now;
             floorObjs[current].walkers.forEach(w => stepWalker(w, dtw));
             walking = true;
         }
-        if (!onScreen || (!animating && !dirty && !walking)) return;
+        if (!onScreen || (!animating && !dirty && !walking)) { adapt(now, false); return; }
+        adapt(now, true);
         if (animating || dirty) renderer.shadowMap.needsUpdate = true;
         updateCamera();
         if (composer) composer.render(); else renderer.render(scene, camera);
@@ -1286,7 +1311,7 @@ function init() {
         dirty = false;
     }
     requestAnimationFrame(loop);
-    if (/[?&]perf\b/.test(location.search)) window.__sk3dInfo = renderer.info;
+    if (/[?&]perf\b/.test(location.search)) { window.__sk3dInfo = renderer.info; window.__sk3dLevel = () => ({ level, ao: !!composer, pixelRatio }); }
 
     // Arrivée : le bâtiment complet apparaît.
     setTitle('compétences', `${floors.length} étages · ${floors.reduce((a, f) => a + f.skills.length, 0)} zones`);
