@@ -1097,13 +1097,16 @@ function init() {
         };
         // Le détail s'affiche dans le panneau, sans quitter la page.
         const showDetail = (html) => {
-            panelList.innerHTML = `<button type="button" class="sk3d-panel__back"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Retour à la liste</button>
-                <article class="sk3d-detail">${html}</article>`;
+            const single = projects.length + exps.length === 1;
+            panelList.innerHTML = (single ? '' : `<button type="button" class="sk3d-panel__back"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Retour à la liste</button>`)
+                + `<article class="sk3d-detail">${html}</article>`;
             panelList.scrollTop = 0;
-            panelList.querySelector('.sk3d-panel__back').addEventListener('click', showList);
-            panelList.querySelector('.sk3d-panel__back').focus();
+            panelList.querySelector('.sk3d-panel__back')?.addEventListener('click', showList);
+            panelList.querySelector('.sk3d-panel__back')?.focus();
         };
-        showList();
+        // Un seul élément lié : son détail s'affiche directement (un clic de moins).
+        if (projects.length + exps.length === 1) showDetail(projects.length ? projectDetail(projects[0]) : expDetail(exps[0]));
+        else showList();
     }
 
     // Contenu d'origine (fiche projet ou carte de parcours), sans attributs de traduction ni identifiants.
@@ -1167,7 +1170,7 @@ function init() {
     const levelBtns = floors.map((f, i) => {
         const b = document.createElement('button');
         b.type = 'button';
-        b.textContent = i;
+        b.innerHTML = `<span class="sk3d-lvl__num">${i}</span><span class="sk3d-lvl__name">${esc(f.title)}</span>`;
         b.setAttribute('aria-label', `Étage ${i} : ${f.title}`);
         b.title = f.title;
         b.addEventListener('click', () => selectFloor(i));
@@ -1181,6 +1184,7 @@ function init() {
         cardEl.hidden = true;
         closePanel();
         levelBtns.forEach((b, n) => b.classList.toggle('is-active', n === i));
+        levelBtns[i].scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduced ? 'auto' : 'smooth' });
         root.classList.add('is-level');
         setTitle(floors[i].title, 'sélectionnez une zone');
         // Seul l'étage choisi reste : ceux du dessus s'envolent, ceux du dessous s'enfoncent,
@@ -1241,7 +1245,13 @@ function init() {
         menu.hidden = true;
         menuBtn.setAttribute('aria-expanded', 'false');
     }
-    menuBtn.addEventListener('click', (e) => { e.stopPropagation(); menu.hidden ? openMenu() : closeMenu(); });
+    const narrow = () => matchMedia('(max-width: 768px)').matches;
+    menuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        // Sur mobile, les noms sont déjà dans la barre : le bouton affiche directement le bâtiment complet.
+        if (narrow()) { showOverview(); return; }
+        menu.hidden ? openMenu() : closeMenu();
+    });
     document.addEventListener('click', (e) => { if (!menu.hidden && !menu.contains(e.target)) closeMenu(); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.hidden) { closeMenu(); menuBtn.focus(); } });
 

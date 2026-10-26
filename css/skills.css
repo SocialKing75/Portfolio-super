@@ -411,6 +411,7 @@ body.dark-mode .header { background: rgba(24, 22, 20, .88); backdrop-filter: blu
     cursor: pointer;
     transition: background .25s ease, color .25s ease, transform .25s ease;
 }
+.sk3d-lvl__name { display: none; }
 .sk3d-bar__levels button:hover:not(.is-active) { background: #ffd9c6; color: #fc3d03; transform: translateY(-2px); }
 .sk3d-bar__levels button:focus-visible, .sk3d-bar__side:focus-visible { outline: 2px solid #ff8a3d; outline-offset: 2px; }
 .sk3d-bar__levels button.is-active {
@@ -581,12 +582,23 @@ button.sk3d-proj, button.sk3d-exp { width: 100%; font: inherit; text-align: left
     .sk3d-head { top: 5.5rem; transform: none; }
     .sk3d-title { font-size: 2.3rem; margin-bottom: .6rem; }
     .sk3d-bar { bottom: 20px; }
+    /* Mobile : les étages s'affichent avec leur nom, en une ligne qui défile ; un seul toucher suffit. */
+    .sk3d-bar { left: .75rem; right: .75rem; transform: none; }
     .sk3d-bar__main, .sk3d-bar__side { height: 62px; }
-    .sk3d-bar__main { padding: 4px 12px; }
-    .sk3d-bar__levels { gap: 8px; }
-    .sk3d-bar__levels button { width: 42px; height: 42px; font-size: 15px; }
-    .sk3d-bar__side { width: 62px; }
-    .sk3d-menu { min-width: 240px; }
+    .sk3d-bar__main { flex: 1; min-width: 0; padding: 0 8px; }
+    .sk3d-bar__levels { gap: 6px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 8px 0; }
+    .sk3d-bar__levels::-webkit-scrollbar { display: none; }
+    .sk3d-bar__levels button {
+        width: auto; height: 46px; flex: none;
+        display: inline-flex; align-items: center; gap: .45rem;
+        padding: 0 .9rem 0 .35rem; border-radius: 999px;
+        font-size: 14px; scroll-snap-align: center;
+    }
+    .sk3d-lvl__num { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: rgba(255, 255, 255, .16); }
+    .sk3d-lvl__name { display: inline; white-space: nowrap; font-weight: 500; }
+    .sk3d-bar__side { width: 62px; flex: none; }
+    /* Le panneau reprend déjà le nom et le niveau : la fiche de gauche est masquée. */
+    .sk3d.has-panel .sk3d-card { display: none; }
     .sk3d-pin__icon { width: 40px; height: 40px; font-size: 16px; border-radius: 9px; }
     .sk3d { --line-k: .5; }
     .sk3d-pin__label { display: none; }
