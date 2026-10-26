@@ -3,6 +3,7 @@
 // et une zone aménagée par compétence. Les données sont lues dans .sk-data (masqué).
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
@@ -74,11 +75,13 @@ function init() {
     // ---------------------------------------------------------------- Scène
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     // Résolution plafonnée : l'occlusion ambiante est coûteuse sur les écrans très denses.
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth < 700 ? 1.5 : 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth < 700 ? 1.25 : 1.5));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.NoToneMapping;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    // L'ombre n'est recalculée que quand le bâtiment bouge (pas pour les personnages).
+    renderer.shadowMap.autoUpdate = false;
     holder.append(renderer.domElement);
 
     const BG = new THREE.Color(0xfffbf1);
@@ -94,7 +97,7 @@ function init() {
     const sun = new THREE.DirectionalLight(0xfff8f0, 1.35);
     sun.position.set(22, 26, -30);
     sun.castShadow = true;
-    sun.shadow.mapSize.set(4096, 4096);
+    sun.shadow.mapSize.set(2048, 2048);
     Object.assign(sun.shadow.camera, { left: -60, right: 60, top: 60, bottom: -60, near: 1, far: 200 });
     sun.shadow.bias = -0.0004;
     sun.shadow.normalBias = 0.03;
@@ -202,11 +205,13 @@ function init() {
         g.rotation.y = -Math.atan2(z2 - z1, x2 - x1);
         return g;
     }
+    const PERSON_BODY = new THREE.CapsuleGeometry(0.17, 0.95, 3, 8);
+    const PERSON_HEAD = new THREE.SphereGeometry(0.13, 10, 8);
     function person(mats, s = 1) {
         const p = new THREE.Group();
-        const body = mesh(new THREE.CapsuleGeometry(0.17 * s, 0.95 * s, 4, 10), mats.white);
+        const body = mesh(PERSON_BODY, mats.white, false, false);
         body.position.y = 0.66 * s;
-        const head = mesh(new THREE.SphereGeometry(0.13 * s, 14, 10), mats.white);
+        const head = mesh(PERSON_HEAD, mats.white, false, false);
         head.position.y = 1.5 * s;
         p.add(body, head);
         return p;
@@ -412,13 +417,15 @@ function init() {
         ]
     };
     // Espaces de chaque étage, dans l'ordre des compétences.
-    const FLOOR_ZONES = [
-        ['openspace', 'labo', 'tableur', 'electronique'],
-        ['archives', 'dashboards', 'accueil', 'planning'],
-        ['dessin', 'maquette', 'metre', 'projection'],
-        ['montage', 'motion', 'photo', 'streaming'],
-        ['direction', 'agora', 'creatif', 'flex', 'warroom', 'scrum', 'securite', 'strategie']
-    ];
+    // Associés par nom d'étage : l'ordre des étages se règle dans skills.html.
+    const FLOOR_ZONES = {
+        'Langages': ['openspace', 'labo', 'tableur', 'electronique'],
+        'Bureautique & Data': ['archives', 'dashboards', 'accueil', 'planning'],
+        'Logiciels métier': ['dessin', 'maquette', 'metre', 'projection'],
+        'Création & Médias': ['montage', 'motion', 'photo', 'streaming'],
+        'Soft Skills': ['direction', 'agora', 'creatif', 'flex', 'warroom', 'scrum', 'securite', 'strategie']
+    };
+    const DEFAULT_ZONES = Object.values(FLOOR_ZONES).flat();
 
     // Découpages de plateau [x, y, largeur, profondeur] en fraction, façon plan d'architecte.
     const LAYOUTS_4 = [
@@ -503,6 +510,29 @@ function init() {
         w.p.position.y = SLAB + Math.abs(Math.sin(w.t * w.len * 3.2)) * 0.04;
     }
 
+    // Fusionne les meshes statiques d'un groupe par matériau : quelques appels de dessin
+    // par étage au lieu de plusieurs centaines (rendu, ombres et occlusion ambiante).
+    const inv = new THREE.Matrix4(), rel = new THREE.Matrix4();
+    function bake(group, skip) {
+        group.updateMatrixWorld(true);
+        inv.copy(group.matrixWorld).invert();
+        const buckets = new Map(), done = [];
+        group.traverse(o => {
+            if (!o.isMesh || skip(o) || o.material.transparent) return;
+            rel.multiplyMatrices(inv, o.matrixWorld);
+            let geo = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone();
+            for (const name of Object.keys(geo.attributes)) if (!['position', 'normal', 'uv'].includes(name)) geo.deleteAttribute(name);
+            geo.clearGroups();
+            geo.applyMatrix4(rel);
+            const key = o.material.uuid + o.castShadow + o.receiveShadow;
+            if (!buckets.has(key)) buckets.set(key, { mat: o.material, cast: o.castShadow, receive: o.receiveShadow, geos: [] });
+            buckets.get(key).geos.push(geo);
+            done.push(o);
+        });
+        done.forEach(o => o.removeFromParent());
+        for (const b of buckets.values()) group.add(mesh(mergeGeometries(b.geos), b.mat, b.cast, b.receive));
+    }
+
     const floorObjs = floors.map((f, i) => {
         const mats = makeMaterials();
         const g = new THREE.Group();
@@ -528,9 +558,11 @@ function init() {
         slat.position.set(4.6 + slatLen / 2, SLAB + WALL_H / 2, WALL_T / 2 + 0.02);
         g.add(slat);
 
-        // Zones : une compétence par zone.
+        // Zones : une compétence par zone. L'intérieur est masqué quand un étage le recouvre.
+        const inner = new THREE.Group();
+        g.add(inner);
         const layout = zoneLayout(f.skills.length, i);
-        const seq = FLOOR_ZONES[i % FLOOR_ZONES.length];
+        const seq = FLOOR_ZONES[f.title] || DEFAULT_ZONES;
         const iw = INNER.x1 - INNER.x0, id = INNER.z1 - INNER.z0;
         const zoneWalkers = [];
         const zones = f.skills.map((s, k) => {
@@ -540,25 +572,30 @@ function init() {
             const floor = mesh(new THREE.BoxGeometry(rw - 0.12, 0.03, rd - 0.12), zmat, false, true);
             floor.position.set(x0 + rw / 2, SLAB + 0.015, z0 + rd / 2);
             floor.userData = { floor: i, zone: k, base: zmat.color.clone() };
-            g.add(floor);
+            inner.add(floor);
             // Cloisons basses sur les limites intérieures, avec un passage.
-            if (fx > 0.01) g.add(wallBetween([x0, z0 + rd * 0.4], [x0, z0 + rd], 1.15, 0.14, mats.wall));
-            if (fz > 0.01) g.add(wallBetween([x0 + rw * 0.42, z0], [x0 + rw, z0], 1.15, 0.14, mats.wall));
+            if (fx > 0.01) inner.add(wallBetween([x0, z0 + rd * 0.4], [x0, z0 + rd], 1.15, 0.14, mats.wall));
+            if (fz > 0.01) inner.add(wallBetween([x0 + rw * 0.42, z0], [x0 + rw, z0], 1.15, 0.14, mats.wall));
             const kind = seq[k % seq.length];
-            const grid = furnish(g, ZONE_KINDS[kind], mats, x0, z0, rw, rd);
-            zoneWalkers.push(...walkers(g, mats, x0, z0, rw, rd, grid));
+            const grid = furnish(inner, ZONE_KINDS[kind], mats, x0, z0, rw, rd);
+            zoneWalkers.push(...walkers(inner, mats, x0, z0, rw, rd, grid));
             // Colonne vitrée à l'angle des zones du fond, comme les colonnes de verre de la référence.
             if (fx > 0.01 && fz < 0.01) {
                 const col = mesh(new THREE.CylinderGeometry(0.42, 0.42, WALL_H, 24), mats.glass, false, false);
                 col.position.set(x0, SLAB + WALL_H / 2, z0 + rd * 0.2);
-                g.add(col);
+                inner.add(col);
             }
             return { skill: s, floor, x: x0 + rw / 2, z: z0 + rd / 2, back: fz < 0.01 };
         });
 
+        const zoneFloors = new Set(zones.map(z => z.floor));
+        const moving = new Set(zoneWalkers.flatMap(w => w.p.children));
+        bake(inner, o => zoneFloors.has(o) || moving.has(o));
+        bake(g, o => o.parent === inner || o === inner);
+
         const list = new Set();
         g.traverse(o => { if (o.material) list.add(o.material); });
-        return { group: g, mats: [...list], zones, walkers: zoneWalkers, lift: 0, opacity: 1 };
+        return { group: g, inner, mats: [...list], zones, walkers: zoneWalkers, lift: 0, opacity: 1 };
     });
 
     // Toit (et acrotère) : s'envole avec les étages supérieurs.
@@ -567,6 +604,7 @@ function init() {
     roof.position.y = floors.length * H;
     roof.add(mesh(SLAB_GEO, roofMats.slab));
     FOOT.forEach((p, k) => roof.add(wallBetween(p, FOOT[(k + 1) % FOOT.length], 0.45, WALL_T, roofMats.wall)));
+    bake(roof, () => false);
     building.add(roof);
     const roofObj = { group: roof, mats: Object.values(roofMats), lift: 0, opacity: 1 };
 
@@ -576,8 +614,8 @@ function init() {
     const ao = new GTAOPass(scene, camera, 1, 1);
     ao.output = GTAOPass.OUTPUT.Default;
     ao.blendIntensity = 1;
-    ao.updateGtaoMaterial({ radius: 0.9, distanceExponent: 1.4, thickness: 1.2, scale: 1, samples: 16 });
-    ao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 16 });
+    ao.updateGtaoMaterial({ radius: 0.9, distanceExponent: 1.4, thickness: 1.2, scale: 1, samples: 12 });
+    ao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 8 });
     composer.addPass(ao);
     composer.addPass(new OutputPass());
 
@@ -754,6 +792,7 @@ function init() {
         root.classList.add('is-level');
         setTitle(floors[i].title, 'sélectionnez une zone');
         floorObjs.forEach((o, j) => {
+            o.inner.visible = j >= i;
             o.zones.forEach(z => z.floor.material.color.copy(z.floor.userData.base));
             animateStack(o, j > i ? 40 + (j - i) * 6 : 0, j > i ? 0 : 1, j > i ? (j - i) * 60 : 0);
         });
@@ -769,8 +808,9 @@ function init() {
         levelBtns.forEach(b => b.classList.remove('is-active'));
         root.classList.remove('is-level');
         setTitle('compétences', `${floors.length} étages · ${floors.reduce((a, f) => a + f.skills.length, 0)} zones`);
-        floorObjs.forEach(o => animateStack(o, 0, 1, 0));
-        animateStack(roofObj, 0, 1, 0);
+        floorObjs.forEach(o => { o.inner.visible = true; animateStack(o, 0, 1, 0); });
+        // Une fois le toit reposé, les intérieurs sont invisibles : on ne les dessine plus.
+        animateStack(roofObj, 0, 1, 0).then(() => { if (current < 0) floorObjs.forEach(o => { o.inner.visible = false; }); invalidate(); });
         animateCamera(new THREE.Vector3(0, (floors.length * H) / 2, 0), 0.66, 0.06);
     }
     $('.sk3d-bar__side').addEventListener('click', showOverview);
@@ -795,24 +835,27 @@ function init() {
     // ---------------------------------------------------------------- Boucle
     // Les personnages de l'étage ouvert marchent en continu (environ 30 images/s) ;
     // sinon, rendu uniquement pendant les transitions.
-    let lastWalk = 0;
+    let lastWalk = 0, onScreen = true;
+    new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; invalidate(); }).observe(root);
     function loop(now) {
         requestAnimationFrame(loop);
         const animating = stepTweens(now);
         let walking = false;
-        if (current >= 0 && !reduced && !document.hidden && now - lastWalk > 32) {
+        if (current >= 0 && !reduced && !document.hidden && now - lastWalk > 40) {
             const dtw = Math.min(0.1, (now - lastWalk) / 1000);
             lastWalk = now;
             floorObjs[current].walkers.forEach(w => stepWalker(w, dtw));
             walking = true;
         }
-        if (!animating && !dirty && !walking) return;
+        if (!onScreen || (!animating && !dirty && !walking)) return;
+        if (animating || dirty) renderer.shadowMap.needsUpdate = true;
         updateCamera();
         composer.render();
         placePins();
         dirty = false;
     }
     requestAnimationFrame(loop);
+    if (/[?&]perf\b/.test(location.search)) window.__sk3dInfo = renderer.info;
 
     // Arrivée : le bâtiment fermé apparaît, puis l'étage 0 s'ouvre.
     setTitle('compétences', `${floors.length} étages · ${floors.reduce((a, f) => a + f.skills.length, 0)} zones`);
