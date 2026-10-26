@@ -916,6 +916,8 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible {
 .experience__tools-label { margin-right: .15rem; font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text-color-light); }
 .experience__tools span:not(.experience__tools-label) { padding: .15rem .55rem; border-radius: 1rem; font-size: .72rem; font-weight: 600; color: var(--title-color); border: 1px solid hsla(0, 0%, 50%, .3); }
 .timeline__content .experience__tools { margin: .55rem 0 0; }
+.experience__tools + .experience__tools--soft { margin-top: -.5rem; }
+.timeline__content .experience__tools + .experience__tools--soft { margin-top: .4rem; }
 .modal__stack { list-style: none; padding: 0; margin: 0; display: grid; gap: .35rem; }
 .modal__stack li { display: grid; grid-template-columns: 8.5rem 1fr; gap: .75rem; color: var(--text-color); }
 .modal__stack strong { color: var(--title-color); font-weight: 600; }

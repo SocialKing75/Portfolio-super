@@ -205,6 +205,7 @@ const translations = {
         "Meudon": "SADIEM - Meudon",
         "exp-sadiem-stat": "quantity take-off projects",
         "Outils": "Tools",
+        "Gestion de projet": "Project management",
         "Soft skills": "Soft skills",
         "vlog-uses": "Vlog video editing, photo retouching and YouTube thumbnails.",
         "Piscine 42 (1 mois)": "42 Piscine (1 month)",
