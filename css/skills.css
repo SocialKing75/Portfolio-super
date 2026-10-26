@@ -234,295 +234,7 @@ body.dark-mode .sk-tag { border-color: rgba(255,255,255,0.07); }
 
 .sk-tag:hover i { color: white; }
 
-/* ========== Maquette 3D ========== */
-.sk3d {
-    --sk3d-bg: hsl(36, 60%, 97%);
-    --sk3d-slab: hsl(20, 18%, 92%);
-    --sk3d-wall: hsl(20, 12%, 86%);
-    --sk3d-wall-dark: hsl(20, 10%, 80%);
-    --sk3d-roof: hsl(20, 20%, 94%);
-    --sk3d-room: hsl(20, 30%, 97%);
-    --sk3d-room-line: hsl(20, 14%, 84%);
-    --sk3d-shadow: hsla(30, 20%, 40%, 0.22);
-    --sk3d-ink: hsl(0, 0%, 10%);
-    --sk3d-chip: hsl(0, 0%, 100%);
-    --sk3d-top: 5.5rem;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    height: 100svh;
-    padding: var(--sk3d-top) 0 1rem;
-    background: var(--sk3d-bg);
-    overflow: hidden;
-    user-select: none;
-}
-body.dark-mode .sk3d {
-    --sk3d-bg: hsl(0, 0%, 12%);
-    --sk3d-slab: hsl(0, 0%, 24%);
-    --sk3d-wall: hsl(0, 0%, 30%);
-    --sk3d-wall-dark: hsl(0, 0%, 22%);
-    --sk3d-roof: hsl(0, 0%, 34%);
-    --sk3d-room: hsl(0, 0%, 28%);
-    --sk3d-room-line: hsl(0, 0%, 38%);
-    --sk3d-shadow: hsla(0, 0%, 0%, 0.45);
-    --sk3d-ink: hsl(0, 0%, 95%);
-    --sk3d-chip: hsl(0, 0%, 18%);
-}
-
-.sk3d-info {
-    position: absolute;
-    top: calc(var(--sk3d-top) + 1.5rem);
-    left: clamp(1rem, 4vw, 3rem);
-    z-index: 2;
-    white-space: nowrap;
-    pointer-events: none;
-}
-.sk3d-info__title { font-size: clamp(1.6rem, 3.4vw, 2.6rem); line-height: 1.05; color: var(--sk3d-ink); margin-bottom: .5rem; }
-.sk3d-info__sub { font-size: .9rem; color: var(--text-color); }
-.sk3d-info__card {
-    margin-top: 1rem;
-    padding: .9rem 1rem;
-    border-radius: 1rem;
-    background: var(--sk3d-chip);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
-    animation: sk3dPop .35s ease;
-}
-.sk3d-info__name { font-weight: 600; color: var(--sk3d-ink); }
-.sk3d-info__level { font-size: .85rem; color: var(--first-color); margin: .15rem 0 .5rem; }
-.sk3d-info__bar { display: flex; gap: 4px; }
-.sk3d-info__bar span { flex: 1; height: 6px; border-radius: 3px; background: var(--sk3d-room-line); }
-.sk3d-info__bar span.on { background: var(--first-color); }
-
-.sk3d-viewport { position: relative; flex: 1; min-height: 0; overflow: hidden; cursor: grab; touch-action: pan-y; }
-.sk3d.is-dragging .sk3d-viewport { cursor: grabbing; }
-
-.sk3d-stage {
-    position: absolute;
-    inset: 0;
-    --rx: 58deg; --rz: -38deg; --scale: 1; --focus: 0px;
-    transform: translateY(calc(var(--focus) * var(--scale)));
-    transition: transform .8s cubic-bezier(.65, 0, .25, 1);
-}
-.sk3d-scene {
-    position: absolute;
-    left: 50%;
-    top: 64%;
-    margin-left: -300px;
-    margin-top: -170px;
-    transform-style: preserve-3d;
-    transform-origin: 50% 50% var(--zf, 0px);
-    transform: scale(calc(var(--scale) * var(--zoom, 1))) rotateX(var(--rx)) rotateZ(var(--rz));
-    transition: transform .8s cubic-bezier(.65, 0, .25, 1);
-}
-.sk3d-scene, .sk3d-scene * { transform-style: preserve-3d; }
-
-.sk3d-shadow {
-    /* Ombre portée au sol, projetée sur le côté gauche du bâtiment. */
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: -220px;
-    right: 70%;
-    background: linear-gradient(to right, transparent, var(--sk3d-shadow) 70%);
-    filter: blur(6px);
-    transform: translateZ(-1px);
-}
-
-.sk3d-floor {
-    position: absolute;
-    left: 0; top: 0;
-    transform: translateZ(var(--z));
-    transition: transform .8s cubic-bezier(.65, 0, .25, 1);
-    cursor: pointer;
-}
-.sk3d-floor.is-above { transform: translateZ(calc(var(--z) + 520px)); pointer-events: none; }
-.sk3d-floor.is-active { cursor: default; }
-
-.sk3d-box { position: absolute; left: 0; top: 0; }
-.sk3d-face { position: absolute; left: 0; top: 0; transform-origin: 0 0; backface-visibility: visible; transition: opacity .6s ease, background-color .3s ease; }
-.sk3d-slab { position: absolute; inset: 0; background: var(--sk3d-slab); }
-.sk3d-shell > .sk3d-face--front { background: var(--sk3d-wall); border-top: 2px solid var(--sk3d-roof); }
-.sk3d-shell > .sk3d-face--left { background: var(--sk3d-wall-dark); border-top: 2px solid var(--sk3d-roof); }
-.sk3d-shell > .sk3d-face--top { background: var(--sk3d-roof); box-shadow: inset 0 0 0 1px var(--sk3d-room-line); }
-.sk3d-wall { background: var(--sk3d-wall-dark); opacity: 0; }
-/* La dalle d'un étage est confondue avec le toit du précédent : on ne l'affiche qu'à l'étage ouvert, légèrement surélevée. */
-.sk3d-floor:not(.is-active) .sk3d-slab { visibility: hidden; }
-.sk3d-floor.is-active .sk3d-slab { transform: translateZ(1px); }
-
-.sk3d-floor.is-above .sk3d-face,
-.sk3d-floor.is-above .sk3d-slab,
-.sk3d-floor.is-above .sk3d-floor__label { opacity: 0; transition: opacity .4s ease; }
-
-/* Étage ouvert : on retire le toit et les murs avant, on montre les murs du fond. */
-.sk3d-floor.is-active > .sk3d-shell > .sk3d-face--top { opacity: 0; pointer-events: none; }
-.sk3d-floor.is-active > .sk3d-shell > .sk3d-face--front,
-.sk3d-floor.is-active > .sk3d-shell > .sk3d-face--left { opacity: .35; }
-.sk3d-floor.is-active .sk3d-wall { opacity: 1; }
-
-.sk3d-floor:not(.is-active):hover > .sk3d-shell > .sk3d-face--front { background: hsl(30, 10%, 80%); }
-body.dark-mode .sk3d-floor:not(.is-active):hover > .sk3d-shell > .sk3d-face--front { background: hsl(0, 0%, 38%); }
-
-.sk3d-floor__label {
-    position: absolute;
-    left: 16px;
-    top: 0;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    transform: scaleY(-1);
-    font-size: 15px;
-    color: var(--sk3d-ink);
-    opacity: .5;
-    white-space: nowrap;
-    transition: opacity .4s ease;
-}
-.sk3d-floor__label b { font-size: 22px; }
-.sk3d-floor.is-active .sk3d-floor__label { opacity: 0; }
-
-.sk3d-room {
-    position: absolute;
-    transform: translateZ(2px);
-    background: var(--sk3d-room);
-    opacity: 0;
-    transition: opacity .5s ease .25s, background-color .3s ease;
-    pointer-events: none;
-}
-.sk3d-floor.is-active .sk3d-room { opacity: 1; pointer-events: auto; cursor: pointer; }
-.sk3d-room--alt { background: var(--sk3d-slab); }
-.sk3d-room:hover { background: hsl(30, 12%, 93%); }
-.sk3d-room.is-selected { background: hsl(30, 10%, 89%); }
-body.dark-mode .sk3d-room:hover { background: hsl(0, 0%, 32%); }
-body.dark-mode .sk3d-room.is-selected { background: hsl(0, 0%, 36%); }
-
-/* Maquette monochrome, comme une maquette d'architecte : seuls les repères sont en couleur. */
-.sk3d-obj .sk3d-face { box-shadow: inset 0 0 0 .5px rgba(0, 0, 0, .05); }
-.sk3d-obj .sk3d-face--top { background: hsl(30, 20%, 99%); }
-.sk3d-obj .sk3d-face--front { background: hsl(30, 10%, 91%); }
-.sk3d-obj .sk3d-face--left { background: hsl(30, 8%, 84%); }
-/* Variations de matière, toujours dans les blancs et gris. */
-.sk3d-obj--wood .sk3d-face--top { background: hsl(30, 14%, 95%); }
-.sk3d-obj--wood .sk3d-face--front { background: hsl(30, 8%, 87%); }
-.sk3d-obj--wood .sk3d-face--left { background: hsl(30, 6%, 80%); }
-.sk3d-obj--screen .sk3d-face--top,
-.sk3d-obj--rack .sk3d-face--top { background: hsl(30, 6%, 88%); }
-.sk3d-obj--screen .sk3d-face--front,
-.sk3d-obj--rack .sk3d-face--front { background: hsl(30, 5%, 78%); }
-.sk3d-obj--screen .sk3d-face--left,
-.sk3d-obj--rack .sk3d-face--left { background: hsl(30, 5%, 72%); }
-.sk3d-obj--rack .sk3d-face--front { background: repeating-linear-gradient(0deg, hsl(30, 5%, 80%) 0 5px, hsl(30, 5%, 70%) 5px 6px); }
-.sk3d-obj--kanban .sk3d-face--front { background:
-    linear-gradient(90deg, transparent 32%, hsl(30, 6%, 82%) 32% 33%, transparent 33% 66%, hsl(30, 6%, 82%) 66% 67%, transparent 67%),
-    radial-gradient(circle, hsl(30, 6%, 84%) 0 3px, transparent 4px) 0 0 / 14px 10px,
-    hsl(0, 0%, 100%); }
-.sk3d-obj--plant .sk3d-face { border-radius: 40%; }
-.sk3d-obj--head .sk3d-face { border-radius: 50%; }
-.sk3d-person { position: absolute; width: 0; height: 0; }
-body.dark-mode .sk3d-obj .sk3d-face--top { background: hsl(0, 0%, 52%); }
-body.dark-mode .sk3d-obj .sk3d-face--front { background: hsl(0, 0%, 42%); }
-body.dark-mode .sk3d-obj .sk3d-face--left { background: hsl(0, 0%, 35%); }
-body.dark-mode .sk3d-obj--rack .sk3d-face--front { background: repeating-linear-gradient(0deg, hsl(0, 0%, 40%) 0 5px, hsl(0, 0%, 32%) 5px 6px); }
-
-/* Repère : toujours face à la caméra. */
-.sk3d-pin {
-    position: absolute;
-    width: 0; height: 0;
-    padding: 0; border: 0; background: none;
-    transform-origin: 0 0;
-    transform: translateZ(var(--lift)) rotateZ(calc(var(--rz) * -1)) rotateX(calc(var(--rx) * -1));
-    cursor: pointer;
-}
-.sk3d-pin__inner {
-    position: absolute;
-    transform-origin: 50% 100%;
-    left: 0; bottom: 0;
-    width: max-content;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transform: translateX(-50%) translateY(14px) scale(.6);
-    opacity: 0;
-    transition: opacity .35s ease, transform .45s cubic-bezier(.3, 1.5, .5, 1);
-    pointer-events: none;
-}
-.sk3d-floor.is-active .sk3d-pin__inner { opacity: 1; transform: translateX(-50%) translateY(0) scale(var(--pin-scale, 1)); pointer-events: auto; transition-delay: .45s; }
-.sk3d-pin__icon {
-    display: grid;
-    place-items: center;
-    width: 40px; height: 40px;
-    border-radius: 10px;
-    background: linear-gradient(160deg, hsl(14, 100%, 94%), hsl(14, 100%, 86%));
-    color: hsl(14, 90%, 40%);
-    font-size: 17px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, .12);
-    transition: transform .2s ease, background .2s ease, color .2s ease;
-}
-.sk3d-pin__label {
-    margin-top: 5px;
-    max-width: 130px;
-    font-size: 11.5px;
-    font-weight: 600;
-    line-height: 1.15;
-    text-align: center;
-    color: var(--sk3d-ink);
-    text-shadow: 0 0 6px var(--sk3d-bg), 0 0 3px var(--sk3d-bg);
-}
-.sk3d-pin__stem { width: 2px; height: var(--stem, 34px); margin-top: 4px; background: var(--sk3d-ink); }
-.sk3d-pin__dot {
-    width: 14px; height: 14px;
-    margin-bottom: -7px;
-    border-radius: 50%;
-    border: 2px solid var(--first-color);
-    background: radial-gradient(circle, var(--first-color) 0 2px, var(--sk3d-chip) 3px);
-}
-.sk3d-pin:hover .sk3d-pin__icon,
-.sk3d-room.is-selected .sk3d-pin__icon { transform: translateY(-4px); background: var(--first-color); color: #fff; }
-
-.sk3d-controls {
-    display: flex;
-    justify-content: center;
-    gap: .5rem;
-    padding: 0 1rem;
-}
-.sk3d-controls__floors {
-    display: flex;
-    gap: .35rem;
-    padding: .35rem;
-    border-radius: 999px;
-    background: hsl(0, 0%, 20%);
-    overflow-x: auto;
-    scrollbar-width: none;
-}
-.sk3d-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: .45rem;
-    padding: .55rem .9rem;
-    border: 0;
-    border-radius: 999px;
-    background: hsl(0, 0%, 30%);
-    color: hsl(0, 0%, 90%);
-    font: inherit;
-    font-size: .8rem;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: background .25s ease, color .25s ease;
-}
-.sk3d-btn:hover { background: hsl(0, 0%, 38%); }
-.sk3d-btn.is-active { background: var(--first-color); color: #fff; }
-.sk3d-btn--overview { padding: .55rem .95rem; background: hsl(0, 0%, 20%); }
-
-.sk3d-hint { margin-top: .75rem; text-align: center; font-size: .78rem; color: var(--text-color-light); }
-
-/* Animation d'arrivée : chaque étage descend à sa place, du bas vers le haut. */
-.sk3d.is-intro .sk3d-floor { transform: translateZ(calc(var(--z) + 280px)); transition: none; }
-.sk3d.is-intro .sk3d-shell > .sk3d-face,
-.sk3d.is-intro .sk3d-floor__label { opacity: 0; transition: none; }
-.sk3d.is-building .sk3d-floor { transition-duration: .9s; transition-delay: calc(var(--i) * 160ms); }
-.sk3d.is-building .sk3d-shell > .sk3d-face { transition: opacity .6s ease calc(var(--i) * 160ms); }
-
-/* Page Compétences : la maquette occupe tout l'écran sous la barre de navigation. */
+/* ========== Maquette 3D (WebGL) ========== */
 .skills-page { padding: 0; min-height: 0; }
 .skills-page .container { max-width: none; margin: 0; padding: 0; }
 .skills-page .sk-hero {
@@ -533,38 +245,221 @@ body.dark-mode .sk3d-obj--rack .sk3d-face--front { background: repeating-linear-
     white-space: nowrap;
 }
 
-.sk3d-fs {
+.sk3d {
+    --sk3d-grad: linear-gradient(90deg, #a96cff, #ee5fc6);
+    position: relative;
+    height: 100vh;
+    height: 100svh;
+    background: #fffbf1;
+    overflow: hidden;
+    user-select: none;
+    font-family: 'Outfit', var(--body-font), sans-serif;
+}
+.sk3d-canvas { position: absolute; inset: 0; opacity: 0; transition: opacity 1s ease; }
+.sk3d.is-ready .sk3d-canvas { opacity: 1; }
+.sk3d-canvas canvas { display: block; width: 100%; height: 100%; }
+.sk3d-grain {
     position: absolute;
-    top: calc(var(--sk3d-top) + 1.5rem);
-    right: clamp(1rem, 4vw, 3rem);
-    z-index: 2;
+    inset: 0;
+    opacity: .035;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    background-size: 128px 128px;
+}
+
+/* La maquette reste claire, comme la référence : en mode sombre, l'en-tête garde un fond pour rester lisible. */
+body.dark-mode .header { background: rgba(24, 22, 20, .88); backdrop-filter: blur(8px); }
+
+/* Titre à gauche, centré verticalement */
+.sk3d-head {
+    position: absolute;
+    left: clamp(1.25rem, 4.7vw, 4.75rem);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+    white-space: nowrap;
+    pointer-events: none;
+}
+.sk3d-title {
+    font-family: inherit;
+    font-size: clamp(2.6rem, 4.2vw, 4.25rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.035em;
+    color: #000;
+    margin: 0 0 1.6rem;
+}
+.sk3d-title span { display: inline-block; animation: sk3dLetter .6s cubic-bezier(.2, .8, .2, 1) both; transform-origin: 50% 100%; }
+@keyframes sk3dLetter { from { opacity: 0; transform: translateY(.35em) rotateX(80deg); } to { opacity: 1; transform: none; } }
+.sk3d-sub { font-size: .9rem; color: #8b8885; letter-spacing: .01em; }
+.sk3d-card {
+    width: max-content;
+    margin-top: 1.4rem;
+    padding: .95rem 1.1rem;
+    min-width: 240px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, .85);
+    box-shadow: 0 10px 30px rgba(60, 40, 20, .08);
+    animation: sk3dCard .4s ease both;
+}
+.sk3d-card__name { font-weight: 600; color: #000; }
+.sk3d-card__level { margin: .2rem 0 .6rem; font-size: .85rem; background: var(--sk3d-grad); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 600; }
+.sk3d-card__bar { display: flex; gap: 4px; }
+.sk3d-card__bar span { flex: 1; height: 5px; border-radius: 3px; background: #ebe5e0; }
+.sk3d-card__bar span.on { background: var(--sk3d-grad); }
+@keyframes sk3dCard { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* Repères : icône, libellé, tige et point, comme sur la référence */
+.sk3d-pins { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.sk3d-pin {
+    position: absolute;
+    left: 0; top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    cursor: pointer;
+    pointer-events: auto;
+    transform: translate(calc(var(--x, -999px) - 50%), calc(var(--y, -999px) - 100% + 13px));
+    animation: sk3dPin .55s cubic-bezier(.2, .8, .2, 1) both;
+}
+@keyframes sk3dPin { from { opacity: 0; } to { opacity: 1; } }
+.sk3d-pin__icon {
     display: grid;
     place-items: center;
-    width: 44px; height: 44px;
-    border: 0;
+    width: 56px; height: 56px;
+    border-radius: 11px;
+    background: linear-gradient(180deg, #f7e7fe 0%, #edc9f8 100%);
+    color: #111;
+    font-size: 21px;
+    box-shadow: 0 6px 18px rgba(170, 90, 200, .12);
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+.sk3d-pin__label {
+    margin-top: 9px;
+    max-width: 130px;
+    font-size: 13.5px;
+    font-weight: 500;
+    line-height: 1.25;
+    color: #000;
+    text-align: center;
+}
+.sk3d-pin__line { width: 1.5px; height: calc(var(--line, 90px) * var(--line-k, 1)); margin-top: 8px; background: #000; }
+.sk3d-pin__dot {
+    position: relative;
+    width: 26px; height: 26px;
     border-radius: 50%;
-    background: var(--sk3d-chip);
-    color: var(--sk3d-ink);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, .1);
+    background: linear-gradient(#f6eefa, #f6eefa) padding-box, linear-gradient(135deg, #b014ff, #ff3fa4) border-box;
+    border: 1.6px solid transparent;
+}
+.sk3d-pin__dot::after {
+    content: '';
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 6px; height: 6px;
+    margin: -3px 0 0 -3px;
+    border-radius: 50%;
+    background: #b416fa;
+}
+.sk3d-pin.is-down { flex-direction: column-reverse; transform: translate(calc(var(--x, -999px) - 50%), calc(var(--y, -999px) - 13px)); }
+.sk3d-pin.is-down .sk3d-pin__line { margin: 0 0 8px; }
+.sk3d-pin.is-down .sk3d-pin__label { margin: 0 0 9px; }
+.sk3d-pin:hover .sk3d-pin__icon, .sk3d-pin.is-hover .sk3d-pin__icon { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(170, 90, 200, .22); }
+.sk3d-pin.is-selected .sk3d-pin__icon { background: linear-gradient(180deg, #e9c3fb 0%, #d99af2 100%); }
+.sk3d-pin:focus-visible { outline: none; }
+.sk3d-pin:focus-visible .sk3d-pin__icon { box-shadow: 0 0 0 3px #b416fa; }
+
+/* Bouton rond en haut à droite */
+.sk3d-fs {
+    position: absolute;
+    top: 6.2rem;
+    right: clamp(1rem, 2.5vw, 2.5rem);
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    background: linear-gradient(#f4eef6, #f4eef6) padding-box, linear-gradient(135deg, #a96cff, #ee5fc6) border-box;
+    color: #111;
+    font-size: 14px;
+    cursor: pointer;
+}
+.sk3d:fullscreen .sk3d-fs { top: 1.5rem; }
+
+/* Barre du bas : sélecteur d'étages */
+.sk3d-bar {
+    position: absolute;
+    left: 50%;
+    bottom: 32px;
+    z-index: 3;
+    display: flex;
+    gap: 9px;
+    transform: translateX(-50%);
+}
+.sk3d-bar__main, .sk3d-bar__side {
+    display: flex;
+    align-items: center;
+    height: 58px;
+    border-radius: 14px;
+    border: 2px solid transparent;
+    background: linear-gradient(#636262, #636262) padding-box, linear-gradient(90deg, #8a5cff, #e04fc0 55%, #8a5cff) border-box;
+}
+.sk3d-bar__main { padding: 4px 26px 4px 4px; gap: 46px; }
+.sk3d-bar__icon {
+    display: grid;
+    place-items: center;
+    width: 46px; height: 46px;
+    border-radius: 10px;
+    background: #141414;
+}
+.sk3d-bar__icon svg { width: 24px; height: 24px; }
+.sk3d-bar__levels { display: flex; gap: 14px; }
+.sk3d-bar__levels button {
+    width: 35px; height: 35px;
+    border-radius: 50%;
+    border: 1.5px solid transparent;
+    background: #7a7978;
+    color: #e9e7e6;
+    font: 500 11px 'Outfit', sans-serif;
     cursor: pointer;
     transition: background .25s ease, color .25s ease;
 }
-.sk3d-fs:hover { background: var(--first-color); color: #fff; }
-.sk3d:fullscreen { --sk3d-top: 0px; }
-
-@keyframes sk3dPop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.sk3d-bar__levels button:hover { background: #8a8988; }
+.sk3d-bar__levels button.is-active {
+    background: linear-gradient(#8f7e9b, #8f7e9b) padding-box, linear-gradient(135deg, #b98cff, #f070cf) border-box;
+    color: #fff;
+}
+.sk3d-bar__side {
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+    width: 58px;
+    cursor: pointer;
+}
+.sk3d-bar__side span { display: block; width: 18px; height: 1.6px; border-radius: 1px; background: #f2f0ee; }
+.sk3d-bar__side span:nth-child(2) { width: 13px; }
+.sk3d-bar__side span:nth-child(3) { width: 18px; }
 
 @media (max-width: 768px) {
-    .sk3d { --sk3d-top: 4.5rem; }
-    .sk3d-info { position: static; max-width: none; margin: 1rem 4.5rem .5rem 1rem; }
-    .sk3d-fs { top: calc(var(--sk3d-top) + 1rem); right: 1rem; }
-    .sk3d-btn span { display: none; }
-    .sk3d-btn { padding: .6rem .75rem; }
-    /* Sur mobile, seule l'étiquette de la compétence choisie s'affiche. */
+    .sk3d-head { top: 5.5rem; transform: none; }
+    .sk3d-title { font-size: 2.3rem; margin-bottom: .6rem; }
+    .sk3d-fs { top: 5.6rem; }
+    .sk3d-bar { bottom: 20px; }
+    .sk3d-bar__main { gap: 16px; padding-right: 14px; }
+    .sk3d-bar__levels { gap: 8px; }
+    .sk3d-pin__icon { width: 40px; height: 40px; font-size: 16px; border-radius: 9px; }
+    .sk3d { --line-k: .5; }
     .sk3d-pin__label { display: none; }
-    .sk3d-room.is-selected .sk3d-pin__label { display: block; }
+    .sk3d-pin.is-selected .sk3d-pin__label { display: block; }
+    .sk3d-pin__dot { width: 20px; height: 20px; }
+    .sk3d-pin { transform: translate(calc(var(--x, -999px) - 50%), calc(var(--y, -999px) - 100% + 10px)); }
+    .sk3d-pin.is-down { transform: translate(calc(var(--x, -999px) - 50%), calc(var(--y, -999px) - 10px)); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .sk3d *, .sk3d *::before, .sk3d *::after { transition: none !important; animation: none !important; }
+    .sk3d *, .sk3d *::before, .sk3d *::after { animation: none !important; transition: none !important; }
 }

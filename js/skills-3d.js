@@ -1,21 +1,18 @@
-// Maquette 3D des compétences : un bâtiment isométrique dont chaque étage est une catégorie.
-// Les données sont lues dans la grille .sk-card / .sk-soft de la page, pour ne rien dupliquer.
-document.addEventListener('DOMContentLoaded', () => {
-    const root = document.getElementById('sk3d');
-    if (!root) return;
+// Maquette 3D des compétences, rendue en WebGL (Three.js) comme une maquette d'architecte :
+// bâtiment blanc mat, occlusion ambiante, ombre portée douce, un étage par catégorie
+// et une zone aménagée par compétence. Les données sont lues dans .sk-data (masqué).
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
+const root = document.getElementById('sk3d');
+if (root) init();
+
+function init() {
     const LEVELS = { mid: 1, high: 2, expert: 3 };
-    const W = 600, D = 340, H = 60;
-    // Emprise de chaque étage [x, y, largeur, profondeur] : le bâtiment se rétrécit en gradins
-    // côté visible, ce qui dégage des terrasses comme sur une vraie maquette.
-    const FOOTPRINTS = [
-        [0, 0, 600, 340],
-        [40, 0, 560, 320],
-        [40, 0, 500, 280],
-        [100, 0, 440, 280],
-        [100, 0, 380, 230]
-    ];
-
     const floors = [...document.querySelectorAll('.sk-card')].map(card => ({
         title: card.querySelector('.sk-card__title').textContent.trim(),
         icon: card.querySelector('.sk-card__icon i').className,
@@ -38,30 +35,187 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (!floors.length) return;
 
-    const el = (tag, cls, html) => {
-        const n = document.createElement(tag);
-        if (cls) n.className = cls;
-        if (html !== undefined) n.innerHTML = html;
-        return n;
-    };
 
-    // Boîte : faces avant (y = profondeur) et gauche (x = 0), plus un dessus optionnel.
-    const box = (w, d, h, cls) => {
-        const b = el('div', 'sk3d-box ' + (cls || ''));
-        b.style.width = w + 'px'; b.style.height = d + 'px';
-        const front = el('div', 'sk3d-face sk3d-face--front');
-        front.style.cssText = `width:${w}px;height:${h}px;transform:translateY(${d}px) rotateX(90deg)`;
-        const left = el('div', 'sk3d-face sk3d-face--left');
-        left.style.cssText = `width:${d}px;height:${h}px;transform:rotateZ(90deg) rotateX(90deg)`;
-        const top = el('div', 'sk3d-face sk3d-face--top');
-        top.style.cssText = `width:${w}px;height:${d}px;transform:translateZ(${h}px)`;
-        b.append(front, left, top);
-        return b;
-    };
+    // ---------------------------------------------------------------- Interface
+    const SVG_LEVELS = '<svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="sk3dGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b78bff"/><stop offset="1" stop-color="#f06bd2"/></linearGradient></defs><path d="M7 9.5 12 4.5l5 5M7 14.5l5 5 5-5" fill="none" stroke="url(#sk3dGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    root.innerHTML = `
+        <div class="sk3d-canvas"></div>
+        <div class="sk3d-pins"></div>
+        <div class="sk3d-head">
+            <h3 class="sk3d-title" aria-live="polite"></h3>
+            <p class="sk3d-sub"></p>
+            <div class="sk3d-card" hidden></div>
+        </div>
+        <button class="sk3d-fs" type="button" aria-label="Afficher la maquette en plein écran"><i class="fa-solid fa-expand" aria-hidden="true"></i></button>
+        <div class="sk3d-bar">
+            <div class="sk3d-bar__main">
+                <span class="sk3d-bar__icon">${SVG_LEVELS}</span>
+                <div class="sk3d-bar__levels" role="group" aria-label="Choisir un étage"></div>
+            </div>
+            <button class="sk3d-bar__side" type="button" aria-label="Vue d'ensemble du bâtiment"><span></span><span></span><span></span></button>
+        </div>
+        <div class="sk3d-grain" aria-hidden="true"></div>`;
+    const $ = (s) => root.querySelector(s);
+    const holder = $('.sk3d-canvas'), pinLayer = $('.sk3d-pins');
+    const titleEl = $('.sk3d-title'), subEl = $('.sk3d-sub'), cardEl = $('.sk3d-card');
+    const levelsEl = $('.sk3d-bar__levels');
 
-    // --- Mobilier ---
-    // Chaque objet : [x, y, largeur, profondeur] en fraction de la pièce, puis hauteur et altitude
-    // en pixels (mises à l'échelle de la pièce), puis le matériau.
+    // Grain léger par-dessus la scène, comme sur la référence.
+    {
+        const c = document.createElement('canvas');
+        c.width = c.height = 128;
+        const g = c.getContext('2d'), img = g.createImageData(128, 128);
+        for (let i = 0; i < img.data.length; i += 4) {
+            const v = 110 + Math.random() * 146;
+            img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+            img.data[i + 3] = 255;
+        }
+        g.putImageData(img, 0, 0);
+        $('.sk3d-grain').style.backgroundImage = `url(${c.toDataURL()})`;
+    }
+
+    // ---------------------------------------------------------------- Scène
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+    // Résolution plafonnée : l'occlusion ambiante est coûteuse sur les écrans très denses.
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth < 700 ? 1.5 : 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.NoToneMapping;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    holder.append(renderer.domElement);
+
+    const BG = new THREE.Color(0xfffbf1);
+    const scene = new THREE.Scene();
+    scene.background = BG;
+
+    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, -400, 400);
+    const AZ = THREE.MathUtils.degToRad(37.5), EL = THREE.MathUtils.degToRad(40.5);
+    const camDir = new THREE.Vector3(Math.sin(AZ) * Math.cos(EL), Math.sin(EL), Math.cos(AZ) * Math.cos(EL));
+    const view = { target: new THREE.Vector3(0, 4, 0), zoom: 1 };
+
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xf2ebe3, 2.35));
+    const sun = new THREE.DirectionalLight(0xfff8f0, 1.35);
+    sun.position.set(22, 26, -30);
+    sun.castShadow = true;
+    sun.shadow.mapSize.set(4096, 4096);
+    Object.assign(sun.shadow.camera, { left: -60, right: 60, top: 60, bottom: -60, near: 1, far: 200 });
+    sun.shadow.bias = -0.0004;
+    sun.shadow.normalBias = 0.03;
+    sun.shadow.radius = 6;
+    scene.add(sun, sun.target);
+
+    const ground = new THREE.Mesh(
+        new THREE.PlaneGeometry(600, 600),
+        new THREE.ShadowMaterial({ color: 0x6e6446, opacity: 0.17 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    // ---------------------------------------------------------------- Matériaux
+    function slatTexture() {
+        const c = document.createElement('canvas');
+        c.width = 256; c.height = 64;
+        const g = c.getContext('2d');
+        g.fillStyle = '#f5e9e2';
+        g.fillRect(0, 0, 256, 64);
+        for (let x = 0; x < 256; x += 8) {
+            g.fillStyle = '#eadbd2';
+            g.fillRect(x, 0, 1.5, 64);
+            g.fillStyle = '#fbf3ee';
+            g.fillRect(x + 3, 0, 2, 64);
+        }
+        const t = new THREE.CanvasTexture(c);
+        t.colorSpace = THREE.SRGBColorSpace;
+        t.wrapS = t.wrapT = THREE.RepeatWrapping;
+        return t;
+    }
+    const SLAT = slatTexture();
+    const std = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.92, metalness: 0, ...extra });
+    // Chaque étage a ses propres matériaux pour pouvoir s'effacer en fondu.
+    function makeMaterials() {
+        return {
+            white: std(0xf7f2f0),
+            wall: std(0xf6f0ee),
+            slab: std(0xf2ebe8),
+            floorA: std(0xf7ece7),
+            floorB: std(0xf4e5df),
+            hover: std(0xf0d8ce),
+            wood: std(0xf1e8e3),
+            screen: std(0xded8d5),
+            slat: std(0xffffff, { map: SLAT }),
+            glass: new THREE.MeshStandardMaterial({ color: 0xe6edf0, roughness: 0.15, metalness: 0, transparent: true, opacity: 0.38, depthWrite: false }),
+            frame: std(0xf3eeec)
+        };
+    }
+
+    // ---------------------------------------------------------------- Géométrie
+    const H = 3.0, SLAB = 0.3, WALL_T = 0.32, WALL_H = 2.6;
+    // Emprise en plan (x le long du bâtiment, z vers l'avant), en mètres : un long volume
+    // au pignon gauche en biais, avec un décroché en façade, comme la maquette de référence.
+    const LEN = 44, DEP = 20;
+    const FOOT = [[0, 0], [LEN, 0], [LEN, DEP], [19, DEP], [18, 16.6], [3.4, 16.6]];
+    const OFFSET = new THREE.Vector3(-LEN / 2 - 2, 0, -DEP / 2);
+    const INNER = { x0: 4, x1: LEN - 0.7, z0: 0.7, z1: 15.9 };
+
+    const footShape = new THREE.Shape(FOOT.map(([x, z]) => new THREE.Vector2(x, -z)));
+    function slabGeometry(depth) {
+        const g = new THREE.ExtrudeGeometry(footShape, { depth, bevelEnabled: false });
+        g.rotateX(-Math.PI / 2);
+        return g;
+    }
+    const SLAB_GEO = slabGeometry(SLAB);
+
+    function mesh(geo, mat, cast = true, receive = true) {
+        const m = new THREE.Mesh(geo, mat);
+        m.castShadow = cast;
+        m.receiveShadow = receive;
+        return m;
+    }
+    function rbox(w, h, d, mat, r = 0.04) {
+        const rr = Math.min(r, w / 2.2, h / 2.2, d / 2.2);
+        return mesh(rr > 0.005 ? new RoundedBoxGeometry(w, h, d, 2, rr) : new THREE.BoxGeometry(w, h, d), mat);
+    }
+    // Mur entre deux points du plan, posé au sol de l'étage.
+    function wallBetween([x1, z1], [x2, z2], h, t, mat) {
+        const len = Math.hypot(x2 - x1, z2 - z1);
+        const m = mesh(new THREE.BoxGeometry(len + t, h, t), mat);
+        m.position.set((x1 + x2) / 2, SLAB + h / 2, (z1 + z2) / 2);
+        m.rotation.y = -Math.atan2(z2 - z1, x2 - x1);
+        return m;
+    }
+    // Façade vitrée (pignon droit) : vitrage, montants et lisses.
+    function glazing([x1, z1], [x2, z2], mats) {
+        const g = new THREE.Group();
+        const len = Math.hypot(x2 - x1, z2 - z1);
+        const panel = mesh(new THREE.BoxGeometry(len, WALL_H, 0.06), mats.glass, false, false);
+        panel.position.y = SLAB + WALL_H / 2;
+        g.add(panel);
+        const n = Math.round(len / 2.6);
+        for (let i = 0; i <= n; i++) {
+            const m = mesh(new THREE.BoxGeometry(0.22, WALL_H, 0.34), mats.frame);
+            m.position.set(-len / 2 + (i * len) / n, SLAB + WALL_H / 2, 0);
+            g.add(m);
+        }
+        for (const y of [SLAB + 0.12, SLAB + WALL_H - 0.12, SLAB + WALL_H * 0.42]) {
+            const m = mesh(new THREE.BoxGeometry(len, 0.2, 0.34), mats.frame);
+            m.position.y = y;
+            g.add(m);
+        }
+        g.position.set((x1 + x2) / 2, 0, (z1 + z2) / 2);
+        g.rotation.y = -Math.atan2(z2 - z1, x2 - x1);
+        return g;
+    }
+    function person(mats, s = 1) {
+        const p = new THREE.Group();
+        const body = mesh(new THREE.CapsuleGeometry(0.17 * s, 0.95 * s, 4, 10), mats.white);
+        body.position.y = 0.66 * s;
+        const head = mesh(new THREE.SphereGeometry(0.13 * s, 14, 10), mats.white);
+        head.position.y = 1.5 * s;
+        p.add(body, head);
+        return p;
+    }
+
     const desk = [
         [0.18, 0.18, 0.64, 0.3, 20, 0, 'wood'],
         [0.34, 0.2, 0.32, 0.05, 22, 20, 'screen'],
@@ -277,29 +431,6 @@ document.addEventListener('DOMContentLoaded', () => {
         securite: [[0.24, 0.62]], strategie: [[0.2, 0.52], [0.72, 0.78]]
     };
 
-    function person(x, y, k) {
-        const p = el('div', 'sk3d-person');
-        p.style.left = x + 'px';
-        p.style.top = y + 'px';
-        // Jambes, buste, bras et tête : une silhouette simple, blanche, à l'échelle de la maquette.
-        const part = ([px, py, w, d, h, z], cls = '') => {
-            const b = box(w * k, d * k, h * k, 'sk3d-obj sk3d-obj--person ' + cls);
-            b.style.left = px * k + 'px';
-            b.style.top = py * k + 'px';
-            b.style.transform = `translateZ(${z * k}px)`;
-            return b;
-        };
-        p.append(
-            part([1, 1, 3, 4, 13, 0]),
-            part([6, 1, 3, 4, 13, 0]),
-            part([0, 0, 10, 6, 13, 13]),
-            part([-3, 1, 3, 4, 12, 13]),
-            part([10, 1, 3, 4, 12, 13]),
-            part([1.5, 0, 7, 6, 8, 27], 'sk3d-obj--head')
-        );
-        return p;
-    }
-
     // Espaces de chaque étage, dans l'ordre des compétences.
     const FLOOR_ZONES = [
         ['openspace', 'labo', 'tableur', 'electronique'],
@@ -308,21 +439,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ['montage', 'motion', 'photo', 'streaming'],
         ['direction', 'agora', 'creatif', 'flex', 'warroom', 'scrum', 'securite', 'strategie']
     ];
-
-    function furnish(kind, rw, rd) {
-        const k = Math.max(0.55, Math.min(1.3, Math.min(rw, rd) / 130));
-        let top = 0;
-        const items = kind.map(([x, y, w, d, h, z, mat]) => {
-            const ow = Math.max(3, w * rw), od = Math.max(3, d * rd);
-            const b = box(ow, od, h * k, 'sk3d-obj sk3d-obj--' + mat);
-            b.style.left = x * rw + 'px';
-            b.style.top = y * rd + 'px';
-            if (z) b.style.transform = `translateZ(${z * k}px)`;
-            top = Math.max(top, (z + h) * k);
-            return b;
-        });
-        return { items, top: Math.round(top) };
-    }
 
     // Découpages de plateau [x, y, largeur, profondeur] en fraction, façon plan d'architecte.
     const LAYOUTS_4 = [
@@ -341,34 +457,358 @@ document.addEventListener('DOMContentLoaded', () => {
         return Array.from({ length: n }, (_, k) => [(k % cols) / cols, Math.floor(k / cols) / rows, 1 / cols, 1 / rows]);
     }
 
-    // --- Structure ---
-    const info = el('div', 'sk3d-info');
-    const infoTitle = el('h3', 'sk3d-info__title');
-    const infoSub = el('p', 'sk3d-info__sub');
-    const infoCard = el('div', 'sk3d-info__card');
-    info.append(infoTitle, infoSub, infoCard);
+    // ---------------------------------------------------------------- Bâtiment
+    const building = new THREE.Group();
+    building.position.copy(OFFSET);
+    scene.add(building);
 
-    const viewport = el('div', 'sk3d-viewport');
-    const stage = el('div', 'sk3d-stage');
-    const scene = el('div', 'sk3d-scene');
-    scene.style.width = W + 'px'; scene.style.height = D + 'px';
-    scene.append(el('div', 'sk3d-shadow'));
-    stage.append(scene);
-    viewport.append(stage);
+    const MAT_OF = { screen: 'screen', rack: 'screen', wood: 'wood' };
+    // Le mobilier d'un espace est un module d'environ 5 × 4 m, répété pour remplir la zone :
+    // des objets à taille réelle, nombreux et serrés, comme sur la maquette de référence.
+    const MOD_W = 7.5, MOD_D = 6.2, HK = 0.04;
+    function furnish(group, kind, people, mats, x0, z0, rw, rd) {
+        const nx = Math.max(1, Math.round(rw / MOD_W)), nz = Math.max(1, Math.round(rd / MOD_D));
+        const mw = rw / nx, md = rd / nz, pad = 0.9;
+        const cw = mw - pad * 2, cd = md - pad * 2;
+        for (let ix = 0; ix < nx; ix++) {
+            for (let iz = 0; iz < nz; iz++) {
+                const ox = x0 + ix * mw + pad, oz = z0 + iz * md + pad;
+                for (const [fx, fy, fw, fd, h, z, mat] of kind) {
+                    const w = Math.max(0.12, fw * cw), d = Math.max(0.12, fd * cd), hh = h * HK;
+                    const m = rbox(w, hh, d, mats[MAT_OF[mat] || 'white'], mat === 'plant' ? 0.2 : 0.05);
+                    m.position.set(ox + fx * cw + w / 2, SLAB + z * HK + hh / 2, oz + fy * cd + d / 2);
+                    group.add(m);
+                }
+                // Une ou deux silhouettes par module, en alternance.
+                (people || []).forEach(([px, pz], n) => {
+                    if ((ix + iz + n) % 2) return;
+                    const p = person(mats);
+                    p.position.set(ox + px * cw, SLAB, oz + pz * cd);
+                    p.rotation.y = (ix * 3 + n) * 1.3;
+                    group.add(p);
+                });
+            }
+        }
+    }
 
-    const controls = el('div', 'sk3d-controls');
-    const overviewBtn = el('button', 'sk3d-btn sk3d-btn--overview', '<i class="fa-solid fa-building" aria-hidden="true"></i>');
-    overviewBtn.type = 'button';
-    overviewBtn.setAttribute('aria-label', "Vue d'ensemble du bâtiment");
-    const floorBtns = el('div', 'sk3d-controls__floors');
-    controls.append(overviewBtn, floorBtns);
+    const floorObjs = floors.map((f, i) => {
+        const mats = makeMaterials();
+        const g = new THREE.Group();
+        g.position.y = i * H;
+        building.add(g);
 
-    const hint = el('p', 'sk3d-hint', '<i class="fa-solid fa-hand-pointer" aria-hidden="true"></i> Glissez pour faire pivoter la maquette');
+        g.add(mesh(SLAB_GEO, mats.slab));
+        // Murs périphériques ; le pignon droit est vitré.
+        FOOT.forEach((p, k) => {
+            const q = FOOT[(k + 1) % FOOT.length];
+            if (p[0] === LEN && q[0] === LEN) g.add(glazing(p, q, mats));
+            else g.add(wallBetween(p, q, WALL_H, WALL_T, mats.wall));
+        });
+        // Habillage en lattes de bois sur le mur du fond, comme sur la maquette.
+        const slatLen = LEN - 5;
+        const tex = SLAT.clone();
+        tex.needsUpdate = true;
+        tex.repeat.set(slatLen / 2.2, 1);
+        const slatMat = mats.slat.clone();
+        slatMat.map = tex;
+        mats.slat = slatMat;
+        const slat = mesh(new THREE.PlaneGeometry(slatLen, WALL_H - 0.05), slatMat, false, true);
+        slat.position.set(4.6 + slatLen / 2, SLAB + WALL_H / 2, WALL_T / 2 + 0.02);
+        g.add(slat);
 
-    // Plein écran (API Fullscreen) quand le navigateur le permet.
-    const fsBtn = el('button', 'sk3d-fs', '<i class="fa-solid fa-expand" aria-hidden="true"></i>');
-    fsBtn.type = 'button';
-    fsBtn.setAttribute('aria-label', 'Afficher la maquette en plein écran');
+        // Zones : une compétence par zone.
+        const layout = zoneLayout(f.skills.length, i);
+        const seq = FLOOR_ZONES[i % FLOOR_ZONES.length];
+        const iw = INNER.x1 - INNER.x0, id = INNER.z1 - INNER.z0;
+        const zones = f.skills.map((s, k) => {
+            const [fx, fz, fw, fd] = layout[k];
+            const x0 = INNER.x0 + fx * iw, z0 = INNER.z0 + fz * id, rw = fw * iw, rd = fd * id;
+            const zmat = (k % 2 ? mats.floorB : mats.floorA).clone();
+            const floor = mesh(new THREE.BoxGeometry(rw - 0.12, 0.03, rd - 0.12), zmat, false, true);
+            floor.position.set(x0 + rw / 2, SLAB + 0.015, z0 + rd / 2);
+            floor.userData = { floor: i, zone: k, base: zmat.color.clone() };
+            g.add(floor);
+            // Cloisons basses sur les limites intérieures, avec un passage.
+            if (fx > 0.01) g.add(wallBetween([x0, z0 + rd * 0.4], [x0, z0 + rd], 1.15, 0.14, mats.wall));
+            if (fz > 0.01) g.add(wallBetween([x0 + rw * 0.42, z0], [x0 + rw, z0], 1.15, 0.14, mats.wall));
+            const kind = seq[k % seq.length];
+            furnish(g, ZONE_KINDS[kind], PEOPLE[kind], mats, x0, z0, rw, rd);
+            // Colonne vitrée à l'angle des zones du fond, comme les colonnes de verre de la référence.
+            if (fx > 0.01 && fz < 0.01) {
+                const col = mesh(new THREE.CylinderGeometry(0.42, 0.42, WALL_H, 24), mats.glass, false, false);
+                col.position.set(x0, SLAB + WALL_H / 2, z0 + rd * 0.2);
+                g.add(col);
+            }
+            return { skill: s, floor, x: x0 + rw / 2, z: z0 + rd / 2, back: fz < 0.01 };
+        });
+
+        if (i === 0) g.add(terrace(mats));
+
+        const list = new Set();
+        g.traverse(o => { if (o.material) list.add(o.material); });
+        return { group: g, mats: [...list], zones, lift: 0, opacity: 1 };
+    });
+
+    // Toit (et acrotère) : s'envole avec les étages supérieurs.
+    const roofMats = makeMaterials();
+    const roof = new THREE.Group();
+    roof.position.y = floors.length * H;
+    roof.add(mesh(SLAB_GEO, roofMats.slab));
+    FOOT.forEach((p, k) => roof.add(wallBetween(p, FOOT[(k + 1) % FOOT.length], 0.45, WALL_T, roofMats.wall)));
+    building.add(roof);
+    const roofObj = { group: roof, mats: Object.values(roofMats), lift: 0, opacity: 1 };
+
+    function terrace(mats) {
+        const t = new THREE.Group();
+        const deck = mesh(new THREE.BoxGeometry(6.4, 0.16, 16), mats.slab);
+        deck.position.set(0, 0.08, 0);
+        t.add(deck);
+        for (let r = 0; r < 6; r++) {
+            for (let c = 0; c < 2; c++) {
+                const x = -1.5 + c * 3, z = -6.3 + r * 2.5;
+                const tab = mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.06, 20), mats.white);
+                tab.position.set(x, 0.86, z);
+                const foot = mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.72, 8), mats.white);
+                foot.position.set(x, 0.5, z);
+                t.add(tab, foot);
+                for (const dz of [-0.75, 0.75]) {
+                    const ch = rbox(0.42, 0.45, 0.42, mats.white, 0.05);
+                    ch.position.set(x, 0.38, z + dz);
+                    const back = rbox(0.42, 0.45, 0.06, mats.white, 0.02);
+                    back.position.set(x, 0.8, z + dz + Math.sign(dz) * 0.2);
+                    t.add(ch, back);
+                }
+            }
+        }
+        const a = person(mats); a.position.set(2.6, 0.16, -7.2);
+        const b = person(mats); b.position.set(-2.4, 0.16, 6.6);
+        t.add(a, b);
+        t.position.set(LEN + 5.5, 0, DEP * 0.62);
+        return t;
+    }
+
+    // ---------------------------------------------------------------- Post-traitement
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const ao = new GTAOPass(scene, camera, 1, 1);
+    ao.output = GTAOPass.OUTPUT.Default;
+    ao.blendIntensity = 1;
+    ao.updateGtaoMaterial({ radius: 0.9, distanceExponent: 1.4, thickness: 1.2, scale: 1, samples: 16 });
+    ao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 16 });
+    composer.addPass(ao);
+    composer.addPass(new OutputPass());
+
+    // ---------------------------------------------------------------- Caméra et rendu
+    let width = 1, height = 1, dirty = true;
+    const invalidate = () => { dirty = true; };
+    const right = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), camDir).normalize();
+    const cam = { target: new THREE.Vector3(0, 8, 0), zoom: 0.9, shift: 0 };
+
+    function updateCamera() {
+        const aspect = width / height;
+        const mobile = width < 700;
+        const half = (mobile ? Math.max(24, 24 / aspect) : Math.max(24, 34 / aspect)) / cam.zoom;
+        camera.left = -half * aspect; camera.right = half * aspect;
+        camera.top = half; camera.bottom = -half;
+        camera.updateProjectionMatrix();
+        // Décalage vers la droite pour laisser la place au titre, comme sur la référence.
+        const t = cam.target.clone().addScaledVector(right, mobile ? 0 : -cam.shift * half * aspect);
+        camera.position.copy(t).addScaledVector(camDir, 150);
+        camera.lookAt(t);
+    }
+
+    function resize() {
+        const r = root.getBoundingClientRect();
+        width = Math.max(1, r.width); height = Math.max(1, r.height);
+        renderer.setSize(width, height);
+        composer.setSize(width, height);
+        ao.setSize(width * renderer.getPixelRatio(), height * renderer.getPixelRatio());
+        invalidate();
+    }
+    new ResizeObserver(resize).observe(root);
+    resize();
+
+    // ---------------------------------------------------------------- Animations
+    // ?instant : sans animation (mouvement réduit, ou captures de contrôle).
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches || /[?&]instant\b/.test(location.search);
+    const tweens = new Set();
+    const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    function tween(duration, update, delay = 0) {
+        return new Promise(done => {
+            const tw = { start: performance.now() + delay, duration: reduced ? 1 : duration, update, done };
+            tweens.add(tw);
+            invalidate();
+        });
+    }
+    // Renvoie vrai si une animation a avancé : l'image finale est ainsi toujours rendue.
+    function stepTweens(now) {
+        const active = tweens.size > 0;
+        for (const tw of tweens) {
+            const t = Math.min(1, Math.max(0, (now - tw.start) / tw.duration));
+            if (now < tw.start) continue;
+            tw.update(ease(t));
+            if (t >= 1) { tweens.delete(tw); tw.done(); }
+        }
+        return active;
+    }
+
+    function setOpacity(obj, o) {
+        obj.opacity = o;
+        for (const m of obj.mats) {
+            const base = m.userData.baseOpacity ?? (m.userData.baseOpacity = m.opacity);
+            const transparent = o < 1 || m.userData.baseTransparent || (m.userData.baseTransparent = m.transparent);
+            if (m.transparent !== transparent) { m.transparent = transparent; m.needsUpdate = true; }
+            m.opacity = base * o;
+            m.depthWrite = o >= 1 && !m.userData.noDepth;
+        }
+        obj.group.visible = o > 0.001;
+    }
+    floorObjs.forEach(o => o.mats.forEach(m => { m.userData.baseTransparent = m.transparent; m.userData.noDepth = !m.depthWrite; }));
+    roofObj.mats.forEach(m => { m.userData.baseTransparent = m.transparent; m.userData.noDepth = !m.depthWrite; });
+
+    function animateStack(obj, lift, opacity, delay) {
+        const l0 = obj.lift, o0 = obj.opacity, y0 = obj.group.position.y - l0;
+        if (opacity > 0) obj.group.visible = true;
+        return tween(1100, (t) => {
+            obj.lift = l0 + (lift - l0) * t;
+            obj.group.position.y = y0 + obj.lift;
+            setOpacity(obj, o0 + (opacity - o0) * t);
+        }, delay);
+    }
+    function animateCamera(target, zoom, shift) {
+        const t0 = cam.target.clone(), z0 = cam.zoom, s0 = cam.shift;
+        return tween(1300, (t) => {
+            cam.target.lerpVectors(t0, target, t);
+            cam.zoom = z0 + (zoom - z0) * t;
+            cam.shift = s0 + (shift - s0) * t;
+        });
+    }
+
+    // ---------------------------------------------------------------- Titre, repères, fiche
+    function setTitle(text, sub) {
+        titleEl.innerHTML = [...text.toLowerCase()].map((ch, n) =>
+            `<span style="animation-delay:${n * 28}ms">${ch === ' ' ? '&nbsp;' : ch}</span>`).join('');
+        subEl.textContent = sub;
+    }
+
+    let current = -1, selected = -1, pins = [];
+    function buildPins(i) {
+        pinLayer.innerHTML = '';
+        pins = floorObjs[i].zones.map((z, k) => {
+            const b = document.createElement('button');
+            b.type = 'button';
+            // Zones du fond : repère vers le haut ; zones de devant : vers le bas, comme sur la référence.
+            b.className = 'sk3d-pin' + (z.back ? '' : ' is-down');
+            b.style.setProperty('--line', (z.back ? 110 : 64) + 'px');
+            b.style.animationDelay = 250 + k * 70 + 'ms';
+            b.setAttribute('aria-label', `${z.skill.name} — ${z.skill.level}`);
+            b.innerHTML = `<span class="sk3d-pin__icon"><i class="${z.skill.icon || floors[i].icon}" aria-hidden="true"></i></span>
+                <span class="sk3d-pin__label">${z.skill.name}</span>
+                <span class="sk3d-pin__line"></span>
+                <span class="sk3d-pin__dot"></span>`;
+            b.addEventListener('click', () => selectSkill(k));
+            b.addEventListener('mouseenter', () => hoverZone(k));
+            b.addEventListener('mouseleave', () => hoverZone(-1));
+            pinLayer.append(b);
+            return { el: b, zone: z };
+        });
+    }
+    const v = new THREE.Vector3();
+    function placePins() {
+        if (current < 0) return;
+        const g = floorObjs[current].group;
+        for (const p of pins) {
+            v.set(p.zone.x, SLAB + 0.05, p.zone.z).add(OFFSET);
+            v.y += g.position.y;
+            v.project(camera);
+            p.el.style.setProperty('--x', ((v.x + 1) / 2) * width + 'px');
+            p.el.style.setProperty('--y', ((1 - v.y) / 2) * height + 'px');
+        }
+    }
+
+    const HOVER = new THREE.Color(0xf0d8ce);
+    let hovered = -1;
+    function hoverZone(k) {
+        if (current < 0) return;
+        floorObjs[current].zones.forEach((z, n) => {
+            const on = n === k || n === selected;
+            z.floor.material.color.copy(on ? HOVER : z.floor.userData.base);
+        });
+        pins.forEach((p, n) => p.el.classList.toggle('is-hover', n === k));
+        hovered = k;
+        invalidate();
+    }
+
+    function selectSkill(k) {
+        selected = k;
+        const s = floorObjs[current].zones[k].skill;
+        pins.forEach((p, n) => p.el.classList.toggle('is-selected', n === k));
+        hoverZone(hovered);
+        cardEl.hidden = false;
+        cardEl.innerHTML = `<p class="sk3d-card__name">${s.name}</p>
+            <p class="sk3d-card__level">${s.level}</p>
+            <div class="sk3d-card__bar" aria-hidden="true">${[1, 2, 3].map(n => `<span class="${n <= s.rank ? 'on' : ''}"></span>`).join('')}</div>`;
+    }
+
+    // ---------------------------------------------------------------- Étages
+    const levelBtns = floors.map((f, i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = i;
+        b.setAttribute('aria-label', `Étage ${i} : ${f.title}`);
+        b.addEventListener('click', () => selectFloor(i));
+        levelsEl.append(b);
+        return b;
+    });
+
+    function selectFloor(i) {
+        if (i === current) return;
+        current = i; selected = -1; hovered = -1;
+        cardEl.hidden = true;
+        levelBtns.forEach((b, n) => b.classList.toggle('is-active', n === i));
+        root.classList.add('is-level');
+        setTitle(floors[i].title, 'sélectionnez une zone');
+        floorObjs.forEach((o, j) => {
+            o.zones.forEach(z => z.floor.material.color.copy(z.floor.userData.base));
+            animateStack(o, j > i ? 40 + (j - i) * 6 : 0, j > i ? 0 : 1, j > i ? (j - i) * 60 : 0);
+        });
+        animateStack(roofObj, 46 + (floors.length - i) * 6, 0, 0);
+        animateCamera(new THREE.Vector3(0, i * H - 0.5, 0), 1.0, 0.1);
+        buildPins(i);
+    }
+
+    function showOverview() {
+        current = -1; selected = -1;
+        pinLayer.innerHTML = ''; pins = [];
+        cardEl.hidden = true;
+        levelBtns.forEach(b => b.classList.remove('is-active'));
+        root.classList.remove('is-level');
+        setTitle('compétences', `${floors.length} étages · ${floors.reduce((a, f) => a + f.skills.length, 0)} zones`);
+        floorObjs.forEach(o => animateStack(o, 0, 1, 0));
+        animateStack(roofObj, 0, 1, 0);
+        animateCamera(new THREE.Vector3(0, (floors.length * H) / 2, 0), 0.66, 0.06);
+    }
+    $('.sk3d-bar__side').addEventListener('click', showOverview);
+
+    // Clic et survol directement sur les zones de la maquette.
+    const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+    function pick(e) {
+        if (current < 0) return -1;
+        const r = renderer.domElement.getBoundingClientRect();
+        ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+        ray.setFromCamera(ndc, camera);
+        const hit = ray.intersectObjects(floorObjs[current].zones.map(z => z.floor), false)[0];
+        return hit ? hit.object.userData.zone : -1;
+    }
+    renderer.domElement.addEventListener('pointermove', (e) => {
+        const k = pick(e);
+        if (k !== hovered) hoverZone(k);
+        renderer.domElement.style.cursor = k >= 0 ? 'pointer' : '';
+    });
+    renderer.domElement.addEventListener('click', (e) => { const k = pick(e); if (k >= 0) selectSkill(k); });
+
+    // Plein écran.
+    const fsBtn = $('.sk3d-fs');
     if (!document.fullscreenEnabled) fsBtn.hidden = true;
     fsBtn.addEventListener('click', () => {
         if (document.fullscreenElement) document.exitFullscreen();
@@ -377,209 +817,24 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('fullscreenchange', () => {
         const on = document.fullscreenElement === root;
         fsBtn.innerHTML = `<i class="fa-solid ${on ? 'fa-compress' : 'fa-expand'}" aria-hidden="true"></i>`;
-        fsBtn.setAttribute('aria-label', on ? 'Quitter le plein écran' : 'Afficher la maquette en plein écran');
     });
 
-    root.append(info, viewport, controls, hint, fsBtn);
-
-    // --- Étages ---
-    const floorEls = floors.map((f, i) => {
-        const floor = el('div', 'sk3d-floor');
-        floor.style.setProperty('--z', i * H + 'px');
-        floor.style.setProperty('--i', i);
-        const [fx, fy, fw, fd] = FOOTPRINTS[Math.min(i, FOOTPRINTS.length - 1)];
-        floor.style.left = fx + 'px'; floor.style.top = fy + 'px';
-        floor.style.width = fw + 'px'; floor.style.height = fd + 'px';
-
-        const shell = box(fw, fd, H, 'sk3d-shell');
-        const slab = el('div', 'sk3d-slab');
-        // Murs du fond, bas, pour voir l'intérieur une fois le toit retiré.
-        const backY = el('div', 'sk3d-face sk3d-wall');
-        backY.style.cssText = `width:${fw}px;height:${H}px;transform:rotateX(90deg)`;
-        const backX = el('div', 'sk3d-face sk3d-wall sk3d-wall--side');
-        backX.style.cssText = `width:${fd}px;height:${H}px;transform:translateX(${fw}px) rotateZ(90deg) rotateX(90deg)`;
-        shell.prepend(slab, backY, backX);
-
-        const label = el('div', 'sk3d-floor__label', `<b>${i}</b> ${f.title}`);
-        shell.querySelector('.sk3d-face--front').append(label);
-
-        // Zones : un plateau ouvert découpé en espaces de tailles différentes, une compétence par zone.
-        const zones = zoneLayout(f.skills.length, i);
-        const pad = 10;
-        const iw = fw - pad * 2, id = fd - pad * 2;
-
-        const rooms = f.skills.map((s, k) => {
-            const [zx, zy, zw, zd] = zones[k];
-            const rw = zw * iw, rd = zd * id;
-            const r = zy > 0.01 ? 1 : 0;
-            const rows = 2;
-            const room = el('div', 'sk3d-room' + (k % 2 ? ' sk3d-room--alt' : ''));
-            room.style.cssText = `left:${pad + zx * iw}px;top:${pad + zy * id}px;width:${rw}px;height:${rd}px`;
-
-            // Cloisons basses sur les limites intérieures, avec un passage laissé libre.
-            const kk = Math.max(0.55, Math.min(1.3, Math.min(rw, rd) / 130));
-            if (zx > 0.01) {
-                const wall = box(4, rd * 0.62, 16 * kk, 'sk3d-obj sk3d-obj--partition');
-                wall.style.left = '-2px'; wall.style.top = rd * 0.38 + 'px';
-                room.append(wall);
-            }
-            if (zy > 0.01) {
-                const wall = box(rw * 0.58, 4, 16 * kk, 'sk3d-obj sk3d-obj--partition');
-                wall.style.left = rw * 0.42 + 'px'; wall.style.top = '-2px';
-                room.append(wall);
-            }
-
-            const seq = FLOOR_ZONES[i % FLOOR_ZONES.length];
-            const kind = seq[k % seq.length];
-            const furniture = furnish(ZONE_KINDS[kind], rw, rd);
-            const pk = Math.max(0.6, Math.min(1.2, Math.min(rw, rd) / 130));
-            (PEOPLE[kind] || []).forEach(([px, py]) => furniture.items.push(person(px * rw, py * rd, pk)));
-
-            const pin = el('button', 'sk3d-pin');
-            pin.type = 'button';
-            pin.style.left = rw / 2 + 'px';
-            pin.style.top = rd / 2 + 'px';
-            pin.style.setProperty('--lift', furniture.top + 'px');
-            // Rangée du fond : tige plus longue pour que les étiquettes ne se chevauchent pas.
-            pin.style.setProperty('--stem', (rows > 1 && r === 0 ? 62 : 22) + 'px');
-            pin.setAttribute('aria-label', `${s.name} — ${s.level}`);
-            pin.innerHTML = `<span class="sk3d-pin__inner">
-                <span class="sk3d-pin__icon"><i class="${s.icon || f.icon}" aria-hidden="true"></i></span>
-                <span class="sk3d-pin__label">${s.name}</span>
-                <span class="sk3d-pin__stem"></span>
-                <span class="sk3d-pin__dot"></span>
-            </span>`;
-            pin.addEventListener('click', (e) => { e.stopPropagation(); selectSkill(i, k); });
-            room.addEventListener('click', () => selectSkill(i, k));
-
-            room.append(...furniture.items, pin);
-            shell.append(room);
-            return { room, pin };
-        });
-
-        floor.append(shell);
-        floor.addEventListener('click', () => { if (current !== i) selectFloor(i); });
-        scene.append(floor);
-
-        const btn = el('button', 'sk3d-btn', `<i class="${f.icon}" aria-hidden="true"></i><span>${f.title}</span>`);
-        btn.type = 'button';
-        btn.setAttribute('aria-label', `Étage ${i} : ${f.title}`);
-        btn.addEventListener('click', () => selectFloor(i));
-        floorBtns.prepend(btn);
-
-        return { floor, rooms, btn };
-    });
-
-    // --- États ---
-    let current = -1;
-
-    function showOverview() {
-        current = -1;
-        stage.style.setProperty('--focus', '0px');
-        stage.style.setProperty('--zoom', 1);
-        root.classList.remove('is-floor');
-        floorEls.forEach(({ floor, btn, rooms }) => {
-            floor.classList.remove('is-active', 'is-above', 'is-below');
-            btn.classList.remove('is-active');
-            rooms.forEach(r => r.room.classList.remove('is-selected'));
-        });
-        overviewBtn.classList.add('is-active');
-        infoTitle.textContent = 'Le bâtiment';
-        infoSub.textContent = `${floors.length} étages, ${floors.reduce((a, f) => a + f.skills.length, 0)} compétences. Sélectionnez un étage.`;
-        infoCard.hidden = true;
+    // ---------------------------------------------------------------- Boucle
+    function loop(now) {
+        requestAnimationFrame(loop);
+        const animating = stepTweens(now);
+        if (!animating && !dirty) return;
+        updateCamera();
+        composer.render();
+        placePins();
+        dirty = false;
     }
+    requestAnimationFrame(loop);
 
-    function selectFloor(i) {
-        current = i;
-        // Recentre la vue sur l'étage ouvert.
-        // Le zoom se fait autour du centre de l'étage ouvert, recentré à l'écran.
-        const zf = i * H + H / 2;
-        scene.style.setProperty('--zf', zf + 'px');
-        stage.style.setProperty('--focus', '-40px');
-        // Les étages plus petits sont agrandis pour garder des zones lisibles.
-        const fp = FOOTPRINTS[Math.min(i, FOOTPRINTS.length - 1)];
-        stage.style.setProperty('--zoom', Math.min(1.45, W / fp[2]).toFixed(2));
-        root.classList.add('is-floor');
-        overviewBtn.classList.remove('is-active');
-        floorEls.forEach(({ floor, btn, rooms }, j) => {
-            floor.classList.toggle('is-active', j === i);
-            floor.classList.toggle('is-above', j > i);
-            floor.classList.toggle('is-below', j < i);
-            btn.classList.toggle('is-active', j === i);
-            rooms.forEach(r => r.room.classList.remove('is-selected'));
-        });
-        infoTitle.textContent = floors[i].title;
-        infoSub.textContent = `Étage ${i} — sélectionnez une compétence`;
-        infoCard.hidden = true;
-    }
-
-    function selectSkill(i, k) {
-        if (current !== i) selectFloor(i);
-        const s = floors[i].skills[k];
-        floorEls[i].rooms.forEach((r, j) => r.room.classList.toggle('is-selected', j === k));
-        infoCard.hidden = false;
-        infoCard.innerHTML = `<p class="sk3d-info__name">${s.name}</p>
-            <p class="sk3d-info__level">${s.level}</p>
-            <div class="sk3d-info__bar" aria-hidden="true">${[1, 2, 3].map(n => `<span class="${n <= s.rank ? 'on' : ''}"></span>`).join('')}</div>`;
-    }
-
-    overviewBtn.addEventListener('click', showOverview);
-    showOverview();
-
-    // Animation d'arrivée : les étages se posent un à un, puis l'étage 0 s'ouvre.
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        selectFloor(0);
-    } else {
-        root.classList.add('is-intro');
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-            root.classList.add('is-building');
-            root.classList.remove('is-intro');
-        }));
-        setTimeout(() => {
-            root.classList.remove('is-building');
-            if (current === -1) selectFloor(0);
-        }, floors.length * 160 + 1100);
-    }
-
-    // --- Rotation au glisser ---
-    let rx = 58, rz = -38;
-    const apply = () => {
-        stage.style.setProperty('--rx', rx + 'deg');
-        stage.style.setProperty('--rz', rz + 'deg');
-    };
-    apply();
-
-    let drag = null;
-    viewport.addEventListener('pointerdown', (e) => {
-        if (e.button !== 0) return;
-        drag = { x: e.clientX, y: e.clientY, rx, rz, moved: false };
-    });
-    window.addEventListener('pointermove', (e) => {
-        if (!drag) return;
-        const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
-        if (!drag.moved && Math.hypot(dx, dy) < 5) return;
-        drag.moved = true;
-        root.classList.add('is-dragging');
-        rz = Math.max(-62, Math.min(-16, drag.rz - dx * 0.25));
-        rx = Math.max(45, Math.min(68, drag.rx - dy * 0.2));
-        apply();
-    });
-    window.addEventListener('pointerup', () => {
-        if (drag?.moved) {
-            // Empêche le clic qui suit un glisser de changer la sélection.
-            viewport.addEventListener('click', (e) => e.stopPropagation(), { capture: true, once: true });
-        }
-        drag = null;
-        root.classList.remove('is-dragging');
-    });
-
-    // --- Mise à l'échelle ---
-    const fit = () => {
-        const s = Math.max(0.3, Math.min(1.3, viewport.clientWidth / 820, viewport.clientHeight / 640));
-        stage.style.setProperty('--scale', s);
-        // Sur petit écran, les repères restent lisibles malgré la réduction de la maquette.
-        stage.style.setProperty('--pin-scale', Math.min(1.5, Math.max(1, 0.6 / s)).toFixed(2));
-    };
-    fit();
-    new ResizeObserver(fit).observe(viewport);
-});
+    // Arrivée : le bâtiment fermé apparaît, puis l'étage 0 s'ouvre.
+    setTitle('compétences', `${floors.length} étages · ${floors.reduce((a, f) => a + f.skills.length, 0)} zones`);
+    cam.target.set(0, (floors.length * H) / 2, 0); cam.zoom = 0.6; cam.shift = 0.06;
+    animateCamera(new THREE.Vector3(0, (floors.length * H) / 2, 0), 0.66, 0.06);
+    root.classList.add('is-ready');
+    setTimeout(() => { if (current === -1) selectFloor(0); }, reduced ? 0 : 1500);
+}
