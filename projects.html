@@ -442,6 +442,7 @@
                                 <span class="tech-tag">Next.js 15</span>
                                 <span class="tech-tag">React 19</span>
                                 <span class="tech-tag">TypeScript</span>
+                                <span class="tech-tag">Node.js</span>
                                 <span class="tech-tag">Supabase</span>
                                 <span class="tech-tag">Stripe</span>
                             </div>
@@ -721,6 +722,15 @@
                         <p>Import &amp; parsing GPX (validation, tracé Leaflet) et synchronisation automatique Strava &amp; Garmin · modèle de fitness Banister (TRIMP, CTL/ATL/TSB et recommandation contextualisée) · estimation VDOT/VO2max et allures cibles (Daniels/Gilbert) · zones cardiaques et efficacité cardiaque · génération de plans d'entraînement par phases (Base, Affûtage, Build, Affinage) et dashboard analytique (Chart.js) · carte de chaleur des parcours · bilan hebdomadaire par email · abonnements Stripe (Free / Pro 6 €/mois / Elite 14 €/mois) gérés par webhooks.</p>
                     </div>
                     <div class="modal__detail">
+                        <h4>Stack technique</h4>
+                        <ul class="modal__stack">
+                            <li><strong>Framework</strong> Next.js 15 (App Router)</li>
+                            <li><strong>Backend</strong> Server Actions Next.js + API Routes (Node.js)</li>
+                            <li><strong>Base de données</strong> Supabase (PostgreSQL hébergé)</li>
+                            <li><strong>Auth</strong> Supabase Auth</li>
+                        </ul>
+                    </div>
+                    <div class="modal__detail">
                         <h4>Architecture &amp; ingénierie</h4>
                         <p>Next.js 15 (App Router) organisé en route groups (marketing, auth, app protégée, admin), server actions et API routes (handler GPX, webhook Stripe). Supabase pour l'auth, PostgreSQL et le stockage, avec Row Level Security (auth.uid() = user_id) sur toutes les tables. Déploiement en production sur VPS OVH (pm2), typage TypeScript de bout en bout (types DB générés depuis le schéma).</p>
                     </div>
@@ -733,6 +743,8 @@
                     <span class="tech-tag">Next.js 15</span>
                     <span class="tech-tag">React 19</span>
                     <span class="tech-tag">TypeScript</span>
+                    <span class="tech-tag">Node.js</span>
+                    <span class="tech-tag">PostgreSQL</span>
                     <span class="tech-tag">Supabase</span>
                     <span class="tech-tag">Stripe</span>
                     <span class="tech-tag">Tailwind CSS</span>
