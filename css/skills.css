@@ -311,7 +311,9 @@ body.dark-mode .sk3d {
     margin-left: -300px;
     margin-top: -170px;
     transform-style: preserve-3d;
-    transform: scale(var(--scale)) rotateX(var(--rx)) rotateZ(var(--rz));
+    transform-origin: 50% 50% var(--zf, 0px);
+    transform: scale(calc(var(--scale) * var(--zoom, 1))) rotateX(var(--rx)) rotateZ(var(--rz));
+    transition: transform .8s cubic-bezier(.65, 0, .25, 1);
 }
 .sk3d-scene, .sk3d-scene * { transform-style: preserve-3d; }
 
@@ -383,12 +385,12 @@ body.dark-mode .sk3d-floor:not(.is-active):hover > .sk3d-shell > .sk3d-face--fro
     position: absolute;
     transform: translateZ(2px);
     background: var(--sk3d-room);
-    box-shadow: inset 0 0 0 2px var(--sk3d-room-line);
     opacity: 0;
     transition: opacity .5s ease .25s, background-color .3s ease;
     pointer-events: none;
 }
 .sk3d-floor.is-active .sk3d-room { opacity: 1; pointer-events: auto; cursor: pointer; }
+.sk3d-room--alt { background: var(--sk3d-slab); }
 .sk3d-room:hover { background: hsl(14, 100%, 95%); }
 .sk3d-room.is-selected { background: hsl(14, 100%, 90%); }
 body.dark-mode .sk3d-room:hover { background: hsl(14, 30%, 26%); }
@@ -398,6 +400,24 @@ body.dark-mode .sk3d-room.is-selected { background: hsl(14, 40%, 30%); }
 .sk3d-obj--white .sk3d-face--top { background: hsl(30, 20%, 99%); }
 .sk3d-obj--white .sk3d-face--front { background: hsl(30, 10%, 90%); }
 .sk3d-obj--white .sk3d-face--left { background: hsl(30, 8%, 84%); }
+.sk3d-obj--partition .sk3d-face--top { background: hsl(30, 20%, 99%); }
+.sk3d-obj--partition .sk3d-face--front { background: hsl(30, 12%, 91%); }
+.sk3d-obj--partition .sk3d-face--left { background: hsl(30, 10%, 86%); }
+body.dark-mode .sk3d-obj--partition .sk3d-face--top { background: hsl(0, 0%, 45%); }
+body.dark-mode .sk3d-obj--partition .sk3d-face--front { background: hsl(0, 0%, 36%); }
+body.dark-mode .sk3d-obj--partition .sk3d-face--left { background: hsl(0, 0%, 30%); }
+.sk3d-obj--rack .sk3d-face--top { background: hsl(220, 10%, 34%); }
+.sk3d-obj--rack .sk3d-face--front { background: repeating-linear-gradient(0deg, hsl(220, 12%, 22%) 0 5px, hsl(14, 90%, 55%) 5px 6px); }
+.sk3d-obj--rack .sk3d-face--left { background: hsl(220, 12%, 18%); }
+.sk3d-obj--board .sk3d-face--top,
+.sk3d-obj--board .sk3d-face--front { background: hsl(0, 0%, 100%); }
+.sk3d-obj--board .sk3d-face--left { background: hsl(0, 0%, 88%); }
+.sk3d-obj--kanban .sk3d-face--top { background: hsl(0, 0%, 100%); }
+.sk3d-obj--kanban .sk3d-face--front { background:
+    linear-gradient(90deg, transparent 32%, hsl(0, 0%, 85%) 32% 33%, transparent 33% 66%, hsl(0, 0%, 85%) 66% 67%, transparent 67%),
+    radial-gradient(circle, hsl(48, 95%, 62%) 0 3px, transparent 4px) 0 0 / 14px 10px,
+    hsl(0, 0%, 100%); }
+.sk3d-obj--kanban .sk3d-face--left { background: hsl(0, 0%, 88%); }
 .sk3d-obj--wood .sk3d-face--top { background: hsl(32, 35%, 90%); }
 .sk3d-obj--wood .sk3d-face--front { background: hsl(30, 22%, 80%); }
 .sk3d-obj--wood .sk3d-face--left { background: hsl(30, 18%, 74%); }
