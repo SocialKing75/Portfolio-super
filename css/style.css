@@ -1074,6 +1074,8 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible {
 .project__image { width: 100%; height: 200px; object-fit: cover; }
 .project__content { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
 .project__title { font-size: var(--h2-font-size); margin-bottom: 1rem; color: var(--title-color); }
+.project__meta { margin: -0.25rem 0 0.45rem; font-size: var(--smaller-font-size, .75rem); font-weight: 500; color: var(--text-color-light); }
+.project__event { color: var(--first-color); font-weight: 600; }
 /* Description tronquée à 4 lignes pour des cartes de même taille ; le texte complet est dans la fiche */
 .project__description { margin-bottom: 1.5rem; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 4; line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 .project__details { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem; }

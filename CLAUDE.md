@@ -11,3 +11,9 @@
   puis la date de publication (jour de l'ajout) `<time class="hackathon-card__date" datetime="AAAA-MM-JJ">Publié le …</time>`.
   `js/main.js` les reformate dans la langue choisie. Ne jamais inventer une date d'événement : la demander.
 - Tout nouveau texte est traduit dans les 5 langues de `js/translations.js` (fr, en, es, de, zh).
+
+## Projets (`projects.html`)
+
+- Chaque carte porte, entre l'étiquette et le titre, `<p class="project__meta">` avec la date de
+  l'événement (`time.project__event` + `data-event-start`/`data-event-end`, si elle est connue) et
+  la date de publication (`time.project__date`, jour de l'ajout). Ne jamais inventer une date d'événement.

@@ -52,7 +52,18 @@ function init() {
             </div>
             <button class="sk3d-bar__side" type="button" aria-label="Vue d'ensemble du bâtiment"><span></span><span></span><span></span></button>
         </div>
-        <div class="sk3d-grain" aria-hidden="true"></div>`;
+        <div class="sk3d-grain" aria-hidden="true"></div>
+        <aside class="sk3d-panel" aria-label="Projets liés à la compétence" aria-hidden="true">
+            <div class="sk3d-panel__head">
+                <div>
+                    <p class="sk3d-panel__eyebrow">Projets liés</p>
+                    <h3 class="sk3d-panel__title"></h3>
+                    <p class="sk3d-panel__level"></p>
+                </div>
+                <button class="sk3d-panel__close" type="button" aria-label="Fermer le panneau">&times;</button>
+            </div>
+            <div class="sk3d-panel__list"></div>
+        </aside>`;
     const $ = (s) => root.querySelector(s);
     const holder = $('.sk3d-canvas'), pinLayer = $('.sk3d-pins');
     const titleEl = $('.sk3d-title'), subEl = $('.sk3d-sub'), cardEl = $('.sk3d-card');
@@ -964,9 +975,94 @@ function init() {
         invalidate();
     }
 
+    // ---------------------------------------------------------------- Panneau des projets liés
+    // Les projets sont lus dans projects.html ; une compétence y est liée par mots-clés
+    // recherchés dans les étiquettes, le titre et les détails de chaque carte.
+    const SKILL_KEYWORDS = {
+        'HTML / CSS / JS': ['html', 'css', 'javascript', 'next.js', 'react', 'typescript', 'pwa'],
+        'Python': ['python', 'streamlit', 'fastapi'],
+        'VBA': ['vba', 'macro'],
+        'C': [],
+        'Excel': ['excel'],
+        'PowerBI': ['powerbi', 'power bi'],
+        'Suite Microsoft 365': ['microsoft 365', 'office 365', 'word', 'powerpoint', 'outlook', 'teams'],
+        'Ms Project': ['ms project', 'microsoft project'],
+        'Revit / Autocad': ['revit', 'autocad'],
+        'Navisworks / SketchUp': ['navisworks', 'sketchup'],
+        'Devisoc / Kreo': ['devisoc', 'kreo', 'métré'],
+        'EveBIM / BIMvision': ['evebim', 'bimvision', 'bim'],
+        'Premiere Pro': ['premiere'],
+        'After Effects': ['after effects'],
+        'Photoshop': ['photoshop'],
+        'OBS Studio': ['obs'],
+        'Leadership': ['leadership', 'management'],
+        'Communication': ['communication', 'formation'],
+        'Résolution de problèmes': ['résolution', 'diagnostic'],
+        'Adaptabilité': ['adaptabilité'],
+        'Gestion de projet': ['gestion de projet', 'management de projet', 'chef de projet'],
+        'Agile / Scrum': ['agile', 'scrum'],
+        'Gestion des risques': ['risque'],
+        'Planification stratégique': ['planification', 'planning']
+    };
+    let projectsPromise = null;
+    function loadProjects() {
+        projectsPromise ||= fetch('projects.html')
+            .then(r => (r.ok ? r.text() : ''))
+            .then(html => [...new DOMParser().parseFromString(html, 'text/html').querySelectorAll('.project__card')].map(c => ({
+                id: c.dataset.project,
+                category: c.dataset.category,
+                title: c.querySelector('.project__title')?.textContent.trim() || '',
+                company: c.querySelector('.project__company')?.textContent.trim() || '',
+                image: c.querySelector('.project__image')?.getAttribute('src') || '',
+                event: c.querySelector('.project__event')?.textContent.trim() || '',
+                published: c.querySelector('.project__date')?.getAttribute('datetime') || '',
+                tags: [...c.querySelectorAll('.tech-tag')].map(t => t.textContent.trim()),
+                haystack: [c.querySelector('.project__title'), ...c.querySelectorAll('.tech-tag, .project__detail span')]
+                    .map(e => e?.textContent || '').join(' | ').toLowerCase()
+            })))
+            .catch(() => []);
+        return projectsPromise;
+    }
+    const panel = $('.sk3d-panel'), panelList = $('.sk3d-panel__list');
+    const esc = (t) => t.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    // Mot-clé court (≤ 3 lettres) : mot entier, pour éviter les faux positifs.
+    const matches = (hay, kw) => kw.length <= 3 ? new RegExp(`(^|[^a-zà-ÿ])${kw}([^a-zà-ÿ]|$)`).test(hay) : hay.includes(kw);
+    async function openPanel(skill) {
+        $('.sk3d-panel__title').textContent = skill.name;
+        $('.sk3d-panel__level').textContent = skill.level;
+        panelList.innerHTML = '<p class="sk3d-panel__empty">Chargement…</p>';
+        panel.classList.add('is-open');
+        panel.setAttribute('aria-hidden', 'false');
+        root.classList.add('has-panel');
+        const keywords = SKILL_KEYWORDS[skill.name] ?? [skill.name.toLowerCase()];
+        const projects = (await loadProjects()).filter(p => keywords.some(k => matches(p.haystack, k)));
+        if ($('.sk3d-panel__title').textContent !== skill.name) return;
+        const locale = document.documentElement.lang || 'fr';
+        panelList.innerHTML = projects.length ? projects.map(p => {
+            const pub = p.published ? new Date(p.published + 'T12:00:00').toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+            return `<a class="sk3d-proj" href="projects.html#project-${p.id}">
+                <img class="sk3d-proj__img" src="${esc(p.image)}" alt="" loading="lazy" width="96" height="48">
+                <span class="sk3d-proj__body">
+                    <span class="sk3d-proj__company">${esc(p.company)}</span>
+                    <span class="sk3d-proj__title">${esc(p.title)}</span>
+                    <span class="sk3d-proj__meta">${[p.event, pub && 'Publié le ' + pub].filter(Boolean).map(esc).join(' · ')}</span>
+                </span>
+                <i class="fa-solid fa-arrow-right sk3d-proj__go" aria-hidden="true"></i>
+            </a>`;
+        }).join('') : '<p class="sk3d-panel__empty">Aucun projet lié pour l\'instant.</p>';
+    }
+    function closePanel() {
+        panel.classList.remove('is-open');
+        panel.setAttribute('aria-hidden', 'true');
+        root.classList.remove('has-panel');
+    }
+    $('.sk3d-panel__close').addEventListener('click', closePanel);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePanel(); });
+
     function selectSkill(k) {
         selected = k;
         const s = floorObjs[current].zones[k].skill;
+        openPanel(s);
         pins.forEach((p, n) => p.el.classList.toggle('is-selected', n === k));
         hoverZone(hovered);
         cardEl.hidden = false;
@@ -990,6 +1086,7 @@ function init() {
         if (i === current) return;
         current = i; selected = -1; hovered = -1;
         cardEl.hidden = true;
+        closePanel();
         levelBtns.forEach((b, n) => b.classList.toggle('is-active', n === i));
         root.classList.add('is-level');
         setTitle(floors[i].title, 'sélectionnez une zone');
@@ -1011,6 +1108,7 @@ function init() {
         current = -1; selected = -1;
         pinLayer.innerHTML = ''; pins = [];
         cardEl.hidden = true;
+        closePanel();
         levelBtns.forEach(b => b.classList.remove('is-active'));
         root.classList.remove('is-level');
         setTitle('compétences', `${floors.length} étages · ${floors.reduce((a, f) => a + f.skills.length, 0)} zones`);
