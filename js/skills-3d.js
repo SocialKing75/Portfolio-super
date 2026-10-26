@@ -262,11 +262,11 @@ function init() {
     }
     const PERSON_BODY = new THREE.CapsuleGeometry(0.17, 0.95, 3, 8);
     const PERSON_HEAD = new THREE.SphereGeometry(0.13, 10, 8);
-    function person(mats, s = 1) {
+    function person(mats, s = 1, mat = mats.white) {
         const p = new THREE.Group();
-        const body = mesh(PERSON_BODY, mats.white, false, false);
+        const body = mesh(PERSON_BODY, mat, false, false);
         body.position.y = 0.66 * s;
-        const head = mesh(PERSON_HEAD, mats.white, false, false);
+        const head = mesh(PERSON_HEAD, mat, false, false);
         head.position.y = 1.5 * s;
         p.add(body, head);
         return p;
@@ -528,14 +528,14 @@ function init() {
 
     // Personnages qui se déplacent : ils marchent d'un carrefour à l'autre dans les allées
     // laissées libres entre les modules de mobilier, donc sans traverser les meubles.
-    function walkers(group, mats, x0, z0, rw, rd, { nx, nz, mw, md }) {
+    function walkers(group, mats, x0, z0, rw, rd, { nx, nz, mw, md }, mat) {
         const m = 0.45;
         const node = (ix, iz) => new THREE.Vector2(
             THREE.MathUtils.clamp(x0 + ix * mw, x0 + m, x0 + rw - m),
             THREE.MathUtils.clamp(z0 + iz * md, z0 + m, z0 + rd - m));
         const count = Math.min(3, Math.max(1, Math.round(nx * nz * 0.8)));
         return Array.from({ length: count }, (_, n) => {
-            const p = person(mats);
+            const p = person(mats, 1, mat);
             const at = [(n * 2) % (nx + 1), (n + 1) % (nz + 1)];
             const pos = node(...at);
             p.position.set(pos.x, SLAB, pos.y);
@@ -774,7 +774,11 @@ function init() {
             if (fz > 0.01) inner.add(wallBetween([x0 + rw * 0.42, z0], [x0 + rw, z0], 1.15, 0.14, mats.wall));
             const kind = seq[k % seq.length];
             const grid = furnish(inner, ZONE_KINDS[kind], mats, x0, z0, rw, rd);
-            zoneWalkers.push(...walkers(inner, mats, x0, z0, rw, rd, grid));
+            // Personnages à la couleur de leur zone, en plus soutenu pour ressortir sur le sol.
+            const pc = new THREE.Color(ZONE_COLORS[k % ZONE_COLORS.length]);
+            const hsl = {}; pc.getHSL(hsl);
+            pc.setHSL(hsl.h, Math.min(1, hsl.s * 1.6 + 0.15), hsl.l * 0.72);
+            zoneWalkers.push(...walkers(inner, mats, x0, z0, rw, rd, grid, std(pc)));
             // Colonne vitrée à l'angle des zones du fond, comme les colonnes de verre de la référence.
             if (fx > 0.01 && fz < 0.01) {
                 const col = mesh(new THREE.CylinderGeometry(0.42, 0.42, WALL_H, 24), mats.glass, false, false);
@@ -1027,11 +1031,12 @@ function init() {
     function loadExperiences() {
         expPromise ||= fetch('about.html')
             .then(r => (r.ok ? r.text() : ''))
-            .then(html => [...new DOMParser().parseFromString(html, 'text/html').querySelectorAll('[id].experience__card, [id].timeline__item')].map(c => ({
+            .then(html => [...new DOMParser().parseFromString(html, 'text/html').querySelectorAll('[id].experience__card, [id].timeline__item, [id].blog-card')].map(c => ({
                 id: c.id,
                 school: c.classList.contains('timeline__item'),
+                hobby: c.classList.contains('blog-card'),
                 title: c.querySelector('h5, h4')?.textContent.trim() || '',
-                org: c.querySelector('h5 + p, h4 + p')?.textContent.trim() || '',
+                org: c.classList.contains('blog-card') ? 'Et aussi' : c.querySelector('h5 + p, h4 + p')?.textContent.trim() || '',
                 period: (c.querySelector('.experience__period, .timeline__year')?.textContent || '').trim(),
                 haystack: [...c.querySelectorAll('.experience__tools span:not(.experience__tools-label)')].map(t => t.textContent.toLowerCase()).join(' | ')
             })).filter(e => e.haystack))
@@ -1056,7 +1061,7 @@ function init() {
         if ($('.sk3d-panel__title').textContent !== skill.name) return;
         const locale = document.documentElement.lang || 'fr';
         const expHtml = exps.map(e => `<a class="sk3d-exp" href="about.html#${e.id}">
-                <span class="sk3d-exp__icon"><i class="fa-solid ${e.school ? 'fa-graduation-cap' : 'fa-briefcase'}" aria-hidden="true"></i></span>
+                <span class="sk3d-exp__icon"><i class="fa-solid ${e.hobby ? 'fa-video' : e.school ? 'fa-graduation-cap' : 'fa-briefcase'}" aria-hidden="true"></i></span>
                 <span class="sk3d-proj__body">
                     <span class="sk3d-proj__title">${esc(e.title)}</span>
                     <span class="sk3d-proj__meta">${esc([e.org, e.period].filter(Boolean).join(' · '))}</span>
