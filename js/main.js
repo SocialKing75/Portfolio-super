@@ -154,10 +154,13 @@ function updateLanguage() {
         const locale = { fr: 'fr-FR', en: 'en-GB', es: 'es-ES', de: 'de-DE', zh: 'zh-CN' }[currentLanguage] || 'fr-FR';
         el.textContent = `${PUBLISHED[currentLanguage] || PUBLISHED.fr} ${date.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })}`;
     });
-    // Date de l'événement : un mois, ou une période « mois – mois année ».
+    // Date de l'événement : un jour, un mois, ou une période « mois – mois année ».
     document.querySelectorAll('time.hackathon-card__event[data-event-start]').forEach(el => {
         const locale = { fr: 'fr-FR', en: 'en-GB', es: 'es-ES', de: 'de-DE', zh: 'zh-CN' }[currentLanguage] || 'fr-FR';
-        const month = (v, withYear) => new Date(v + '-15T12:00:00').toLocaleDateString(locale, withYear ? { month: 'long', year: 'numeric' } : { month: 'long' });
+        // AAAA-MM-JJ : jour précis ; AAAA-MM : mois seul.
+        const month = (v, withYear) => v.length === 10
+            ? new Date(v + 'T12:00:00').toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })
+            : new Date(v + '-15T12:00:00').toLocaleDateString(locale, withYear ? { month: 'long', year: 'numeric' } : { month: 'long' });
         const start = el.dataset.eventStart, end = el.dataset.eventEnd;
         const sameYear = end && start.slice(0, 4) === end.slice(0, 4);
         let txt = end ? `${month(start, !sameYear)} – ${month(end, true)}` : month(start, true);
