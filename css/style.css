@@ -1422,6 +1422,8 @@ body.dark-mode .newsletter-input { border-color: rgba(255,255,255,0.08); }
 }
 
 @media screen and (min-width: 768px) {
+    .home__container { grid-template-columns: repeat(2, 1fr); align-items: center; }
+    .home__data { text-align: initial; }
     .skills__container, .projects__container { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
 }
 
