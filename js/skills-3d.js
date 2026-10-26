@@ -155,7 +155,8 @@ function init() {
     const LEN = 44, DEP = 20;
     const FOOT = [[0, 0], [LEN, 0], [LEN, DEP], [19, DEP], [18, 16.6], [3.4, 16.6]];
     const OFFSET = new THREE.Vector3(-LEN / 2 - 2, 0, -DEP / 2);
-    const INNER = { x0: 4, x1: LEN - 0.7, z0: 0.7, z1: 15.9 };
+    // Les zones commencent après le noyau de circulation (ascenseur + escalier) côté gauche.
+    const INNER = { x0: 7.4, x1: LEN - 0.7, z0: 0.7, z1: 15.9 };
 
     const footShape = new THREE.Shape(FOOT.map(([x, z]) => new THREE.Vector2(x, -z)));
     function slabGeometry(depth) {
@@ -512,6 +513,43 @@ function init() {
         w.p.position.y = SLAB + Math.abs(Math.sin(w.t * w.len * 3.2)) * 0.04;
     }
 
+    // Noyau de circulation : ascenseur vitré et escalier à deux volées avec palier.
+    function circulation(mats) {
+        const c = new THREE.Group();
+        const X = 4.1, Z = 0.75;
+        // Ascenseur : gaine vitrée, cabine blanche, montants d'angle et porte.
+        const shaft = mesh(new THREE.BoxGeometry(2.3, WALL_H, 2.3), mats.glass, false, false);
+        shaft.position.set(X + 1.15, SLAB + WALL_H / 2, Z + 1.15);
+        c.add(shaft);
+        const cabin = rbox(1.7, 1.5, 1.7, mats.white, 0.06);
+        cabin.position.set(X + 1.15, SLAB + 1.1, Z + 1.15);
+        c.add(cabin);
+        for (const [dx, dz] of [[0, 0], [2.3, 0], [0, 2.3], [2.3, 2.3]]) {
+            const post = mesh(new THREE.BoxGeometry(0.12, WALL_H, 0.12), mats.frame);
+            post.position.set(X + dx, SLAB + WALL_H / 2, Z + dz);
+            c.add(post);
+        }
+        const door = mesh(new THREE.BoxGeometry(1.1, 2.0, 0.08), mats.screen);
+        door.position.set(X + 1.15, SLAB + 1.0, Z + 2.34);
+        c.add(door);
+        // Escalier : volée montante, palier, volée descendante, mur d'échiffre au milieu.
+        const steps = 10, run = 0.46, rise = (WALL_H / 2) / steps, w = 1.1, z0 = 4.0;
+        for (let k = 0; k < steps; k++) {
+            const h1 = rise * (k + 1), h2 = WALL_H / 2 + rise * (k + 1);
+            const a = rbox(w, h1, run, mats.white, 0.02);
+            a.position.set(X + w / 2, SLAB + h1 / 2, z0 + k * run + run / 2);
+            const b = rbox(w, rise * 1.6, run, mats.white, 0.02);
+            b.position.set(X + 0.1 + w * 1.5, SLAB + h2 - rise * 0.8, z0 + (steps - 1 - k) * run + run / 2);
+            c.add(a, b);
+        }
+        const landing = rbox(w * 2 + 0.1, 0.18, 1.3, mats.white, 0.03);
+        landing.position.set(X + w + 0.05, SLAB + WALL_H / 2 - 0.09, z0 + steps * run + 0.65);
+        const spine = mesh(new THREE.BoxGeometry(0.1, WALL_H * 0.75, steps * run), mats.wall);
+        spine.position.set(X + w + 0.05, SLAB + WALL_H * 0.375, z0 + (steps * run) / 2);
+        c.add(landing, spine);
+        return c;
+    }
+
     // Fusionne les meshes statiques d'un groupe par matériau : quelques appels de dessin
     // par étage au lieu de plusieurs centaines (rendu, ombres et occlusion ambiante).
     const inv = new THREE.Matrix4(), rel = new THREE.Matrix4();
@@ -548,8 +586,9 @@ function init() {
             if (p[0] === LEN && q[0] === LEN) g.add(glazing(p, q, mats));
             else g.add(wallBetween(p, q, WALL_H, WALL_T, mats.wall));
         });
+        g.add(circulation(mats));
         // Habillage en lattes de bois sur le mur du fond, comme sur la maquette.
-        const slatLen = LEN - 5;
+        const slatLen = LEN - 8.2;
         const tex = SLAT.clone();
         tex.needsUpdate = true;
         tex.repeat.set(slatLen / 2.2, 1);
@@ -557,7 +596,7 @@ function init() {
         slatMat.map = tex;
         mats.slat = slatMat;
         const slat = mesh(new THREE.PlaneGeometry(slatLen, WALL_H - 0.05), slatMat, false, true);
-        slat.position.set(4.6 + slatLen / 2, SLAB + WALL_H / 2, WALL_T / 2 + 0.02);
+        slat.position.set(7.4 + slatLen / 2, SLAB + WALL_H / 2, WALL_T / 2 + 0.02);
         g.add(slat);
 
         // Zones : une compétence par zone. L'intérieur est masqué quand un étage le recouvre.
