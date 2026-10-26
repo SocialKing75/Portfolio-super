@@ -1000,7 +1000,7 @@ function init() {
         'Photoshop': ['photoshop'],
         'OBS Studio': ['obs'],
         'Leadership': ['leadership'],
-        'Communication': ['communication', 'formation'],
+        'Communication': ['communication'],
         'Résolution de problèmes': ['résolution', 'diagnostic'],
         'Adaptabilité': ['adaptabilité'],
         'Gestion de projet': ['gestion de projet', 'management de projet', 'chef de projet'],
@@ -1023,7 +1023,7 @@ function init() {
                 event: c.querySelector('.project__event')?.textContent.trim() || '',
                 tags: [...c.querySelectorAll('.tech-tag')].map(t => t.textContent.trim()),
                 haystack: [c.querySelector('.project__title'), ...c.querySelectorAll('.tech-tag, .project__detail span')]
-                    .map(e => e?.textContent || '').join(' | ').toLowerCase()
+                    .map(e => e?.textContent || '').concat(c.dataset.soft || '').join(' | ').toLowerCase()
             })))
             .catch(() => []);
         return projectsPromise;
