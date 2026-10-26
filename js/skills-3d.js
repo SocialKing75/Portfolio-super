@@ -133,6 +133,34 @@ function init() {
         return t;
     }
     const SLAT = slatTexture();
+    function sheenTexture() {
+        const c = document.createElement('canvas');
+        c.width = c.height = 256;
+        const g = c.getContext('2d');
+        const base = g.createLinearGradient(0, 0, 0, 256);
+        base.addColorStop(0, '#dfeeee');
+        base.addColorStop(1, '#c9dcdc');
+        g.fillStyle = base;
+        g.fillRect(0, 0, 256, 256);
+        // Bandes de reflet obliques, comme le ciel renvoyé par une vitre.
+        g.globalCompositeOperation = 'lighter';
+        for (const [x, w, a] of [[30, 70, 0.32], [120, 26, 0.22], [175, 50, 0.18]]) {
+            const s = g.createLinearGradient(x, 0, x + w, 0);
+            s.addColorStop(0, 'rgba(255,255,255,0)');
+            s.addColorStop(0.5, `rgba(255,255,255,${a})`);
+            s.addColorStop(1, 'rgba(255,255,255,0)');
+            g.save();
+            g.translate(128, 128); g.transform(1, 0, -0.55, 1, 0, 0); g.translate(-128, -128);
+            g.fillStyle = s;
+            g.fillRect(x, -60, w, 380);
+            g.restore();
+        }
+        const t = new THREE.CanvasTexture(c);
+        t.colorSpace = THREE.SRGBColorSpace;
+        t.wrapS = t.wrapT = THREE.RepeatWrapping;
+        return t;
+    }
+    const SHEEN = sheenTexture();
     const std = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.92, metalness: 0, ...extra });
     // Chaque étage a ses propres matériaux pour pouvoir s'effacer en fondu.
     function makeMaterials() {
@@ -144,7 +172,10 @@ function init() {
             screen: std(0xded8d5),
             slat: std(0xffffff, { map: SLAT }),
             glass: new THREE.MeshStandardMaterial({ color: 0xe6edf0, roughness: 0.15, metalness: 0, transparent: true, opacity: 0.38, depthWrite: false }),
-            frame: std(0xf3eeec)
+            // Vitrage de façade : teinte verte d'un verre clair, reflets en diagonale peints dans une texture.
+            facadeGlass: new THREE.MeshStandardMaterial({ color: 0xffffff, map: SHEEN, roughness: 0.08, metalness: 0, transparent: true, opacity: 0.42, depthWrite: false, side: THREE.DoubleSide }),
+            frame: std(0xf3eeec),
+            mullion: std(0xe9e3e0)
         };
     }
 
@@ -155,6 +186,7 @@ function init() {
     const LEN = 44, DEP = 20;
     const FOOT = [[0, 0], [LEN, 0], [LEN, DEP], [19, DEP], [18, 16.6], [3.4, 16.6]];
     const OFFSET = new THREE.Vector3(-LEN / 2 - 2, 0, -DEP / 2);
+    const GLASS_X = 29;
     // Les zones commencent après le noyau de circulation (ascenseur + escalier) côté gauche.
     const INNER = { x0: 7.4, x1: LEN - 0.7, z0: 0.7, z1: 15.9 };
 
@@ -186,24 +218,33 @@ function init() {
         m.rotation.y = -Math.atan2(z2 - z1, x2 - x1);
         return m;
     }
-    // Façade vitrée (pignon droit) : vitrage, montants et lisses.
+    // Façade vitrée : mur-rideau toute hauteur. Allège basse et linteau pleins, vitrage teinté
+    // posé en retrait, montants fins réguliers (épais aux trames de 3 m) et traverse d'imposte.
     function glazing([x1, z1], [x2, z2], mats) {
         const g = new THREE.Group();
         const len = Math.hypot(x2 - x1, z2 - z1);
-        const panel = mesh(new THREE.BoxGeometry(len, WALL_H, 0.06), mats.glass, false, false);
-        panel.position.y = SLAB + WALL_H / 2;
-        g.add(panel);
-        const n = Math.round(len / 2.6);
-        for (let i = 0; i <= n; i++) {
-            const m = mesh(new THREE.BoxGeometry(0.22, WALL_H, 0.34), mats.frame);
-            m.position.set(-len / 2 + (i * len) / n, SLAB + WALL_H / 2, 0);
+        const sill = 0.18, head = 0.22, depth = 0.34;
+        const gh = WALL_H - sill - head;
+        const sillM = mesh(new THREE.BoxGeometry(len + WALL_T, sill, depth), mats.wall);
+        sillM.position.y = SLAB + sill / 2;
+        const headM = mesh(new THREE.BoxGeometry(len + WALL_T, head, depth), mats.wall);
+        headM.position.y = SLAB + WALL_H - head / 2;
+        g.add(sillM, headM);
+        const pane = mesh(new THREE.PlaneGeometry(len, gh), mats.facadeGlass, false, false);
+        pane.geometry.attributes.uv.array.forEach((v, n, arr) => { arr[n] = n % 2 ? v : v * len / 4; });
+        pane.position.set(0, SLAB + sill + gh / 2, -0.04);
+        g.add(pane);
+        const bay = 1.5, n = Math.max(1, Math.round(len / bay));
+        for (let k = 0; k <= n; k++) {
+            const major = k % 2 === 0;
+            const w = major ? 0.16 : 0.07;
+            const m = mesh(new THREE.BoxGeometry(w, gh, major ? depth : 0.22), mats.mullion);
+            m.position.set(-len / 2 + (k * len) / n, SLAB + sill + gh / 2, major ? 0 : -0.02);
             g.add(m);
         }
-        for (const y of [SLAB + 0.12, SLAB + WALL_H - 0.12, SLAB + WALL_H * 0.42]) {
-            const m = mesh(new THREE.BoxGeometry(len, 0.2, 0.34), mats.frame);
-            m.position.y = y;
-            g.add(m);
-        }
+        const transom = mesh(new THREE.BoxGeometry(len, 0.07, 0.22), mats.mullion);
+        transom.position.set(0, SLAB + sill + gh * 0.8, -0.02);
+        g.add(transom);
         g.position.set((x1 + x2) / 2, 0, (z1 + z2) / 2);
         g.rotation.y = -Math.atan2(z2 - z1, x2 - x1);
         return g;
@@ -532,22 +573,107 @@ function init() {
         const door = mesh(new THREE.BoxGeometry(1.1, 2.0, 0.08), mats.screen);
         door.position.set(X + 1.15, SLAB + 1.0, Z + 2.34);
         c.add(door);
-        // Escalier : volée montante, palier, volée descendante, mur d'échiffre au milieu.
-        const steps = 10, run = 0.46, rise = (WALL_H / 2) / steps, w = 1.1, z0 = 4.0;
-        for (let k = 0; k < steps; k++) {
-            const h1 = rise * (k + 1), h2 = WALL_H / 2 + rise * (k + 1);
-            const a = rbox(w, h1, run, mats.white, 0.02);
-            a.position.set(X + w / 2, SLAB + h1 / 2, z0 + k * run + run / 2);
-            const b = rbox(w, rise * 1.6, run, mats.white, 0.02);
-            b.position.set(X + 0.1 + w * 1.5, SLAB + h2 - rise * 0.8, z0 + (steps - 1 - k) * run + run / 2);
-            c.add(a, b);
-        }
-        const landing = rbox(w * 2 + 0.1, 0.18, 1.3, mats.white, 0.03);
-        landing.position.set(X + w + 0.05, SLAB + WALL_H / 2 - 0.09, z0 + steps * run + 0.65);
-        const spine = mesh(new THREE.BoxGeometry(0.1, WALL_H * 0.75, steps * run), mats.wall);
-        spine.position.set(X + w + 0.05, SLAB + WALL_H * 0.375, z0 + (steps * run) / 2);
-        c.add(landing, spine);
         return c;
+    }
+
+    // ---- Escalier à deux volées droites et palier intermédiaire (escalier « à l'anglaise »).
+    // Hauteur d'étage à franchir H = 3,00 m → 18 contremarches de 16,7 cm, 9 par volée ;
+    // 8 marches de 29 cm par volée (giron), soit 2h + g = 62 cm (formule de Blondel).
+    const ST = (() => {
+        const risers = Math.round(H / 0.17), r = H / risers, per = risers / 2, run = 0.29, w = 1.1, gap = 0.12;
+        const X = 4.1, Z0 = 4.3, L = (per - 1) * run, landD = 1.2;
+        const pitch = Math.atan2(r, run), d = 0.2 / Math.cos(pitch); // paillasse de 20 cm
+        return { risers, r, per, run, w, gap, X, Z0, L, landD, d, XB: X + w + gap, X1: X + 2 * w + gap, Z1: Z0 + L + landD };
+    })();
+    // Trémie : ouverture dans la dalle des étages au-dessus du rez-de-chaussée.
+    const holeShape = footShape.clone();
+    holeShape.holes.push(new THREE.Path([
+        new THREE.Vector2(ST.X, -ST.Z0), new THREE.Vector2(ST.X, -ST.Z1),
+        new THREE.Vector2(ST.X1, -ST.Z1), new THREE.Vector2(ST.X1, -ST.Z0)
+    ]));
+    const SLAB_HOLE_GEO = new THREE.ExtrudeGeometry(holeShape, { depth: SLAB, bevelEnabled: false }).rotateX(-Math.PI / 2);
+
+    // Prisme : polygone dans le plan (z, y) extrudé selon x, de x0 à x0 + t.
+    function prism(pts, x0, t, mat, cast = true) {
+        const shape = new THREE.Shape(pts.map(([z, y]) => new THREE.Vector2(z, y)));
+        const geo = new THREE.ExtrudeGeometry(shape, { depth: t, bevelEnabled: false });
+        geo.rotateY(-Math.PI / 2);
+        geo.translate(x0 + t, 0, 0);
+        return mesh(geo, mat, cast, true);
+    }
+
+    // Escalier montant d'un niveau (base = sol fini de l'étage), avec mur d'échiffre et garde-corps.
+    function stair(mats, base) {
+        const { r, per, run, w, X, XB, X1, Z0, L, landD, d, Z1 } = ST;
+        const g = new THREE.Group();
+        const B2 = base + per * r, Btop = base + 2 * per * r;
+        // Volée 1 (côté A) : de Z0 vers le palier, contremarches régulières, sous-face inclinée.
+        const a = [[Z0, base]];
+        for (let k = 0; k < per; k++) {
+            const z = Z0 + k * run;
+            a.push([z, base + (k + 1) * r]);
+            if (k < per - 1) a.push([z + run, base + (k + 1) * r]);
+        }
+        const soffitA = (z) => base + r + ((z - Z0) * r) / run - d;
+        a.push([Z0 + L, soffitA(Z0 + L)], [Z0 + ((d - r) * run) / r, base]);
+        g.add(prism(a, X, w, mats.white));
+        // Palier intermédiaire.
+        g.add(prism([[Z0 + L, B2 - d], [Z0 + L, B2], [Z1, B2], [Z1, B2 - d]], X, X1 - X, mats.white));
+        // Volée 2 (côté B) : du palier vers Z0, arrive exactement au sol fini de l'étage supérieur.
+        const b = [[Z0 + L + run, B2]];
+        b.push([Z0 + L, B2]);
+        for (let k = 0; k < per; k++) {
+            const z = Z0 + L - k * run;
+            b.push([z, B2 + (k + 1) * r]);
+            if (k < per - 1) b.push([z - run, B2 + (k + 1) * r]);
+        }
+        b.push([Z0, Btop - d], [Z0 + L + run, B2 - d]);
+        g.add(prism(b, XB, w, mats.white));
+        // Garde-corps : limon plein, vitrage et main courante parallèles à la pente.
+        const nosA = (z) => base + r + ((z - Z0) * r) / run;
+        const nosB = (z) => B2 + r + ((Z0 + L - z) * r) / run;
+        const rail = (x, za, ya, zb, yb, bottomA, bottomB) => {
+            g.add(prism([[za, bottomA], [za, ya + 0.15], [zb, yb + 0.15], [zb, bottomB]], x, 0.06, mats.white));
+            g.add(prism([[za, ya + 0.15], [za, ya + 0.95], [zb, yb + 0.95], [zb, yb + 0.15]], x, 0.03, mats.glass, false));
+            g.add(prism([[za, ya + 0.95], [za, ya + 1.0], [zb, yb + 1.0], [zb, yb + 0.95]], x - 0.01, 0.08, mats.white));
+        };
+        rail(X - 0.06, Z0, nosA(Z0), Z0 + L, nosA(Z0 + L), base, B2 - d);
+        rail(X1, Z0 + L, nosB(Z0 + L), Z0, nosB(Z0), B2 - d, Btop - d);
+        // Côté jour (entre les volées) : garde-corps sur chaque volée.
+        rail(X + w - 0.06, Z0, nosA(Z0), Z0 + L, nosA(Z0 + L), base, B2 - d);
+        rail(XB, Z0 + L, nosB(Z0 + L), Z0, nosB(Z0), B2 - d, Btop - d);
+        // Palier : garde-corps sur ses trois côtés libres.
+        rail(X - 0.06, Z0 + L, B2, Z1, B2, B2 - d, B2 - d);
+        rail(X1, Z0 + L, B2, Z1, B2, B2 - d, B2 - d);
+        const back = mesh(new THREE.BoxGeometry(X1 - X + 0.12, 0.15 + d, 0.06), mats.white);
+        back.position.set((X + X1) / 2, B2 - d + (0.15 + d) / 2, Z1 + 0.03);
+        const backGlass = mesh(new THREE.BoxGeometry(X1 - X + 0.12, 0.8, 0.03), mats.glass, false, false);
+        backGlass.position.set((X + X1) / 2, B2 + 0.55, Z1 + 0.03);
+        const backRail = mesh(new THREE.BoxGeometry(X1 - X + 0.12, 0.05, 0.08), mats.white);
+        backRail.position.set((X + X1) / 2, B2 + 0.975, Z1 + 0.03);
+        g.add(back, backGlass, backRail);
+        return g;
+    }
+
+    // Garde-corps autour de la trémie du dernier étage (pas de volée au-dessus), sauf l'arrivée.
+    function wellGuard(mats) {
+        const g = new THREE.Group();
+        const { X, X1, Z0, Z1, XB } = ST;
+        const y = SLAB;
+        const seg = (x1, z1, x2, z2) => {
+            const len = Math.hypot(x2 - x1, z2 - z1), rot = -Math.atan2(z2 - z1, x2 - x1);
+            for (const [h, yy, t, mat] of [[0.8, y + 0.55, 0.03, mats.glass], [0.05, y + 0.975, 0.08, mats.white], [0.15, y + 0.075, 0.06, mats.white]]) {
+                const m = mesh(new THREE.BoxGeometry(len, h, t), mat, mat !== mats.glass, false);
+                m.position.set((x1 + x2) / 2, yy, (z1 + z2) / 2);
+                m.rotation.y = rot;
+                g.add(m);
+            }
+        };
+        seg(X, Z0, XB, Z0);
+        seg(X, Z0, X, Z1);
+        seg(X, Z1, X1, Z1);
+        seg(X1, Z1, X1, Z0);
+        return g;
     }
 
     // Fusionne les meshes statiques d'un groupe par matériau : quelques appels de dessin
@@ -579,12 +705,30 @@ function init() {
         g.position.y = i * H;
         building.add(g);
 
-        g.add(mesh(SLAB_GEO, mats.slab));
+        g.add(mesh(i === 0 ? SLAB_GEO : SLAB_HOLE_GEO, mats.slab));
+        // Escalier montant (sauf au dernier étage) et, vue isolée d'un étage, la volée qui
+        // arrive de l'étage inférieur, visible dans la trémie.
+        const top = i === floors.length - 1;
+        if (!top) g.add(stair(mats, SLAB));
+        else g.add(wellGuard(mats));
+        let down = null;
+        if (i > 0) {
+            down = stair(mats, SLAB - H);
+            const well = mesh(new THREE.BoxGeometry(ST.X1 - ST.X, SLAB, ST.Z1 - ST.Z0), mats.slab);
+            well.position.set((ST.X + ST.X1) / 2, SLAB / 2 - H, (ST.Z0 + ST.Z1) / 2);
+            down.add(well);
+            down.visible = false;
+            g.add(down);
+        }
         // Murs périphériques ; le pignon droit est vitré.
         FOOT.forEach((p, k) => {
             const q = FOOT[(k + 1) % FOOT.length];
             if (p[0] === LEN && q[0] === LEN) g.add(glazing(p, q, mats));
-            else g.add(wallBetween(p, q, WALL_H, WALL_T, mats.wall));
+            else if (p[1] === DEP && q[1] === DEP) {
+                // Façade avant : partie vitrée côté pignon, comme la vitrine de la référence.
+                g.add(glazing([LEN, DEP], [GLASS_X, DEP], mats));
+                g.add(wallBetween([GLASS_X, DEP], q, WALL_H, WALL_T, mats.wall));
+            } else g.add(wallBetween(p, q, WALL_H, WALL_T, mats.wall));
         });
         g.add(circulation(mats));
         // Habillage en lattes de bois sur le mur du fond, comme sur la maquette.
@@ -631,12 +775,15 @@ function init() {
 
         const zoneFloors = new Set(zones.map(z => z.floor));
         const moving = new Set(zoneWalkers.flatMap(w => w.p.children));
+        const within = (o, root) => { for (let x = o; x; x = x.parent) if (x === root) return true; return false; };
+        // Les personnages restent des objets séparés : sinon, fusionnés, ils ne bougent plus.
         bake(inner, o => zoneFloors.has(o) || moving.has(o));
-        bake(g, o => o.parent === inner || o === inner);
+        if (down) bake(down, () => false);
+        bake(g, o => within(o, inner) || (down && within(o, down)));
 
         const list = new Set();
         g.traverse(o => { if (o.material) list.add(o.material); });
-        return { group: g, inner, mats: [...list], zones, walkers: zoneWalkers, lift: 0, opacity: 1 };
+        return { group: g, inner, down, mats: [...list], zones, walkers: zoneWalkers, lift: 0, opacity: 1 };
     });
 
 
@@ -660,8 +807,23 @@ function init() {
     const right = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), camDir).normalize();
     const cam = { target: new THREE.Vector3(0, 8, 0), zoom: 0.9, shift: 0 };
 
+    // ?cam=azimut,élévation,demi-hauteur : vue de contrôle rapprochée sur l'escalier.
+    const camParam = new URLSearchParams(location.search).get('cam');
     function updateCamera() {
         const aspect = width / height;
+        if (camParam && current >= 0) {
+            const [az, el, half, clip = 400] = camParam.split(',').map(Number);
+            camera.near = 150 - clip;
+            const A = THREE.MathUtils.degToRad(az), E = THREE.MathUtils.degToRad(el);
+            const dir = new THREE.Vector3(Math.sin(A) * Math.cos(E), Math.sin(E), Math.cos(A) * Math.cos(E));
+            camera.left = -half * aspect; camera.right = half * aspect; camera.top = half; camera.bottom = -half;
+            camera.updateProjectionMatrix();
+            const t = new THREE.Vector3((ST.X + ST.X1) / 2, SLAB + 1.6, (ST.Z0 + ST.Z1) / 2).add(building.position);
+            t.y += floorObjs[current].group.position.y;
+            camera.position.copy(t).addScaledVector(dir, 150);
+            camera.lookAt(t);
+            return;
+        }
         const mobile = width < 700;
         const half = (mobile ? Math.max(24, 24 / aspect) : Math.max(24, 34 / aspect)) / cam.zoom;
         camera.left = -half * aspect; camera.right = half * aspect;
@@ -835,6 +997,7 @@ function init() {
         // en fondu, puis ne sont plus dessinés. Le bâtiment descend pour poser l'étage au sol.
         floorObjs.forEach((o, j) => {
             o.inner.visible = true;
+            if (o.down) o.down.visible = j === i;
             o.zones.forEach(z => z.floor.material.color.copy(z.floor.userData.base));
             const lift = j > i ? 40 + (j - i) * 6 : j < i ? -8 - (i - j) * 4 : 0;
             animateStack(o, lift, j === i ? 1 : 0, j > i ? (j - i) * 60 : 0);
@@ -856,6 +1019,7 @@ function init() {
         animateBuilding(0);
         floorObjs.forEach((o, j) => {
             o.inner.visible = true;
+            if (o.down) o.down.visible = false;
             const t = animateStack(o, 0, 1, 0);
             if (j === top) t.then(() => { if (current < 0) floorObjs.forEach((f, n) => { f.inner.visible = n === top; }); invalidate(); });
         });

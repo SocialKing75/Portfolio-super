@@ -367,7 +367,16 @@ body.dark-mode .header { background: rgba(24, 22, 20, .88); backdrop-filter: blu
 .sk3d-pin.is-down { flex-direction: column-reverse; transform: translate(calc(var(--x, -999px) - 50%), calc(var(--y, -999px) - 13px)); }
 .sk3d-pin.is-down .sk3d-pin__line { margin: 0 0 8px; }
 .sk3d-pin.is-down .sk3d-pin__label { margin: 0 0 9px; }
-.sk3d-pin:hover .sk3d-pin__icon, .sk3d-pin.is-hover .sk3d-pin__icon { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(252, 61, 3, .22); }
+.sk3d-pin__icon i, .sk3d-pin__label { transition: color .25s ease; }
+.sk3d-pin:hover .sk3d-pin__icon, .sk3d-pin.is-hover .sk3d-pin__icon {
+    transform: translateY(-4px);
+    background: linear-gradient(180deg, #ff8a3d 0%, #fc3d03 100%);
+    color: #fff;
+    box-shadow: 0 10px 24px rgba(252, 61, 3, .35);
+}
+.sk3d-pin:hover .sk3d-pin__label, .sk3d-pin.is-hover .sk3d-pin__label { color: #fc3d03; }
+.sk3d-pin:hover .sk3d-pin__dot, .sk3d-pin.is-hover .sk3d-pin__dot { transform: scale(1.15); }
+.sk3d-pin__dot { transition: transform .25s ease; }
 .sk3d-pin.is-selected .sk3d-pin__icon { background: linear-gradient(180deg, #ffc9ae 0%, #ffa57d 100%); }
 .sk3d-pin:focus-visible { outline: none; }
 .sk3d-pin:focus-visible .sk3d-pin__icon { box-shadow: 0 0 0 3px #fc3d03; }
@@ -400,11 +409,12 @@ body.dark-mode .header { background: rgba(24, 22, 20, .88); backdrop-filter: blu
     color: #e9e7e6;
     font: 500 11px 'Outfit', sans-serif;
     cursor: pointer;
-    transition: background .25s ease, color .25s ease;
+    transition: background .25s ease, color .25s ease, transform .25s ease;
 }
-.sk3d-bar__levels button:hover { background: #8a8988; }
+.sk3d-bar__levels button:hover:not(.is-active) { background: #ffd9c6; color: #fc3d03; transform: translateY(-2px); }
+.sk3d-bar__levels button:focus-visible, .sk3d-bar__side:focus-visible { outline: 2px solid #ff8a3d; outline-offset: 2px; }
 .sk3d-bar__levels button.is-active {
-    background: linear-gradient(#a8604a, #a8604a) padding-box, linear-gradient(135deg, #ff8a3d, #fc3d03) border-box;
+    background: linear-gradient(#fc3d03, #fc3d03) padding-box, linear-gradient(135deg, #ffb48a, #ff8a3d) border-box;
     color: #fff;
 }
 .sk3d-bar__side {
@@ -414,7 +424,10 @@ body.dark-mode .header { background: rgba(24, 22, 20, .88); backdrop-filter: blu
     width: 58px;
     cursor: pointer;
 }
-.sk3d-bar__side span { display: block; width: 18px; height: 1.6px; border-radius: 1px; background: #f2f0ee; }
+.sk3d-bar__side span { display: block; width: 18px; height: 1.6px; border-radius: 1px; background: #f2f0ee; transition: background .25s ease, width .25s ease; }
+.sk3d-bar__side { transition: background .25s ease, transform .25s ease; }
+.sk3d-bar__side:hover { background: linear-gradient(#fc3d03, #fc3d03) padding-box, linear-gradient(135deg, #ff8a3d, #fc3d03) border-box; transform: translateY(-2px); }
+.sk3d-bar__side:hover span { background: #fff; width: 18px; }
 .sk3d-bar__side span:nth-child(2) { width: 13px; }
 .sk3d-bar__side span:nth-child(3) { width: 18px; }
 
