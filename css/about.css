@@ -127,7 +127,7 @@ html, body { overflow-x: clip; }
 .ab-stat span { display: block; margin-top: .4rem; font-size: .82rem; color: var(--text-color); }
 
 /* ---- Contenu */
-.about { position: relative; overflow: hidden; padding-top: 6rem; }
+.about { position: relative; overflow: clip; padding-top: 6rem; }
 .about__container { position: relative; z-index: 1; }
 #ab-story, #ab-formation, #ab-experience, #ab-stages, #ab-aussi { scroll-margin-top: 5rem; }
 
@@ -161,87 +161,95 @@ html, body { overflow-x: clip; }
 .timeline__year { transition: transform .4s cubic-bezier(.3, 1.5, .5, 1), box-shadow .4s ease; }
 .timeline__item.is-current .timeline__year { transform: scale(1.12); box-shadow: 0 0 0 6px hsla(14, 98%, 50%, .15), 0 10px 24px hsla(0, 0%, 0%, .15); }
 
-/* ---- 3. Expériences : un chapitre plein écran par entreprise */
+/* ---- 3. Expériences : défilé épinglé des entreprises */
 .about__experience { margin-bottom: 0; }
 .about__experience > .experience__title { margin-bottom: 0; padding-bottom: 2.5rem; font-size: var(--h2-font-size); }
-.about__experience .experience__category, .about__experience .experience__grid { display: block; margin: 0; }
-.about__experience .experience__card.xp {
-    --c: hsl(14, 98%, 50%);
-    position: relative;
-    width: 100vw;
-    margin: 0 0 0 calc(50% - 50vw);
-    min-height: 100vh;
-    padding: 8rem 1.5rem 6rem;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
-    background: #050505;
-    color: #e9e6e3;
+.about__experience .experience__category { margin: 0; }
+.about__experience .experience__grid:has(> .experience__card[hidden]:only-child),
+.about__experience .experience__grid { display: block; min-height: 0; }
+.xs { position: relative; width: 100vw; margin-left: calc(50% - 50vw); }
+.xs__sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100svh;
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 2.5rem;
+    background: #000;
 }
-.experience__card--bim.xp { --c: hsl(265, 70%, 58%); }
-.experience__card--metreur.xp { --c: hsl(200, 85%, 48%); }
-.experience__card--chef.xp { --c: hsl(165, 65%, 40%); }
-.xp__glow {
+.xs__layer { position: absolute; inset: 0; display: grid; place-items: center; }
+.xs__glow {
     position: absolute;
     inset: 0;
-    pointer-events: none;
     background:
-        radial-gradient(ellipse 80% 55% at 0% 0%, color-mix(in srgb, var(--c) 70%, transparent), transparent 70%),
-        radial-gradient(ellipse 70% 45% at 50% 110%, color-mix(in srgb, var(--c) 85%, transparent), transparent 70%);
-    opacity: var(--glow, .35);
+        radial-gradient(ellipse 85% 60% at 0% 0%, hsla(var(--c), .75), transparent 70%),
+        radial-gradient(ellipse 65% 42% at 50% 112%, hsla(var(--c), .9), transparent 70%);
 }
-.xp__float {
+.xs__photos { position: absolute; inset: 0; pointer-events: none; }
+.xs__photos img {
     position: absolute;
-    width: clamp(120px, 15vw, 220px);
+    left: 50%; top: 50%;
+    width: clamp(110px, 13vw, 190px);
     aspect-ratio: 4 / 5;
     object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, .55);
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.25);
+    will-change: transform, opacity;
+}
+.xs__head { position: relative; z-index: 1; text-align: center; color: #fff; padding: 0 1rem; }
+.xs__kicker { font-size: .95rem; color: rgba(255, 255, 255, .8); }
+.xs__name { margin: .2rem 0 .35rem; font-size: clamp(3.2rem, 10vw, 8.5rem); line-height: .95; letter-spacing: -0.04em; color: #fff; white-space: nowrap; }
+.xs__name .ch { display: inline-block; opacity: 0; transform: translateY(.55em); transition: transform .7s cubic-bezier(.2, .8, .2, 1), opacity .5s ease; transition-delay: calc(var(--k) * 30ms); }
+.xs__layer.is-on .xs__name .ch { opacity: 1; transform: none; }
+.xs__role { font-size: 1.15rem; font-weight: 600; color: hsl(var(--c)); filter: brightness(1.35); opacity: 0; transition: opacity .6s ease .2s; }
+.xs__layer.is-on .xs__role { opacity: 1; }
+.xs__cta {
+    position: absolute;
+    left: 50%;
+    bottom: 96px;
+    z-index: 2;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: .8rem;
+    padding: .35rem 1rem .35rem .35rem;
     border-radius: 14px;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, .5);
-    transform: translateY(var(--py, 0px)) rotate(var(--rot, 0deg));
-    will-change: transform;
-}
-.xp__float:nth-of-type(1) { left: 4%; top: 16%; --rot: -4deg; }
-.xp__float:nth-of-type(2) { right: 5%; top: 9%; --rot: 5deg; }
-.xp__float:nth-of-type(3) { right: 9%; bottom: 8%; width: clamp(90px, 10vw, 150px); --rot: -3deg; }
-.xp__head { position: relative; text-align: center; z-index: 1; }
-.xp__kicker { font-size: .9rem; color: rgba(255, 255, 255, .75); }
-.xp__name {
-    margin: .3rem 0 .4rem;
-    font-size: clamp(3rem, 9vw, 7.5rem);
-    line-height: .95;
-    letter-spacing: -0.04em;
+    border: 1.5px solid hsla(var(--c, 14, 98%, 50%), .9);
+    background: rgba(20, 20, 20, .55);
+    backdrop-filter: blur(10px);
     color: #fff;
+    font: 500 .9rem var(--body-font), sans-serif;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: border-color .4s ease, background .25s ease;
 }
-.xp__name .ch { display: inline-block; transition: transform .9s cubic-bezier(.2, .8, .2, 1), opacity .9s ease; transition-delay: calc(var(--k) * 35ms); }
-.js-ab .xp:not(.is-in) .xp__name .ch { transform: translateY(.6em); opacity: 0; }
-.xp__role { font-size: 1.15rem; font-weight: 600; color: color-mix(in srgb, var(--c) 70%, #fff); }
-.xp__panel {
-    position: relative;
-    z-index: 1;
-    width: min(760px, 100%);
-    padding: 1.6rem 1.8rem;
-    border-radius: 22px;
-    background: rgba(28, 27, 26, .62);
-    border: 1px solid rgba(255, 255, 255, .08);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-}
-.js-ab .xp .xp__panel { opacity: 0; transform: translateY(40px); transition: opacity .8s ease .25s, transform .9s cubic-bezier(.2, .8, .2, 1) .25s; }
-.js-ab .xp.is-in .xp__panel { opacity: 1; transform: none; }
-.xp > .experience__period, .xp > h5, .xp > p { display: none; }
-.xp__panel .experience__stat { color: rgba(255, 255, 255, .8); margin-top: 0; }
-.xp__panel .experience__stat strong { color: #fff; font-size: 2.6rem; }
-.xp__panel .experience__types span { background: color-mix(in srgb, var(--c) 30%, transparent); color: #fff; }
-.xp__panel .experience__tools-label { color: rgba(255, 255, 255, .55); }
-.xp__panel .experience__tools span:not(.experience__tools-label) { color: #fff; border-color: rgba(255, 255, 255, .22); background: rgba(255, 255, 255, .04); }
-.xp__panel .experience__tasks li { color: rgba(255, 255, 255, .85); font-size: .95rem; }
-.xp__panel .experience__tasks li::before { color: color-mix(in srgb, var(--c) 70%, #fff); }
+.xs__cta:hover { background: hsla(var(--c, 14, 98%, 50%), .35); }
+.xs__cta-icon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: hsl(var(--c, 14, 98%, 50%)); transition: background .4s ease; }
+.xs__dots { position: absolute; right: 1.5rem; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: .6rem; z-index: 2; }
+.xs__dots span { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, .3); transition: background .3s ease, transform .3s ease; }
+.xs__dots span.is-on { background: #fff; transform: scale(1.4); }
+
+/* Détail d'une expérience, en surimpression */
+.xs-sheet { position: fixed; inset: 0; z-index: 2000; display: grid; place-items: center; padding: 1rem; background: rgba(0, 0, 0, .6); backdrop-filter: blur(6px); animation: xsFade .3s ease; }
+.xs-sheet[hidden] { display: none; }
+.xs-sheet__box { position: relative; width: min(720px, 100%); max-height: 88vh; overflow-y: auto; border-radius: 22px; background: #141313; color: #e9e6e3; border-top: 4px solid hsl(var(--c)); animation: xsUp .45s cubic-bezier(.2, .8, .2, 1); }
+.xs-sheet__close { position: absolute; top: .9rem; right: .9rem; z-index: 1; width: 38px; height: 38px; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .1); color: #fff; font-size: 1.4rem; cursor: pointer; }
+.xs-sheet__close:hover { background: hsl(var(--c)); }
+.xs-sheet .experience__card { background: transparent; box-shadow: none; border: 0; border-radius: 0; padding: 1.8rem; color: inherit; }
+.xs-sheet .experience__card h5 { font-size: 1.5rem; color: #fff; }
+.xs-sheet .experience__card h5 + p { color: rgba(255, 255, 255, .6); }
+.xs-sheet .experience__period { background: hsl(var(--c)); }
+.xs-sheet .experience__stat { color: rgba(255, 255, 255, .8); }
+.xs-sheet .experience__stat strong { color: #fff; }
+.xs-sheet .experience__types span { background: hsla(var(--c), .3); color: #fff; }
+.xs-sheet .experience__tools-label { color: rgba(255, 255, 255, .55); }
+.xs-sheet .experience__tools span { opacity: 1; transform: none; }
+.xs-sheet .experience__tools span:not(.experience__tools-label) { color: #fff; border-color: rgba(255, 255, 255, .22); }
+.xs-sheet .experience__types span { opacity: 1; transform: none; }
+.xs-sheet .experience__tasks li { color: rgba(255, 255, 255, .85); }
+@keyframes xsFade { from { opacity: 0; } }
+@keyframes xsUp { from { opacity: 0; transform: translateY(40px); } }
 
 /* ---- 4. Stages et « Et aussi » : carrousels horizontaux */
 .about__internships { margin-top: 5rem; }
@@ -332,10 +340,9 @@ html, body { overflow-x: clip; }
     .ab-story__stack { display: none; }
     .ab-story__sticky { gap: 2rem; }
     .ab-stats { grid-template-columns: repeat(2, 1fr); }
-    .xp__float:nth-of-type(3) { display: none; }
-    .xp__float { width: 110px; opacity: .55; }
-    .about__experience .experience__card.xp { padding: 6rem 1rem 5rem; }
-    .xp__panel { padding: 1.2rem; }
+    .xs__photos img { width: 92px; }
+    .xs__cta { bottom: 92px; }
+    .xs__dots { right: .8rem; }
     .js-ab [data-reveal="left"], .js-ab [data-reveal="right"] { transform: translateY(30px); }
     .timeline__container::after { left: 30px; }
     .ab-dock__main { min-width: 240px; }
@@ -347,3 +354,4 @@ html, body { overflow-x: clip; }
     .ab-story__sticky { position: static; height: auto; }
     .ab-story__text .w { opacity: 1; }
 }
+.about__experience .experience__card[hidden] { display: none !important; }

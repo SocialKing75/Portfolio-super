@@ -26,44 +26,107 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     if (story) new MutationObserver(splitWords).observe(story, { childList: true, characterData: true, subtree: true });
 
-    // ---------------------------------------------------------------- Chapitres d'expérience
+    // ---------------------------------------------------------------- Défilé des entreprises
+    // Une scène épinglée : au défilement, les photos jaillissent du centre vers l'écran,
+    // puis la couleur et le nom passent à l'entreprise suivante (comme les collections Renault).
     const IMAGES = {
-        'exp-parasitis': ['photo-1556761175-5973dc0f32e7', 'photo-1450101499163-c8848c66ca85', 'photo-1551650975-87deedd944c3'],
-        'exp-sadiem': ['photo-1460925895917-afdab827c52f', 'photo-1551434678-e076c223a692', 'photo-1503387762-592deb58ef4e'],
-        'exp-boreal': ['photo-1503387762-592deb58ef4e', 'photo-1560518883-ce09059eeffa', 'photo-1481627834876-b7833e8f5570'],
-        'exp-sisco': ['photo-1481627834876-b7833e8f5570', 'photo-1551650975-87deedd944c3', 'photo-1460925895917-afdab827c52f']
+        'exp-parasitis': ['photo-1556761175-5973dc0f32e7', 'photo-1450101499163-c8848c66ca85', 'photo-1551650975-87deedd944c3', 'photo-1591453089816-0fbb971b454c', 'photo-1460925895917-afdab827c52f'],
+        'exp-sadiem': ['photo-1460925895917-afdab827c52f', 'photo-1551434678-e076c223a692', 'photo-1503387762-592deb58ef4e', 'photo-1481627834876-b7833e8f5570', 'photo-1560518883-ce09059eeffa'],
+        'exp-boreal': ['photo-1503387762-592deb58ef4e', 'photo-1560518883-ce09059eeffa', 'photo-1481627834876-b7833e8f5570', 'photo-1551434678-e076c223a692', 'photo-1556761175-5973dc0f32e7'],
+        'exp-sisco': ['photo-1481627834876-b7833e8f5570', 'photo-1551650975-87deedd944c3', 'photo-1460925895917-afdab827c52f', 'photo-1503387762-592deb58ef4e', 'photo-1450101499163-c8848c66ca85']
     };
-    const chapters = [...document.querySelectorAll('.about__experience .experience__card')].map(card => {
-        card.classList.add('xp');
+    const COLORS = { 'exp-parasitis': '14, 98%, 50%', 'exp-sadiem': '265, 70%, 58%', 'exp-boreal': '200, 85%, 48%', 'exp-sisco': '165, 65%, 40%' };
+    // Direction de sortie de chaque photo (vers les bords), décalage dans le temps.
+    const FLIGHTS = [[-1, -0.7, 0], [1, -0.85, 0.12], [0.9, 0.75, 0.24], [-0.85, 0.8, 0.36], [0.15, -1, 0.48]];
+    const cards = [...document.querySelectorAll('.about__experience .experience__card')];
+    const stage = document.createElement('div');
+    stage.className = 'xs';
+    stage.style.height = `${cards.length * 170 + 30}vh`;
+    const sticky = document.createElement('div');
+    sticky.className = 'xs__sticky';
+    stage.append(sticky);
+    const sheet = document.createElement('div');
+    sheet.className = 'xs-sheet';
+    sheet.hidden = true;
+    sheet.innerHTML = '<div class="xs-sheet__box" role="dialog" aria-modal="true"><button class="xs-sheet__close" type="button" aria-label="Fermer">&times;</button><div class="xs-sheet__body"></div></div>';
+    const layers = cards.map((card) => {
         const period = card.querySelector('.experience__period')?.textContent.trim() || '';
         const role = card.querySelector('h5')?.textContent.trim() || '';
         const org = (card.querySelector('h5 + p')?.textContent || '').split(' - ')[0].trim();
-        const panel = document.createElement('div');
-        panel.className = 'xp__panel';
-        [...card.children].forEach(ch => {
-            if (!ch.matches('.experience__period, h5') && !(ch.matches('p') && ch === card.querySelector('h5 + p'))) panel.append(ch);
-        });
-        const head = document.createElement('div');
-        head.className = 'xp__head';
-        head.innerHTML = `<p class="xp__kicker">${period}</p>
-            <h3 class="xp__name" aria-label="${org}">${[...org].map((c, k) => `<span class="ch" style="--k:${k}" aria-hidden="true">${c === ' ' ? '&nbsp;' : c}</span>`).join('')}</h3>
-            <p class="xp__role">${role}</p>`;
-        const glow = document.createElement('div');
-        glow.className = 'xp__glow';
-        const imgs = (IMAGES[card.id] || []).map((id, n) => {
-            const img = document.createElement('img');
-            img.className = 'xp__float';
-            img.src = `assets/projects/${id}-400.webp`;
-            img.alt = '';
-            img.loading = 'lazy';
-            img.dataset.speed = [-0.18, 0.12, -0.08][n];
-            return img;
-        });
-        card.prepend(glow, ...imgs, head);
-        card.append(panel);
-        card.dataset.reveal = 'chapter';
-        return { card, glow, imgs };
+        const layer = document.createElement('section');
+        layer.className = 'xs__layer';
+        layer.style.setProperty('--c', COLORS[card.id] || '14, 98%, 50%');
+        layer.setAttribute('aria-label', `${org} — ${role}`);
+        layer.innerHTML = `<div class="xs__glow"></div>
+            <div class="xs__photos">${(IMAGES[card.id] || []).map(id => `<img src="assets/projects/${id}-400.webp" alt="" loading="lazy" decoding="async">`).join('')}</div>
+            <div class="xs__head">
+                <p class="xs__kicker">${period}</p>
+                <h3 class="xs__name">${[...org].map((c, k) => `<span class="ch" style="--k:${k}">${c === ' ' ? '&nbsp;' : c}</span>`).join('')}</h3>
+                <p class="xs__role">${role}</p>
+            </div>`;
+        sticky.append(layer);
+        card.hidden = true;
+        return { card, layer, org, photos: [...layer.querySelectorAll('.xs__photos img')], chars: [...layer.querySelectorAll('.ch')] };
     });
+    const cta = document.createElement('button');
+    cta.type = 'button';
+    cta.className = 'xs__cta';
+    cta.innerHTML = '<span class="xs__cta-icon"><i class="fa-solid fa-briefcase" aria-hidden="true"></i></span><span class="xs__cta-label"></span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i>';
+    const dots = document.createElement('div');
+    dots.className = 'xs__dots';
+    dots.innerHTML = layers.map(() => '<span></span>').join('');
+    sticky.append(cta, dots);
+    if (cards.length) {
+        cards[0].parentElement.after(stage);
+        document.body.append(sheet);
+    }
+    let currentXs = 0;
+    const openSheet = (i) => {
+        const { card, org } = layers[i];
+        const clone = card.cloneNode(true);
+        clone.hidden = false;
+        clone.removeAttribute('id');
+        sheet.querySelector('.xs-sheet__body').innerHTML = '';
+        sheet.querySelector('.xs-sheet__body').append(clone);
+        sheet.style.setProperty('--c', COLORS[card.id] || '14, 98%, 50%');
+        sheet.hidden = false;
+        document.body.style.overflow = 'hidden';
+        sheet.querySelector('.xs-sheet__close').focus();
+    };
+    const closeSheet = () => { sheet.hidden = true; document.body.style.overflow = ''; cta.focus(); };
+    cta.addEventListener('click', () => openSheet(currentXs));
+    sheet.addEventListener('click', (e) => { if (e.target === sheet || e.target.closest('.xs-sheet__close')) closeSheet(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !sheet.hidden) closeSheet(); });
+
+    function updateStage(vh) {
+        if (!layers.length) return;
+        const r = stage.getBoundingClientRect();
+        const total = Math.max(1, r.height - vh);
+        const p = Math.min(0.9999, Math.max(0, -r.top / total)) * layers.length;
+        const idx = Math.floor(p);
+        layers.forEach(({ layer, photos, chars }, i) => {
+            const t = p - i;                                   // 0 → 1 pendant le passage de cette entreprise
+            const fadeIn = i === 0 ? 1 : Math.min(1, Math.max(0, (t + 0.12) / 0.18));
+            const fadeOut = i === layers.length - 1 ? 1 : Math.min(1, Math.max(0, (1.04 - t) / 0.16));
+            const o = Math.min(fadeIn, fadeOut);
+            layer.style.opacity = o.toFixed(3);
+            layer.style.visibility = o > 0.001 ? 'visible' : 'hidden';
+            layer.classList.toggle('is-on', t > -0.08 && (t < 0.92 || i === layers.length - 1));
+            if (reduced || o <= 0.001) return;
+            photos.forEach((img, k) => {
+                const [dx, dy, delay] = FLIGHTS[k % FLIGHTS.length];
+                const f = Math.min(1, Math.max(0, (t - delay) / 0.75));     // vol de la photo
+                const ease = f * f;
+                const s = 0.25 + ease * 1.9;
+                img.style.transform = `translate(-50%, -50%) translate(${dx * ease * 62}vw, ${dy * ease * 58}vh) scale(${s.toFixed(3)})`;
+                img.style.opacity = (f <= 0 ? 0 : Math.min(1, f * 6)).toFixed(3);
+            });
+        });
+        currentXs = Math.min(layers.length - 1, idx);
+        cta.querySelector('.xs__cta-label').textContent = `Voir le détail · ${layers[currentXs].org}`;
+        cta.style.setProperty('--c', COLORS[layers[currentXs].card.id] || '14, 98%, 50%');
+        [...dots.children].forEach((d, i) => d.classList.toggle('is-on', i === currentXs));
+    }
 
     // ---------------------------------------------------------------- Carrousels
     [['.about__internships .experience__grid', '.about__internships'], ['.passions__blog', '.about__passions']].forEach(([sel, host]) => {
@@ -176,14 +239,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (d < bestD) { bestD = d; best = it; }
         });
         items.forEach(it => it.classList.toggle('is-current', it === best && bestD < vh * 0.35));
-        // Chapitres : halo qui s'intensifie au centre, images en parallaxe
-        chapters.forEach(({ card, glow, imgs }) => {
-            const r = card.getBoundingClientRect();
-            if (r.bottom < 0 || r.top > vh) return;
-            const c = (r.top + r.height / 2 - vh / 2) / vh;
-            glow.style.setProperty('--glow', (0.95 - Math.min(0.7, Math.abs(c) * 0.9)).toFixed(3));
-            if (!reduced) imgs.forEach(img => img.style.setProperty('--py', `${c * vh * img.dataset.speed}px`));
-        });
+        // Défilé des entreprises
+        updateStage(vh);
         // Barre flottante : visible après l'ouverture, section courante
         if (dock) {
             dock.classList.toggle('is-shown', y > vh * 0.6);
