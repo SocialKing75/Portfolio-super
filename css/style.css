@@ -907,6 +907,10 @@ h1:focus-visible, h2:focus-visible, h3:focus-visible {
 
 .experience__card h5 { color: var(--title-color); margin-bottom: 0.5rem; font-size: var(--h3-font-size); }
 .experience__card > p { color: var(--text-color-light); margin-bottom: 1rem; font-size: var(--small-font-size); }
+.experience__stat { display: flex; align-items: baseline; gap: .4rem; margin: .6rem 0 .5rem; color: var(--text-color); font-size: var(--small-font-size); }
+.experience__stat strong { font-size: 1.6rem; line-height: 1; font-weight: 700; color: var(--first-color); }
+.experience__types { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: .9rem; }
+.experience__types span { padding: .15rem .55rem; border-radius: 1rem; font-size: .72rem; font-weight: 500; color: var(--first-color); background: hsla(14, 98%, 50%, .1); }
 .experience__tasks { list-style: none; padding: 0; }
 .experience__tasks li { position: relative; padding-left: 1.5rem; margin-bottom: 0.5rem; color: var(--text-color); font-size: var(--small-font-size); }
 .experience__tasks li::before { content: '▸'; position: absolute; left: 0; color: var(--first-color); }
