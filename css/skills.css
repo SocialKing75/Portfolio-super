@@ -275,7 +275,7 @@ body.dark-mode .sk3d {
     top: calc(var(--sk3d-top) + 1.5rem);
     left: clamp(1rem, 4vw, 3rem);
     z-index: 2;
-    max-width: 260px;
+    white-space: nowrap;
     pointer-events: none;
 }
 .sk3d-info__title { font-size: clamp(1.6rem, 3.4vw, 2.6rem); line-height: 1.05; color: var(--sk3d-ink); margin-bottom: .5rem; }
@@ -418,6 +418,14 @@ body.dark-mode .sk3d-obj--partition .sk3d-face--left { background: hsl(0, 0%, 30
     radial-gradient(circle, hsl(48, 95%, 62%) 0 3px, transparent 4px) 0 0 / 14px 10px,
     hsl(0, 0%, 100%); }
 .sk3d-obj--kanban .sk3d-face--left { background: hsl(0, 0%, 88%); }
+.sk3d-person { position: absolute; width: 0; height: 0; }
+.sk3d-obj--person .sk3d-face--top { background: hsl(30, 20%, 99%); }
+.sk3d-obj--person .sk3d-face--front { background: hsl(30, 8%, 86%); }
+.sk3d-obj--person .sk3d-face--left { background: hsl(30, 8%, 76%); }
+.sk3d-obj--head .sk3d-face { border-radius: 50%; }
+body.dark-mode .sk3d-obj--person .sk3d-face--top { background: hsl(0, 0%, 88%); }
+body.dark-mode .sk3d-obj--person .sk3d-face--front { background: hsl(0, 0%, 78%); }
+body.dark-mode .sk3d-obj--person .sk3d-face--left { background: hsl(0, 0%, 66%); }
 .sk3d-obj--wood .sk3d-face--top { background: hsl(32, 35%, 90%); }
 .sk3d-obj--wood .sk3d-face--front { background: hsl(30, 22%, 80%); }
 .sk3d-obj--wood .sk3d-face--left { background: hsl(30, 18%, 74%); }

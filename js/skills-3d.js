@@ -261,6 +261,33 @@ document.addEventListener('DOMContentLoaded', () => {
             [0.42, 0.72, 0.12, 0.12, 12, 0, 'accent']
         ]
     };
+    // Personnages (position [x, y] en fraction de la zone), comme les silhouettes de la maquette Renault.
+    const PEOPLE = {
+        openspace: [[0.3, 0.82], [0.76, 0.84]], labo: [[0.3, 0.42], [0.82, 0.72]],
+        tableur: [[0.18, 0.8]], electronique: [[0.48, 0.62]],
+        archives: [[0.38, 0.5], [0.86, 0.82]], dashboards: [[0.12, 0.22], [0.7, 0.32]],
+        accueil: [[0.62, 0.2], [0.62, 0.6]], planning: [[0.9, 0.5]],
+        dessin: [[0.46, 0.62], [0.9, 0.4]], maquette: [[0.2, 0.82], [0.86, 0.76]],
+        metre: [[0.4, 0.46]], projection: [[0.88, 0.82], [0.46, 0.26]],
+        montage: [[0.3, 0.66]], motion: [[0.56, 0.62]],
+        photo: [[0.5, 0.3], [0.5, 0.66]], streaming: [[0.58, 0.56]],
+        direction: [[0.5, 0.56], [0.1, 0.82]], agora: [[0.2, 0.82], [0.76, 0.84]],
+        creatif: [[0.5, 0.22], [0.86, 0.42]], flex: [[0.24, 0.46], [0.72, 0.4], [0.54, 0.84]],
+        warroom: [[0.16, 0.22], [0.62, 0.22]], scrum: [[0.4, 0.54], [0.58, 0.56], [0.2, 0.22]],
+        securite: [[0.24, 0.62]], strategie: [[0.2, 0.52], [0.72, 0.78]]
+    };
+
+    function person(x, y, k) {
+        const p = el('div', 'sk3d-person');
+        p.style.left = x + 'px';
+        p.style.top = y + 'px';
+        const body = box(10 * k, 8 * k, 28 * k, 'sk3d-obj sk3d-obj--person');
+        const head = box(9 * k, 8 * k, 9 * k, 'sk3d-obj sk3d-obj--person sk3d-obj--head');
+        head.style.transform = `translate(${0.5 * k}px, 0) translateZ(${29 * k}px)`;
+        p.append(body, head);
+        return p;
+    }
+
     // Espaces de chaque étage, dans l'ordre des compétences.
     const FLOOR_ZONES = [
         ['openspace', 'labo', 'tableur', 'electronique'],
@@ -392,7 +419,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             room.classList.add('sk3d-room--lvl' + s.rank);
             const seq = FLOOR_ZONES[i % FLOOR_ZONES.length];
-            const furniture = furnish(ZONE_KINDS[seq[k % seq.length]], rw, rd);
+            const kind = seq[k % seq.length];
+            const furniture = furnish(ZONE_KINDS[kind], rw, rd);
+            const pk = Math.max(0.6, Math.min(1.2, Math.min(rw, rd) / 130));
+            (PEOPLE[kind] || []).forEach(([px, py]) => furniture.items.push(person(px * rw, py * rd, pk)));
 
             const pin = el('button', 'sk3d-pin');
             pin.type = 'button';
