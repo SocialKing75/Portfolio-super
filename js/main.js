@@ -154,6 +154,15 @@ function updateLanguage() {
         const locale = { fr: 'fr-FR', en: 'en-GB', es: 'es-ES', de: 'de-DE', zh: 'zh-CN' }[currentLanguage] || 'fr-FR';
         el.textContent = `${PUBLISHED[currentLanguage] || PUBLISHED.fr} ${date.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })}`;
     });
+    // Date de l'événement : un mois, ou une période « mois – mois année ».
+    document.querySelectorAll('time.hackathon-card__event[data-event-start]').forEach(el => {
+        const locale = { fr: 'fr-FR', en: 'en-GB', es: 'es-ES', de: 'de-DE', zh: 'zh-CN' }[currentLanguage] || 'fr-FR';
+        const month = (v, withYear) => new Date(v + '-15T12:00:00').toLocaleDateString(locale, withYear ? { month: 'long', year: 'numeric' } : { month: 'long' });
+        const start = el.dataset.eventStart, end = el.dataset.eventEnd;
+        const sameYear = end && start.slice(0, 4) === end.slice(0, 4);
+        let txt = end ? `${month(start, !sameYear)} – ${month(end, true)}` : month(start, true);
+        el.textContent = txt.charAt(0).toUpperCase() + txt.slice(1);
+    });
     document.querySelectorAll('[data-translate]').forEach(el => {
         const key = el.getAttribute('data-translate');
         if (translations[currentLanguage] && translations[currentLanguage][key]) {
