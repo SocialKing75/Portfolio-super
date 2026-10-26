@@ -83,7 +83,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const hint = el('p', 'sk3d-hint', '<i class="fa-solid fa-hand-pointer" aria-hidden="true"></i> Glissez pour faire pivoter la maquette');
 
-    root.append(info, viewport, controls, hint);
+    // Plein écran (API Fullscreen) quand le navigateur le permet.
+    const fsBtn = el('button', 'sk3d-fs', '<i class="fa-solid fa-expand" aria-hidden="true"></i>');
+    fsBtn.type = 'button';
+    fsBtn.setAttribute('aria-label', 'Afficher la maquette en plein écran');
+    if (!document.fullscreenEnabled) fsBtn.hidden = true;
+    fsBtn.addEventListener('click', () => {
+        if (document.fullscreenElement) document.exitFullscreen();
+        else root.requestFullscreen().catch(() => {});
+    });
+    document.addEventListener('fullscreenchange', () => {
+        const on = document.fullscreenElement === root;
+        fsBtn.innerHTML = `<i class="fa-solid ${on ? 'fa-compress' : 'fa-expand'}" aria-hidden="true"></i>`;
+        fsBtn.setAttribute('aria-label', on ? 'Quitter le plein écran' : 'Afficher la maquette en plein écran');
+    });
+
+    root.append(info, viewport, controls, hint, fsBtn);
 
     // --- Étages ---
     const floorEls = floors.map((f, i) => {
@@ -241,12 +256,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Mise à l'échelle ---
     const fit = () => {
-        const s = Math.min(1, viewport.clientWidth / 820);
+        const s = Math.max(0.3, Math.min(1.3, viewport.clientWidth / 820, viewport.clientHeight / 640));
         stage.style.setProperty('--scale', s);
         // Sur petit écran, les repères restent lisibles malgré la réduction de la maquette.
         stage.style.setProperty('--pin-scale', Math.min(1.5, Math.max(1, 0.6 / s)).toFixed(2));
-        viewport.style.height = Math.round(620 * s + 40) + 'px';
     };
     fit();
-    window.addEventListener('resize', fit);
+    new ResizeObserver(fit).observe(viewport);
 });

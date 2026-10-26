@@ -246,10 +246,13 @@ body.dark-mode .sk-tag { border-color: rgba(255,255,255,0.07); }
     --sk3d-shadow: hsla(30, 20%, 40%, 0.22);
     --sk3d-ink: hsl(0, 0%, 10%);
     --sk3d-chip: hsl(0, 0%, 100%);
+    --sk3d-top: 5.5rem;
     position: relative;
-    margin: 0 0 3.5rem;
-    padding: 1.5rem 1.5rem 1.25rem;
-    border-radius: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100svh;
+    padding: var(--sk3d-top) 0 1rem;
     background: var(--sk3d-bg);
     overflow: hidden;
     user-select: none;
@@ -269,8 +272,8 @@ body.dark-mode .sk3d {
 
 .sk3d-info {
     position: absolute;
-    top: 1.75rem;
-    left: 1.75rem;
+    top: calc(var(--sk3d-top) + 1.5rem);
+    left: clamp(1rem, 4vw, 3rem);
     z-index: 2;
     max-width: 260px;
     pointer-events: none;
@@ -291,7 +294,7 @@ body.dark-mode .sk3d {
 .sk3d-info__bar span { flex: 1; height: 6px; border-radius: 3px; background: var(--sk3d-room-line); }
 .sk3d-info__bar span.on { background: var(--first-color); }
 
-.sk3d-viewport { position: relative; height: 660px; overflow: hidden; cursor: grab; touch-action: pan-y; }
+.sk3d-viewport { position: relative; flex: 1; min-height: 0; overflow: hidden; cursor: grab; touch-action: pan-y; }
 .sk3d.is-dragging .sk3d-viewport { cursor: grabbing; }
 
 .sk3d-stage {
@@ -456,7 +459,7 @@ body.dark-mode .sk3d-room.is-selected { background: hsl(14, 40%, 30%); }
     display: flex;
     justify-content: center;
     gap: .5rem;
-    margin-top: .25rem;
+    padding: 0 1rem;
 }
 .sk3d-controls__floors {
     display: flex;
@@ -488,11 +491,42 @@ body.dark-mode .sk3d-room.is-selected { background: hsl(14, 40%, 30%); }
 
 .sk3d-hint { margin-top: .75rem; text-align: center; font-size: .78rem; color: var(--text-color-light); }
 
+/* Page Compétences : la maquette occupe tout l'écran sous la barre de navigation. */
+.skills-page { padding: 0; min-height: 0; }
+.skills-page .container { max-width: none; margin: 0; padding: 0; }
+.skills-page .sk-hero {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.sk3d-fs {
+    position: absolute;
+    top: calc(var(--sk3d-top) + 1.5rem);
+    right: clamp(1rem, 4vw, 3rem);
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 44px; height: 44px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--sk3d-chip);
+    color: var(--sk3d-ink);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .1);
+    cursor: pointer;
+    transition: background .25s ease, color .25s ease;
+}
+.sk3d-fs:hover { background: var(--first-color); color: #fff; }
+.sk3d:fullscreen { --sk3d-top: 0px; }
+
 @keyframes sk3dPop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
 @media (max-width: 768px) {
-    .sk3d { padding: 1rem .75rem; }
-    .sk3d-info { position: static; max-width: none; margin-bottom: .5rem; }
+    .sk3d { --sk3d-top: 4.5rem; }
+    .sk3d-info { position: static; max-width: none; margin: 1rem 4.5rem .5rem 1rem; }
+    .sk3d-fs { top: calc(var(--sk3d-top) + 1rem); right: 1rem; }
     .sk3d-btn span { display: none; }
     .sk3d-btn { padding: .6rem .75rem; }
     /* Sur mobile, seule l'étiquette de la compétence choisie s'affiche. */
