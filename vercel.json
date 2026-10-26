@@ -1,19 +1,6 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
-  "rewrites": [
-    {
-      "source": "/((?!robots\\.txt$|blocked\\.html$).*)",
-      "has": [
-        {
-          "type": "header",
-          "key": "user-agent",
-          "value": ".*(GPTBot|ChatGPT-User|OAI-SearchBot|ClaudeBot|Claude-Web|Claude-SearchBot|Claude-User|anthropic-ai|CCBot|Google-Extended|GoogleOther|Applebot-Extended|PerplexityBot|Perplexity-User|Bytespider|Amazonbot|Meta-ExternalAgent|Meta-ExternalFetcher|FacebookBot|cohere-ai|cohere-training-data-crawler|Diffbot|ImagesiftBot|Omgili|omgilibot|Timpibot|YouBot|AI2Bot|Ai2Bot-Dolma|PanguBot|Kangaroo Bot|Scrapy|DuckAssistBot|MistralAI-User|img2dataset|Webzio-Extended|SemrushBot|AhrefsBot|MJ12bot|DotBot|PetalBot|DataForSeoBot|python-requests|python-urllib|Go-http-client|curl|wget|PhantomJS).*"
-        }
-      ],
-      "destination": "/blocked.html"
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",
