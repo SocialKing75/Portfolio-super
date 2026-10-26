@@ -251,8 +251,57 @@ html, body { overflow-x: clip; }
 @keyframes xsFade { from { opacity: 0; } }
 @keyframes xsUp { from { opacity: 0; transform: translateY(40px); } }
 
-/* ---- 4. Stages et « Et aussi » : carrousels horizontaux */
-.about__internships { margin-top: 5rem; }
+/* ---- 4a. Stages : défilé horizontal épinglé */
+.about__internships > .experience__title { display: none; }
+.about__internships > .experience__grid[hidden] { display: none !important; }
+.hz { position: relative; width: 100vw; margin-left: calc(50% - 50vw); }
+.hz__sticky { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: flex; align-items: center; }
+.hz__track { display: flex; align-items: center; gap: 4vw; padding: 0 6vw; will-change: transform; }
+.hz__intro { flex: 0 0 auto; width: max-content; max-width: 86vw; }
+.hz__eyebrow { display: inline-block; padding: .3rem .9rem; border-radius: 999px; background: hsla(14, 98%, 50%, .12); color: var(--first-color); font-size: .8rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+.hz__big { margin: .8rem 0 .6rem; font-size: clamp(4rem, 13vw, 11rem); line-height: .9; letter-spacing: -0.05em; color: var(--title-color); }
+.hz__hint { display: flex; align-items: center; gap: .6rem; color: var(--text-color); }
+.hz__hint i { color: var(--first-color); animation: hzNudge 1.4s ease-in-out infinite; }
+@keyframes hzNudge { 50% { transform: translateX(6px); } }
+.hz__card {
+    flex: 0 0 auto;
+    width: min(1040px, 88vw);
+    height: min(600px, 74vh);
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    border-radius: 28px;
+    overflow: hidden;
+    background: var(--body-color);
+    box-shadow: 0 30px 70px hsla(0, 0%, 0%, .14);
+    transform: scale(calc(1 - (var(--c, 0) * var(--c, 0)) * .12)) rotate(calc(var(--c, 0) * 2deg));
+}
+.hz__media { position: relative; overflow: hidden; }
+.hz__media img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.25) translateX(calc(var(--c, 0) * -8%)); }
+.hz__media::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, .65)); }
+.hz__year { position: absolute; left: 1.4rem; bottom: .6rem; z-index: 1; font-size: clamp(4rem, 9vw, 7.5rem); font-weight: 700; line-height: 1; letter-spacing: -0.04em; color: transparent; -webkit-text-stroke: 2px rgba(255, 255, 255, .9); }
+.hz__num { position: absolute; top: 1.2rem; left: 1.4rem; z-index: 1; padding: .25rem .7rem; border-radius: 999px; background: rgba(0, 0, 0, .45); color: #fff; font-size: .8rem; font-weight: 600; backdrop-filter: blur(6px); }
+.hz__text { display: flex; flex-direction: column; justify-content: center; gap: .9rem; padding: clamp(1.4rem, 3vw, 3rem); overflow-y: auto; }
+.hz__period { font-size: .85rem; font-weight: 600; color: var(--first-color); letter-spacing: .02em; }
+.hz__org { font-size: clamp(2rem, 3.6vw, 3.2rem); line-height: 1; letter-spacing: -0.03em; color: var(--title-color); }
+.hz__role { font-size: 1.1rem; font-weight: 600; color: var(--text-color); }
+.hz__text .experience__tasks { margin: .3rem 0; }
+.hz__text .experience__tasks li { font-size: .95rem; }
+.hz__text .experience__tools { margin: 0; }
+.hz__text .experience__tools span { opacity: 1 !important; transform: none !important; }
+.hz__bar { position: absolute; left: 6vw; right: 6vw; bottom: 110px; height: 3px; border-radius: 3px; background: hsla(0, 0%, 50%, .2); overflow: hidden; }
+.hz__bar span { display: block; height: 100%; background: linear-gradient(90deg, #ff8a3d, #fc3d03); transform-origin: left; transform: scaleX(0); }
+@media (max-width: 768px) {
+    .hz__card { grid-template-columns: 1fr; grid-template-rows: 40% 1fr; height: min(640px, 72vh); }
+    .hz__text { justify-content: flex-start; gap: .6rem; }
+    .hz__org { font-size: 2rem; }
+    .hz__bar { bottom: 96px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .hz__card { transform: none; }
+}
+
+/* ---- 4b. « Et aussi » : carrousel horizontal */
+.about__internships { margin-top: 0; }
 .ab-rail {
     display: flex !important;
     gap: 1.2rem;

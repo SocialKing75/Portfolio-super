@@ -129,7 +129,66 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ---------------------------------------------------------------- Carrousels
-    [['.about__internships .experience__grid', '.about__internships'], ['.passions__blog', '.about__passions']].forEach(([sel, host]) => {
+    // ---------------------------------------------------------------- Stages : défilé horizontal épinglé
+    // Le défilement vertical fait glisser les stages de droite à gauche, chacun en grand panneau.
+    const STAGE_IMG = { 'exp-renault': 'photo-1551434678-e076c223a692', 'exp-qcs': 'photo-1503387762-592deb58ef4e' };
+    const stageCards = [...document.querySelectorAll('.about__internships .experience__card')];
+    const hz = document.createElement('div');
+    hz.className = 'hz';
+    hz.innerHTML = '<div class="hz__sticky"><div class="hz__track"></div><div class="hz__bar"><span></span></div></div>';
+    const track = hz.querySelector('.hz__track');
+    track.innerHTML = `<article class="hz__intro">
+            <p class="hz__eyebrow">${stageCards.length} stages</p>
+            <h3 class="hz__big" data-translate="Stages">Stages</h3>
+            <p class="hz__hint"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i> <span data-translate="hz-hint">Premières expériences en entreprise</span></p>
+        </article>` + stageCards.map((c, n) => {
+        const period = c.querySelector('.experience__period')?.textContent.trim() || '';
+        const year = (period.match(/\d{4}/) || [''])[0];
+        const role = c.querySelector('h5')?.textContent.trim() || '';
+        const [org, city] = (c.querySelector('h5 + p')?.textContent || '').split(' - ').map(t => t.trim());
+        const tools = c.querySelector('.experience__tools')?.outerHTML || '';
+        const tasks = c.querySelector('.experience__tasks')?.outerHTML || '';
+        return `<article class="hz__card">
+            <div class="hz__media">
+                <img src="assets/projects/${STAGE_IMG[c.id] || 'photo-1481627834876-b7833e8f5570'}-800.webp" alt="" loading="lazy">
+                <span class="hz__year">${year}</span>
+                <span class="hz__num">0${n + 1}</span>
+            </div>
+            <div class="hz__text">
+                <p class="hz__period">${period}${city ? ' · ' + city : ''}</p>
+                <h4 class="hz__org">${org || ''}</h4>
+                <p class="hz__role">${role}</p>
+                ${tasks}${tools}
+            </div>
+        </article>`;
+    }).join('');
+    if (stageCards.length) {
+        const grid = stageCards[0].parentElement;
+        grid.after(hz);
+        grid.hidden = true;
+        track.querySelectorAll('.experience__tools span').forEach(sp => sp.style.removeProperty('--i'));
+    }
+    const hzBar = hz.querySelector('.hz__bar span');
+    function updateHz(vh) {
+        if (!stageCards.length) return;
+        const r = hz.getBoundingClientRect();
+        const total = Math.max(1, r.height - vh);
+        const p = Math.min(1, Math.max(0, -r.top / total));
+        const dist = Math.max(0, track.scrollWidth - innerWidth);
+        track.style.transform = `translate3d(${-p * dist}px, 0, 0)`;
+        hzBar.style.transform = `scaleX(${p})`;
+        track.querySelectorAll('.hz__card').forEach(card => {
+            const cr = card.getBoundingClientRect();
+            const c = (cr.left + cr.width / 2 - innerWidth / 2) / innerWidth;  // 0 au centre de l'écran
+            card.style.setProperty('--c', Math.max(-1, Math.min(1, c)).toFixed(3));
+        });
+    }
+    const sizeHz = () => { if (stageCards.length) hz.style.height = `${track.scrollWidth - innerWidth + innerHeight}px`; };
+    addEventListener('resize', sizeHz);
+    addEventListener('load', sizeHz);
+    sizeHz();
+
+    [['.passions__blog', '.about__passions']].forEach(([sel, host]) => {
         const rail = document.querySelector(sel);
         if (!rail) return;
         rail.classList.add('ab-rail');
@@ -241,6 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
         items.forEach(it => it.classList.toggle('is-current', it === best && bestD < vh * 0.35));
         // Défilé des entreprises
         updateStage(vh);
+        updateHz(vh);
         // Barre flottante : visible après l'ouverture, section courante
         if (dock) {
             dock.classList.toggle('is-shown', y > vh * 0.6);
@@ -252,6 +312,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
     addEventListener('resize', update);
+    // Les éléments ajoutés ici sont traduits dans la langue choisie.
+    if (typeof applyLang === 'function') applyLang();
     splitWords();
     update();
 });
