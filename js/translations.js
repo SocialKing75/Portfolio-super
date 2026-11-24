@@ -1,5 +1,6 @@
 const translations = {
     fr: {
+        "blob-photographe": "Le photographe recherche la carte SD",
         "Voir le site": "Voir le site",
         "Projet perso": "Projet perso",
         "Portfolio": "Portfolio",
@@ -170,6 +171,7 @@ const translations = {
         "Droit d'auteur © 2025 Le Joë.": "Droit d'auteur © 2025 Deriu Joë."
     },
     en: {
+        "blob-photographe": "The photographer is looking for the SD card",
         "Voir le site": "Visit the website",
         "Projet perso": "Personal project",
         "Portfolio": "Portfolio",
@@ -336,6 +338,7 @@ const translations = {
         "Droit d'auteur © 2025 Le Joë.": "Copyright © 2025 Deriu Joë."
     },
     es: {
+        "blob-photographe": "El fotógrafo está buscando la tarjeta SD",
         "Voir le site": "Ver el sitio",
         "Projet perso": "Proyecto personal",
         "Portfolio": "Portfolio",
@@ -506,6 +509,7 @@ const translations = {
         "Droit d'auteur © 2025 Le Joë.": "Derechos de autor © 2025 Deriu Joë."
     },
     de: {
+        "blob-photographe": "Der Fotograf sucht die SD-Karte",
         "Voir le site": "Website ansehen",
         "Projet perso": "Privatprojekt",
         "Portfolio": "Portfolio",
@@ -676,6 +680,7 @@ const translations = {
         "Droit d'auteur © 2025 Le Joë.": "Urheberrecht © 2025 Deriu Joë."
     },
     zh: {
+        "blob-photographe": "摄影师正在寻找 SD 卡",
         "Voir le site": "访问网站",
         "Projet perso": "个人项目",
         "Portfolio": "作品集",

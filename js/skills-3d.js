@@ -467,6 +467,7 @@ function init() {
         'Langages': ['openspace', 'labo', 'tableur', 'electronique'],
         'Bureautique & Data': ['archives', 'dashboards', 'accueil', 'planning'],
         'Logiciels métier': ['dessin', 'maquette', 'metre', 'projection'],
+        'Agents IA': ['labo', 'warroom', 'strategie', 'projection'],
         'Création & Médias': ['montage', 'motion', 'photo', 'streaming'],
         'Soft Skills': ['direction', 'agora', 'creatif', 'flex', 'warroom', 'scrum', 'securite', 'strategie']
     };
@@ -980,6 +981,10 @@ function init() {
         'Python': ['python', 'streamlit', 'fastapi'],
         'VBA': ['vba', 'macro'],
         'C': ['c'],
+        'Skills Claude Code': ['claude code'],
+        'Hermes': ['hermes'],
+        'OpenClaw': ['openclaw'],
+        'Ollama': ['ollama'],
         'Excel': ['excel'],
         'PowerBI': ['powerbi', 'power bi'],
         'Suite Microsoft 365': ['suite office', 'microsoft 365', 'office 365', 'word', 'powerpoint', 'outlook', 'teams'],
